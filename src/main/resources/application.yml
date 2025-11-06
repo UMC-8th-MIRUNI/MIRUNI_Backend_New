@@ -14,3 +14,9 @@ spring:
         default_batch_fetch_size: 500
     hibernate:
       ddl-auto: create
+
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: health
