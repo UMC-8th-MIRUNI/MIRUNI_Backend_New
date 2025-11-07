@@ -124,9 +124,23 @@ jobs:
             docker-compose logs --tail=50 app
           
             # Check application health
-            echo '=== Checking application health ==='
-            sleep 10
-            curl -f http://localhost:8080/actuator/health || echo 'Health check failed'
+            echo '=== Checking application health with retries ==='
+            HEALTH_OK=false
+            for i in {1..15}; do
+              CODE=\$(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/actuator/health || echo \"000\")
+              echo \"Attempt \$i: HTTP \$CODE\"
+              if [ \"\$CODE\" = \"200\" ] || [ \"\$CODE\" = \"401\" ] || [ \"\$CODE\" = \"403\" ]; then
+                HEALTH_OK=true
+                break
+              fi
+              sleep 5
+            done
+
+            if [ \"\$HEALTH_OK\" = false ]; then
+              echo 'Health check failed after retries'
+              docker-compose logs --tail=100 app || true
+              exit 1
+            fi
           
             # Clean up old miruni-backend images (keep latest, current SHA, and 2 recent versions)
             docker images ${{ secrets.DOCKER_USERNAME }}/miruni-backend --format '{{.Repository}}:{{.Tag}}' | grep -v latest | grep -v ${{ github.sha }} | head -n -2 | xargs -r docker rmi || true
