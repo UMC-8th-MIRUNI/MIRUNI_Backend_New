@@ -66,6 +66,9 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/returnwork:${{ github.sha }}" >> .env
+          echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
+          echo "GRAFANA_USER=${{ secrets.GRAFANA_USER }}" >> .env
+          echo "GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}" >> .env
 
       - name: Deploy to EC2
         env:
@@ -81,6 +84,9 @@ jobs:
           scp -i private_key.pem -o StrictHostKeyChecking=no docker-compose.yml $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/
           echo "=== Copying .env file ==="
           scp -i private_key.pem -o StrictHostKeyChecking=no .env $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/
+          echo "=== Copying monitoring configs ==="
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r prometheus/ $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r grafana/ $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/
           echo "=== Copy completed ==="
           
           # Deploy on server
