@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: ${DOCKER_IMAGE:-returnwork:latest}
+    image: ${DOCKER_IMAGE:-miruni-backend:latest}
     container_name: miruni-app
     restart: unless-stopped
     ports:

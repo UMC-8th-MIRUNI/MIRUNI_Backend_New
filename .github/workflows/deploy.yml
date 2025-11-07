@@ -55,7 +55,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/returnwork:${{ github.sha }},${{ secrets.DOCKER_USERNAME }}/returnwork:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/miruni-backend:${{ github.sha }},${{ secrets.DOCKER_USERNAME }}/miruni-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -76,7 +76,7 @@ jobs:
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/returnwork:${{ github.sha }}" >> .env
+          echo "DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/miruni-backend:${{ github.sha }}" >> .env
           echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
           echo "GRAFANA_USER=${{ secrets.GRAFANA_USER }}" >> .env
           echo "GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}" >> .env
@@ -128,8 +128,8 @@ jobs:
             sleep 10
             curl -f http://localhost:8080/actuator/health || echo 'Health check failed'
           
-            # Clean up old returnwork images (keep latest, current SHA, and 2 recent versions)
-            docker images ${{ secrets.DOCKER_USERNAME }}/returnwork --format '{{.Repository}}:{{.Tag}}' | grep -v latest | grep -v ${{ github.sha }} | head -n -2 | xargs -r docker rmi || true
+            # Clean up old miruni-backend images (keep latest, current SHA, and 2 recent versions)
+            docker images ${{ secrets.DOCKER_USERNAME }}/miruni-backend --format '{{.Repository}}:{{.Tag}}' | grep -v latest | grep -v ${{ github.sha }} | head -n -2 | xargs -r docker rmi || true
           "
           
           rm -f private_key.pem
