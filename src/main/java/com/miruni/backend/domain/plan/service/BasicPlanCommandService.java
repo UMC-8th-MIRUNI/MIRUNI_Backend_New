@@ -1,6 +1,7 @@
 package com.miruni.backend.domain.plan.service;
 
 import com.miruni.backend.domain.plan.dto.request.BasicPlanCreateRequest;
+import com.miruni.backend.domain.plan.dto.request.BasicPlanUpdateRequest;
 import com.miruni.backend.domain.plan.dto.response.BasicPlanResponse;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Priority;
@@ -15,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalTime;
+
 @Service
 @RequiredArgsConstructor
 public class BasicPlanCommandService {
@@ -27,18 +31,44 @@ public class BasicPlanCommandService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
 
-        if (request.startTime().isAfter(request.endTime())) {
-            throw BaseException.type(BasicPlanErrorCode.INVALID_TIME_RANGE);
-        }
-
+        validateTimeRange(request.startTime(), request.endTime());
         Priority mappedPriority = mapPriority(request.priority());
 
-        long expectedDuration = java.time.Duration.between(request.startTime(), request.endTime()).toMinutes();
+        long expectedDuration = Duration.between(request.startTime(), request.endTime()).toMinutes();
 
         BasicPlan plan = request.toEntity(user, expectedDuration, mappedPriority);
         BasicPlan savedBasicPlan = basicPlanRepository.save(plan);
 
         return BasicPlanResponse.from(savedBasicPlan);
+    }
+
+    @Transactional
+    public BasicPlanResponse updateBasicPlan(Long userId, Long planId, BasicPlanUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        BasicPlan plan = basicPlanRepository.findById(planId)
+                .orElseThrow(() -> BaseException.type(BasicPlanErrorCode.BASIC_PLAN_NOT_FOUND));
+
+        if (!plan.getUser().getId().equals(userId)) {
+            throw BaseException.type(BasicPlanErrorCode.USER_NOT_AUTHORIZED);
+        }
+
+        validateTimeRange(request.startTime(), request.endTime());
+        Priority mappedPriority = mapPriority(request.priority());
+
+        long expectedDuration = java.time.Duration.between(request.startTime(), request.endTime()).toMinutes();
+
+        BasicPlan updatedPlan = request.toEntity(plan, expectedDuration, mappedPriority);
+        BasicPlan savedPlan = basicPlanRepository.save(updatedPlan);
+
+        return BasicPlanResponse.from(savedPlan);
+    }
+
+    private void validateTimeRange(LocalTime start, LocalTime end) {
+        if (start.isAfter(end)) {
+            throw BaseException.type(BasicPlanErrorCode.INVALID_TIME_RANGE);
+        }
     }
 
     private Priority mapPriority(String priorityStr) {

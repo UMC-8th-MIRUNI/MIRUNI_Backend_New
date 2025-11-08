@@ -1,6 +1,7 @@
 package com.miruni.backend.domain.plan.controller;
 
 import com.miruni.backend.domain.plan.dto.request.BasicPlanCreateRequest;
+import com.miruni.backend.domain.plan.dto.request.BasicPlanUpdateRequest;
 import com.miruni.backend.domain.plan.dto.response.BasicPlanResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,4 +16,12 @@ public interface BasicPlanApi {
             @RequestParam Long userId,
             @Valid @RequestBody BasicPlanCreateRequest request
     );
+
+    @Operation(summary = "일반 일정 수정", description = "일반 일정을 수정합니다.")
+    BasicPlanResponse updateBasicPlan(
+            @RequestParam Long userId,
+            @PathVariable Long basicPlanId,
+            @Valid @RequestBody BasicPlanUpdateRequest request
+    );
+
 }
