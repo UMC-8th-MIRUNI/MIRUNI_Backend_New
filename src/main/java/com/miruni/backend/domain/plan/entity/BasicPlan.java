@@ -33,7 +33,7 @@ public class BasicPlan extends BaseEntity {
     @Column(name = "scheduled_date", nullable = false)
     private LocalDate scheduledDate;
 
-    @Column(name = "scheduled_time", nullable = false)
+    @Column(name = "scheduled_time", nullable = false, columnDefinition = "TIME")
     private LocalTime scheduledTime;
 
     @Column(name = "expected_duration", nullable = false)
