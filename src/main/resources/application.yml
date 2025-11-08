@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/miruni
+    username: root
+    password: tkddbs3535
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -14,3 +14,12 @@ spring:
         default_batch_fetch_size: 500
     hibernate:
       ddl-auto: create
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
