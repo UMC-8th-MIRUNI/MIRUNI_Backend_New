@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record BasicPlanCreateRequest(
+public record BasicPlanSaveRequest(
 
         @NotBlank(message = "제목은 필수입니다.")
         @Schema(example = "제목")
