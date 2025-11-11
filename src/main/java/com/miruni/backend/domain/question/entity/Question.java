@@ -68,22 +68,30 @@ public class Question extends BaseEntity {
                 .build();
     }
 
-    public static void validateImageCount(int count){
-        if(count > MAX_IMAGE_COUNT){
-            throw BaseException.type(QuestionErrorCode.EXCEED_MAX_IMAGE_COUNT);
-        }
+    public void update(final String title,
+                               final String content){
+        this.title = title;
+        this.content = content;
     }
 
+
     public void addImage(QuestionImage image){
-        if (this.images.size() >= MAX_IMAGE_COUNT) {
-            throw BaseException.type(QuestionErrorCode.EXCEED_MAX_IMAGE_COUNT);
-        }
         this.images.add(image);
+    }
+
+    public void removeImage(QuestionImage image){
+        this.images.remove(image);
     }
 
     private static void validateAgreed(boolean privacyAgreed) {
         if(!privacyAgreed) {
             throw BaseException.type(QuestionErrorCode.AGREEMENT_NOT_ACCEPT);
+        }
+    }
+
+    public static void validateImageCount(int count){
+        if(count > MAX_IMAGE_COUNT){
+            throw BaseException.type(QuestionErrorCode.EXCEED_MAX_IMAGE_COUNT);
         }
     }
 
