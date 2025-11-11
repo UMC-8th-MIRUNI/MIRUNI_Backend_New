@@ -31,4 +31,8 @@ public class QuestionImage extends BaseEntity {
                 .imageUrl(imageUrl)
                 .build();
     }
+
+    public void disconnect(){
+        this.question = null;
+    }
 }

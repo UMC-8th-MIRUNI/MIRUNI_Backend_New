@@ -74,13 +74,21 @@ public class Question extends BaseEntity {
         this.content = content;
     }
 
-
     public void addImage(QuestionImage image){
         this.images.add(image);
     }
 
-    public void removeImage(QuestionImage image){
-        this.images.remove(image);
+    public void removeImage(QuestionImage image) {
+        images.remove(image);
+        image.disconnect();
+    }
+
+    public void removeAll(List<QuestionImage> images){
+        images.forEach(this::removeImage);
+    }
+
+    public boolean isAnswered() {
+        return this.answer != null;
     }
 
     private static void validateAgreed(boolean privacyAgreed) {

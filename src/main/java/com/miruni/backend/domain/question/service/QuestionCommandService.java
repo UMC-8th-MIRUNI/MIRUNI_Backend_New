@@ -116,7 +116,8 @@ public class QuestionCommandService {
 
         imagesToDelete.forEach(image -> {
             s3Util.deleteFile(image.getImageUrl());
-            question.removeImage(image);
         });
+        question.removeAll(imagesToDelete);
+        questionRepository.flush();
     }
 }

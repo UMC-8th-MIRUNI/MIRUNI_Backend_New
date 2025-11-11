@@ -6,7 +6,7 @@ import com.miruni.backend.domain.question.entity.QuestionImage;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record QuestionResponseDto(
+public record GetQuestionResponseDto(
         Long id,
 
         String title,
@@ -17,11 +17,9 @@ public record QuestionResponseDto(
 
         List<Long> imageIds,
 
-        String email,
-
         LocalDateTime createdAt
 ) {
-    public static QuestionResponseDto from(Question question) {
+    public static GetQuestionResponseDto from(Question question) {
 
         List<String> imageUrls = question.getImages().stream()
                 .map(QuestionImage::getImageUrl)
@@ -31,13 +29,12 @@ public record QuestionResponseDto(
                 .map(QuestionImage::getId)
                 .toList();
 
-        return new QuestionResponseDto(
+        return new GetQuestionResponseDto(
                 question.getId(),
                 question.getTitle(),
                 question.getContent(),
                 imageUrls,
                 imageIds,
-                question.getUser().getEmail(),
                 question.getCreatedAt());
     }
 }
