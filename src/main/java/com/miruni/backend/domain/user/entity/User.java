@@ -72,7 +72,7 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokens = new ArrayList<>();
 
-    public User create(String name, String email, LocalDate birth,
+    public static User create(String name, String email, LocalDate birth,
                        String phoneNumber, String password, String nickname){
         return User.builder()
                 .name(name)

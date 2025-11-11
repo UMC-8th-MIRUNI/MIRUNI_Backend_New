@@ -12,8 +12,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "question")
 public class Question extends BaseEntity {
 
@@ -41,16 +39,30 @@ public class Question extends BaseEntity {
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private Answer answer;
 
+    @Builder
+    private Question(final String title,
+                     final String content,
+                     final boolean privacyAgreed,
+                     final User user){
+        this.title = title;
+        this.content = content;
+        this.privacyAgreed = privacyAgreed;
+        this.user = user;
+        this.images = new ArrayList<>();
+    }
+
     public static Question create(final String title,
                                   final String content,
-                                  final boolean privacyAgreed) {
+                                  final boolean privacyAgreed,
+                                  final User user) {
 
         validateAgreed(privacyAgreed);
 
         return Question.builder()
                 .title(title)
                 .content(content)
-                .privacyAgreed(privacyAgreed)
+                .privacyAgreed(true)
+                .user(user)
                 .build();
     }
 
