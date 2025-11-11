@@ -34,6 +34,10 @@ public class QuestionCommandService {
         User user = User.create("추상윤", "dhzkltdh@gmail.com", localDate,
                 "010-7689-3141", "tkddbs3535", "chuchu");
 
+        List<MultipartFile> images = command.imageUrls();
+
+        Question.validateImageCount(images != null ? images.size() : 0);
+
         Question question = questionRepository.save(
                 Question.create(command.title(),
                         command.content(),
@@ -41,7 +45,7 @@ public class QuestionCommandService {
                         user)
         );
 
-        uploadQuestionImages(question, command.imageUrls());
+        uploadQuestionImages(question, images);
 
         return QuestionResponseDto.from(question);
     }
@@ -54,7 +58,7 @@ public class QuestionCommandService {
         for(MultipartFile image : images){
             String key = uploadImageToS3(question, image);
             QuestionImage questionImage = QuestionImage.create(question, key);
-            question.getImages().add(questionImage);
+            question.addImage(questionImage);
         }
     }
 

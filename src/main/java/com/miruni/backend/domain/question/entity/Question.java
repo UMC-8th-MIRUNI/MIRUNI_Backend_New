@@ -15,6 +15,8 @@ import java.util.List;
 @Table(name = "question")
 public class Question extends BaseEntity {
 
+    private static final int MAX_IMAGE_COUNT = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
@@ -64,6 +66,19 @@ public class Question extends BaseEntity {
                 .privacyAgreed(true)
                 .user(user)
                 .build();
+    }
+
+    public static void validateImageCount(int count){
+        if(count > MAX_IMAGE_COUNT){
+            throw BaseException.type(QuestionErrorCode.EXCEED_MAX_IMAGE_COUNT);
+        }
+    }
+
+    public void addImage(QuestionImage image){
+        if (this.images.size() >= MAX_IMAGE_COUNT) {
+            throw BaseException.type(QuestionErrorCode.EXCEED_MAX_IMAGE_COUNT);
+        }
+        this.images.add(image);
     }
 
     private static void validateAgreed(boolean privacyAgreed) {
