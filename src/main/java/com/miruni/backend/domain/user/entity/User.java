@@ -24,16 +24,16 @@ public class User extends BaseEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "name", length = 50)
     private String name;
 
     @Column(name = "email", nullable = false, length = 255, unique = true)
     private String email;
 
-    @Column(name = "birth", nullable = false)
+    @Column(name = "birth")
     private LocalDate birth;
 
-    @Column(name = "phone_number", nullable = false, length = 30)
+    @Column(name = "phone_number", length = 30)
     private String phoneNumber;
 
     @Column(name = "password", nullable = false, length = 255)
