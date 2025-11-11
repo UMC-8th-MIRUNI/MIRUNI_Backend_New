@@ -1,7 +1,9 @@
 package com.miruni.backend.domain.question.entity;
 
+import com.miruni.backend.domain.question.exception.QuestionErrorCode;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.global.common.BaseEntity;
+import com.miruni.backend.global.exception.BaseException;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.ArrayList;
@@ -38,5 +40,24 @@ public class Question extends BaseEntity {
 
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private Answer answer;
+
+    public static Question create(final String title,
+                                  final String content,
+                                  final boolean privacyAgreed) {
+
+        validateAgreed(privacyAgreed);
+
+        return Question.builder()
+                .title(title)
+                .content(content)
+                .privacyAgreed(privacyAgreed)
+                .build();
+    }
+
+    private static void validateAgreed(boolean privacyAgreed) {
+        if(!privacyAgreed) {
+            throw BaseException.type(QuestionErrorCode.AGREEMENT_NOT_ACCEPT);
+        }
+    }
 
 }
