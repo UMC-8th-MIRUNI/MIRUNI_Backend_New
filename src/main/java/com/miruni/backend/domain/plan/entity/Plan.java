@@ -48,4 +48,6 @@ public class Plan extends BaseEntity {
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AiPlan> aiPlans = new ArrayList<>();
 
+    public void updateTitle(String title) {this.title = title;}
+
 }

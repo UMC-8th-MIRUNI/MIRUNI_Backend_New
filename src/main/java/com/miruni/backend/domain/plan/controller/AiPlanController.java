@@ -1,8 +1,11 @@
 package com.miruni.backend.domain.plan.controller;
 
 import com.miruni.backend.domain.plan.dto.request.AiPlanCreateRequest;
+import com.miruni.backend.domain.plan.dto.request.AiPlanUpdateRequest;
 import com.miruni.backend.domain.plan.dto.response.AiPlanCreateResponse;
+import com.miruni.backend.domain.plan.dto.response.AiPlanUpdateResponse;
 import com.miruni.backend.domain.plan.entity.Plan;
+import com.miruni.backend.domain.plan.repository.AiPlanRespository;
 import com.miruni.backend.domain.plan.service.AiPlanCommandService;
 import com.miruni.backend.domain.plan.service.GeminiService;
 import jakarta.validation.Valid;
@@ -22,6 +25,7 @@ import java.util.List;
 public class AiPlanController implements AiPlanApi {
 
         private final AiPlanCommandService aiPlanCommandService;
+        private final AiPlanRespository aiPlanRespository;
 
         @PostMapping
         @Override
@@ -35,6 +39,17 @@ public class AiPlanController implements AiPlanApi {
                         .map(ResponseEntity::ok)
                         .defaultIfEmpty(ResponseEntity.notFound().build());
         }
+
+        @PatchMapping("/{ai_plan_id}")
+        @Override
+        public AiPlanUpdateResponse updateAiPlan(
+                @RequestParam Long userId,
+                @PathVariable Long ai_plan_id,
+                @RequestBody @Valid AiPlanUpdateRequest request
+        ){
+                return aiPlanCommandService.updateAiPlan(ai_plan_id, request, userId);
+        }
+
 
 
 }

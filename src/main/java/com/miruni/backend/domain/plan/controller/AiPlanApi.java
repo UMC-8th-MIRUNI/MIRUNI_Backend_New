@@ -1,7 +1,9 @@
 package com.miruni.backend.domain.plan.controller;
 
 import com.miruni.backend.domain.plan.dto.request.AiPlanCreateRequest;
+import com.miruni.backend.domain.plan.dto.request.AiPlanUpdateRequest;
 import com.miruni.backend.domain.plan.dto.response.AiPlanCreateResponse;
+import com.miruni.backend.domain.plan.dto.response.AiPlanUpdateResponse;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.global.exception.CustomErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +17,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
@@ -118,5 +121,41 @@ public interface AiPlanApi {
     Mono<ResponseEntity<List<AiPlanCreateResponse>>> createAiPlan(
             @RequestParam Long userId,
             @RequestBody @Valid AiPlanCreateRequest request
-            );
+    );
+
+    @Operation(
+            summary = "세부 분할 일정 수정 API ",
+            description = "특정 ai_plan_id를 기준으로, 하위 일정(AiPlan) 및 상위 일정(Plan)의 정보를 수정합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "일정 수정 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AiPlanUpdateResponse.class),
+                            examples = @ExampleObject(
+                                    name = "수정 성공",
+                                    value = """
+                                    {
+                                        "title": "상위일정 수정됨",
+                                        "description": "하위일정 수정됨",
+                                        "scheduled_date": "2027-01-01",
+                                        "startTime": "14:20:59",
+                                        "updated_at": "2025-11-14T10:05:00"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "403", description = "권한 없음 (사용자 ID 불일치)",
+                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 일정",
+                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
+            )
+    })
+    AiPlanUpdateResponse updateAiPlan(
+            @RequestParam Long userId,
+            @PathVariable("ai_plan_id") Long ai_plan_id,
+            @RequestBody @Valid AiPlanUpdateRequest request
+    );
+
 }

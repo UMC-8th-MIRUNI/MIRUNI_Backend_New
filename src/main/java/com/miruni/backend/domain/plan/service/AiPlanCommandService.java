@@ -1,9 +1,12 @@
 package com.miruni.backend.domain.plan.service;
 
 import com.miruni.backend.domain.plan.dto.request.AiPlanCreateRequest;
+import com.miruni.backend.domain.plan.dto.request.AiPlanUpdateRequest;
 import com.miruni.backend.domain.plan.dto.response.AiPlanCreateResponse;
+import com.miruni.backend.domain.plan.dto.response.AiPlanUpdateResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
+import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRespository;
 import com.miruni.backend.domain.plan.repository.PlanRepository;
 import com.miruni.backend.domain.user.entity.User;
@@ -45,7 +48,7 @@ public class AiPlanCommandService {
             List<AiPlan> savedEntity = aiPlanRespository.saveAll(entityToSave);
 
             List<AiPlanCreateResponse> finalDtoList = savedEntity.stream()
-                    .map(entity -> AiPlanCreateResponse.fromEntity(entity,plan))
+                    .map(entity -> AiPlanCreateResponse.fromEntity(entity, plan))
                     .toList();
 
             return Mono.just(finalDtoList);
@@ -53,4 +56,25 @@ public class AiPlanCommandService {
         });
 
     }
+
+    public AiPlanUpdateResponse updateAiPlan(Long aiPlan_id, AiPlanUpdateRequest request, Long user_id) {
+        User user = userRepository.findById(user_id).orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+        AiPlan aiPlan = aiPlanRespository.findById(aiPlan_id).orElseThrow(() -> BaseException.type(AiPlanErrorCode.AI_PLAN_NOT_FOUND));
+        Plan plan = aiPlan.getPlan();
+
+        if(!plan.getUser().getId().equals(user.getId())) {
+            throw BaseException.type(AiPlanErrorCode.PLAN_FORBIDDEN);
+        }
+
+        plan.updateTitle(request.title());
+        aiPlan.updateDetails(
+                request.sub_title(),
+                request.scheduled_date(),
+                request.startTime()
+        );
+
+        return AiPlanUpdateResponse.fromEntity(aiPlan, plan);
+
+    }
+
 }
