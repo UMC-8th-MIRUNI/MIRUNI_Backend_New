@@ -1,7 +1,9 @@
 package com.miruni.backend.domain.plan.entity;
 
+import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.global.common.BaseEntity;
+import com.miruni.backend.global.exception.BaseException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -51,6 +53,8 @@ public class BasicPlan extends BaseEntity {
 
     public void update(String title, String description, LocalDate scheduledDate,
                        LocalTime startTime, LocalTime endTime, Priority priority) {
+        validateTimeRange(startTime, endTime);
+
         this.title = title;
         this.description = description;
         this.scheduledDate = scheduledDate;
@@ -58,4 +62,26 @@ public class BasicPlan extends BaseEntity {
         this.expectedDuration = Duration.between(startTime, endTime).toMinutes();
         this.priority = priority;
     }
+
+    public static BasicPlan create(User user, String title, String description, LocalDate scheduledDate,
+                            LocalTime startTime, LocalTime endTime, Priority priority) {
+        validateTimeRange(startTime, endTime);
+        long expectedDuration = Duration.between(startTime, endTime).toMinutes();
+        return BasicPlan.builder()
+                .user(user)
+                .title(title)
+                .description(description)
+                .scheduledDate(scheduledDate)
+                .scheduledTime(startTime)
+                .expectedDuration(expectedDuration)
+                .priority(priority)
+                .build();
+    }
+
+    private static void validateTimeRange(LocalTime start, LocalTime end) {
+        if (start.isAfter(end)) {
+            throw BaseException.type(BasicPlanErrorCode.INVALID_TIME_RANGE);
+        }
+    }
+
 }

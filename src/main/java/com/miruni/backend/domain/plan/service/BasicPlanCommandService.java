@@ -28,41 +28,30 @@ public class BasicPlanCommandService {
     public BasicPlanResponse createBasicPlan(Long userId, BasicPlanSaveRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
-        validateTimeRange(request.startTime(), request.endTime());
-        long expectedDuration = Duration.between(request.startTime(), request.endTime()).toMinutes();
-        BasicPlan plan = request.toEntity(user, expectedDuration, mapPriority(request.priority()));
-        BasicPlan savedBasicPlan = basicPlanRepository.save(plan);
-        return BasicPlanResponse.from(savedBasicPlan);
+
+        Priority priority = mapPriority(request.priority());
+
+        BasicPlan plan = BasicPlan.create(user, request.title(), request.description(),
+                request.scheduledDate(), request.startTime(), request.endTime(), priority);
+
+        basicPlanRepository.save(plan);
+        return BasicPlanResponse.from(plan);
     }
 
     public BasicPlanResponse updateBasicPlan(Long userId, Long planId, BasicPlanSaveRequest request) {
-        BasicPlan plan = basicPlanRepository.findById(planId)
+        BasicPlan plan = basicPlanRepository.findByIdAndUserId(planId, userId)
                 .orElseThrow(() -> BaseException.type(BasicPlanErrorCode.BASIC_PLAN_NOT_FOUND));
-
-        if (!plan.getUser().getId().equals(userId)) {
-            throw BaseException.type(BasicPlanErrorCode.USER_NOT_AUTHORIZED);
-        }
-        validateTimeRange(request.startTime(), request.endTime());
         plan.update(request.title(), request.description(), request.scheduledDate(),
                 request.startTime(), request.endTime(), mapPriority(request.priority()));
         return BasicPlanResponse.from(plan);
     }
 
     public Long deleteBasicPlan(Long userId, Long planId) {
-        BasicPlan plan = basicPlanRepository.findById(planId)
+        BasicPlan plan = basicPlanRepository.findByIdAndUserId(planId, userId)
                 .orElseThrow(() -> BaseException.type(BasicPlanErrorCode.BASIC_PLAN_NOT_FOUND));
 
-        if (!plan.getUser().getId().equals(userId)) {
-            throw BaseException.type(BasicPlanErrorCode.USER_NOT_AUTHORIZED);
-        }
         basicPlanRepository.delete(plan);
         return planId;
-    }
-
-    private void validateTimeRange(LocalTime start, LocalTime end) {
-        if (start.isAfter(end)) {
-            throw BaseException.type(BasicPlanErrorCode.INVALID_TIME_RANGE);
-        }
     }
 
     private Priority mapPriority(String priorityStr) {
