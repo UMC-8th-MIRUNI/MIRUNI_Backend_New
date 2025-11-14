@@ -3,6 +3,7 @@ package com.miruni.backend.domain.plan.service;
 import com.miruni.backend.domain.plan.dto.request.AiPlanCreateRequest;
 import com.miruni.backend.domain.plan.dto.request.AiPlanUpdateRequest;
 import com.miruni.backend.domain.plan.dto.response.AiPlanCreateResponse;
+import com.miruni.backend.domain.plan.dto.response.AiPlanDeleteResponse;
 import com.miruni.backend.domain.plan.dto.response.AiPlanUpdateResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
@@ -72,9 +73,18 @@ public class AiPlanCommandService {
                 request.scheduled_date(),
                 request.startTime()
         );
-
         return AiPlanUpdateResponse.fromEntity(aiPlan, plan);
-
     }
 
+    public AiPlanDeleteResponse deleteAiPlan(Long aiPlan_id, Long user_id ) {
+        AiPlan aiPlan = aiPlanRespository.findById(aiPlan_id).orElseThrow(() -> BaseException.type(AiPlanErrorCode.AI_PLAN_NOT_FOUND));
+        User user = userRepository.findById(user_id).orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        if (!aiPlan.getPlan().getUser().getId().equals(user.getId())) {
+            throw BaseException.type(AiPlanErrorCode.PLAN_FORBIDDEN);
+        }
+        aiPlanRespository.delete(aiPlan);
+
+        return new AiPlanDeleteResponse(true);
+    }
 }

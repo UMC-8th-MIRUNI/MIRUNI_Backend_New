@@ -3,6 +3,7 @@ package com.miruni.backend.domain.plan.controller;
 import com.miruni.backend.domain.plan.dto.request.AiPlanCreateRequest;
 import com.miruni.backend.domain.plan.dto.request.AiPlanUpdateRequest;
 import com.miruni.backend.domain.plan.dto.response.AiPlanCreateResponse;
+import com.miruni.backend.domain.plan.dto.response.AiPlanDeleteResponse;
 import com.miruni.backend.domain.plan.dto.response.AiPlanUpdateResponse;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.global.exception.CustomErrorResponse;
@@ -156,6 +157,32 @@ public interface AiPlanApi {
             @RequestParam Long userId,
             @PathVariable("ai_plan_id") Long ai_plan_id,
             @RequestBody @Valid AiPlanUpdateRequest request
+    );
+
+    @Operation(
+            summary = "세부 일정 삭제 API",
+            description = "특정 ai_plan_id의 세부 일정을 삭제합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "일정 삭제 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AiPlanDeleteResponse.class),
+                            examples = @ExampleObject(
+                                    name = "삭제 성공",
+                                    value = "{\"isDeleted\": true}"
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "403", description = "권한 없음",
+                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "일정/사용자 없음",
+                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
+            )
+    })
+    AiPlanDeleteResponse deleteAiPlan(
+            @PathVariable("ai_plan_id") Long ai_plan_id,
+            @RequestParam("user_id") Long user_id
     );
 
 }

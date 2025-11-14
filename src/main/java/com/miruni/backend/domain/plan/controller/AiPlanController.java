@@ -3,6 +3,7 @@ package com.miruni.backend.domain.plan.controller;
 import com.miruni.backend.domain.plan.dto.request.AiPlanCreateRequest;
 import com.miruni.backend.domain.plan.dto.request.AiPlanUpdateRequest;
 import com.miruni.backend.domain.plan.dto.response.AiPlanCreateResponse;
+import com.miruni.backend.domain.plan.dto.response.AiPlanDeleteResponse;
 import com.miruni.backend.domain.plan.dto.response.AiPlanUpdateResponse;
 import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.plan.repository.AiPlanRespository;
@@ -48,6 +49,15 @@ public class AiPlanController implements AiPlanApi {
                 @RequestBody @Valid AiPlanUpdateRequest request
         ){
                 return aiPlanCommandService.updateAiPlan(ai_plan_id, request, userId);
+        }
+
+        @DeleteMapping("/{ai_plan_id}")
+        @Override
+        public AiPlanDeleteResponse deleteAiPlan(
+                @PathVariable Long ai_plan_id,
+                @RequestParam Long user_id
+        ){
+                return aiPlanCommandService.deleteAiPlan(ai_plan_id, user_id);
         }
 
 
