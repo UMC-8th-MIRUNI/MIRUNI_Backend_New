@@ -28,9 +28,6 @@ public class Plan extends BaseEntity {
     @Column(name = "title", nullable = false, length = 50)
     private String title;
 
-//    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
-//    private String description;
-
     @Column(name = "deadline", nullable = false)
     private LocalDateTime deadline;
 

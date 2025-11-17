@@ -14,16 +14,16 @@ public record AiPlanUpdateResponse(
         String title,
 
         @Schema(description = "하위 일정 제목")
-        String sub_title,
+        String subTitle,
 
         @Schema(description = "실행날짜")
-        LocalDate scheduled_date,
+        LocalDate scheduledDate,
 
         @Schema(description = "실행시간")
         LocalTime startTime,
 
         @Schema(description = "수정시각")
-        LocalDateTime updated_at
+        LocalDateTime updatedAt
 ) {
         public static  AiPlanUpdateResponse fromEntity(AiPlan aiPlan, Plan plan) {
                 return new AiPlanUpdateResponse(

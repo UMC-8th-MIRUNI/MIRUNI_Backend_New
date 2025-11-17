@@ -119,7 +119,7 @@ public interface AiPlanApi {
                     )
             )
     })
-    Mono<ResponseEntity<List<AiPlanCreateResponse>>> createAiPlan(
+    Mono<List<AiPlanCreateResponse>> createAiPlan(
             @RequestParam Long userId,
             @RequestBody @Valid AiPlanCreateRequest request
     );

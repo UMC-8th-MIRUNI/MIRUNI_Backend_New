@@ -10,10 +10,10 @@ public record AiPlanUpdateRequest(
     String title,
 
     @Schema(description = "하위일정 제목", example = "하위일정 수정")
-    String sub_title,
+    String subTitle,
 
     @Schema(description = "실행날짜", example = "2027-01-01")
-    LocalDate scheduled_date,
+    LocalDate scheduledDate,
 
     @Schema(description = "시작시간", example = "14:20:59")
     LocalTime startTime

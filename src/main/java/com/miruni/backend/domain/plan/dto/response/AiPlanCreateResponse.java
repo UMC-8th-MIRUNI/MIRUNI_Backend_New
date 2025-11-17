@@ -17,7 +17,7 @@ public record AiPlanCreateResponse(
 
         @NotBlank
         @Schema(description = "분할 일정 Id", example = "1")
-        Long ai_planId,
+        Long aiPlanId,
 
         @NotBlank
         @Schema(description = "상위 일정 제목", example = "UMC 기획안 만들기")
@@ -37,7 +37,7 @@ public record AiPlanCreateResponse(
 
         @NotNull
         @Schema(description = "수행날짜", example = "2025-12-05")
-        LocalDate scheduled_date,
+        LocalDate scheduledDate,
 
         @NotBlank
         @Schema(description = "분할 일정 제목", example = "PPT 주제 선정")
@@ -45,7 +45,7 @@ public record AiPlanCreateResponse(
 
         @NotBlank
         @Schema(description = "예상 소요 시간", example = "90")
-        Long expected_duration,
+        Long expectedDuration,
 
         @NotNull
         @Schema(description = "시작 시간", example = "09:00:00")
@@ -59,9 +59,9 @@ public record AiPlanCreateResponse(
                 return AiPlan.builder()
                         .plan(plan)
                         .subTitle(this.description())
-                        .scheduledDate(this.scheduled_date())
+                        .scheduledDate(this.scheduledDate())
                         .scheduledTime(this.startTime())
-                        .expectedDuration(this.expected_duration.intValue())
+                        .expectedDuration(this.expectedDuration().intValue())
                         .build();
         }
 

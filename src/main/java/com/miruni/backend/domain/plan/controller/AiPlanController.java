@@ -6,15 +6,11 @@ import com.miruni.backend.domain.plan.dto.response.AiPlanCreateResponse;
 import com.miruni.backend.domain.plan.dto.response.AiPlanDeleteResponse;
 import com.miruni.backend.domain.plan.dto.response.AiPlanUpdateResponse;
 import com.miruni.backend.domain.plan.entity.Plan;
-import com.miruni.backend.domain.plan.repository.AiPlanRespository;
+import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.plan.service.AiPlanCommandService;
-import com.miruni.backend.domain.plan.service.GeminiService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -26,38 +22,36 @@ import java.util.List;
 public class AiPlanController implements AiPlanApi {
 
         private final AiPlanCommandService aiPlanCommandService;
-        private final AiPlanRespository aiPlanRespository;
+        private final AiPlanRepository aiPlanRepository;
 
         @PostMapping
         @Override
-        public Mono<ResponseEntity<List<AiPlanCreateResponse>>> createAiPlan(
+        public Mono<List<AiPlanCreateResponse>> createAiPlan(
                 @RequestParam Long userId,
                 @RequestBody @Valid AiPlanCreateRequest request
                 ){
-                Plan savedPlan = aiPlanCommandService.createAndSavePlan(request, userId);
+                Plan savedPlan = aiPlanCommandService.savePlan(request, userId);
 
-                return aiPlanCommandService.createAndSaveAiPlans(request, savedPlan)
-                        .map(ResponseEntity::ok)
-                        .defaultIfEmpty(ResponseEntity.notFound().build());
+                return aiPlanCommandService.saveAiPlans(request, savedPlan);
         }
 
-        @PatchMapping("/{ai_plan_id}")
+        @PatchMapping("/{ai-plan-id}")
         @Override
         public AiPlanUpdateResponse updateAiPlan(
                 @RequestParam Long userId,
-                @PathVariable Long ai_plan_id,
+                @PathVariable("ai-plan-id") Long aiPlanId,
                 @RequestBody @Valid AiPlanUpdateRequest request
         ){
-                return aiPlanCommandService.updateAiPlan(ai_plan_id, request, userId);
+                return aiPlanCommandService.updateAiPlan(aiPlanId, request, userId);
         }
 
-        @DeleteMapping("/{ai_plan_id}")
+        @DeleteMapping("/{ai-plan-id}")
         @Override
         public AiPlanDeleteResponse deleteAiPlan(
-                @PathVariable Long ai_plan_id,
+                @PathVariable("ai-plan-id") Long aiPlanId,
                 @RequestParam Long user_id
         ){
-                return aiPlanCommandService.deleteAiPlan(ai_plan_id, user_id);
+                return aiPlanCommandService.deleteAiPlan(aiPlanId, user_id);
         }
 
 
