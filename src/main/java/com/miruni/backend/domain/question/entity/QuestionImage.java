@@ -24,4 +24,15 @@ public class QuestionImage extends BaseEntity {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
+    public static QuestionImage create(final Question question,
+                                       final String imageUrl){
+        return QuestionImage.builder()
+                .question(question)
+                .imageUrl(imageUrl)
+                .build();
+    }
+
+    public void disconnect(){
+        this.question = null;
+    }
 }
