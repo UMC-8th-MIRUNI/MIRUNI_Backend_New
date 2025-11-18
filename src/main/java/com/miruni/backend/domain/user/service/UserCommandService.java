@@ -57,9 +57,8 @@ public class UserCommandService {
         return tokenService.issueTokenResponse(user);
     }
 
-    /**
+    /** 
      * 이메일 중복 검증
-     * - 데이터 접근이 필요한 검증은 서비스 계층에서 수행
      */
     private void validateEmailNotExists(String email) {
         if (userRepository.existsByEmail(email)) {
