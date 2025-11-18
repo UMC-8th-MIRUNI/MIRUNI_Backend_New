@@ -57,6 +57,9 @@ dependencies {
     // S3
     implementation 'software.amazon.awssdk:s3:2.20.26'
     implementation 'software.amazon.awssdk:url-connection-client:2.20.26'
+
+    // firebase
+    implementation 'com.google.firebase:firebase-admin:9.5.0'
 }
 
 tasks.named('test') {
