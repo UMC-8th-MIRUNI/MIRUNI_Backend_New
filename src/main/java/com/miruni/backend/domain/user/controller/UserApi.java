@@ -1,7 +1,7 @@
 package com.miruni.backend.domain.user.controller;
 
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
-import com.miruni.backend.domain.user.dto.response.UserResponse;
+import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.global.authroize.AuthToken;
 import com.miruni.backend.global.authroize.LoginUser;
 import com.miruni.backend.global.exception.CustomErrorResponse;
@@ -105,7 +105,7 @@ public interface UserApi {
                     )
             )
     })
-    UserResponse signup(@Valid @RequestBody UserSignupRequest request);
+    JwtResponseDto signup(@Valid @RequestBody UserSignupRequest request);
 
     @Operation(
             summary = "회원 탈퇴",

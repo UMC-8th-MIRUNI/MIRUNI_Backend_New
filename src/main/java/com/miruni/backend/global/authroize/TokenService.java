@@ -1,15 +1,13 @@
 package com.miruni.backend.global.authroize;
 
-import com.miruni.backend.domain.user.dto.TokenDto;
-import com.miruni.backend.domain.user.dto.response.UserResponse;
+import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.global.common.JwtUtil;
+import com.miruni.backend.global.common.TokenDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -29,10 +27,10 @@ public class TokenService {
      * 공통 토큰 발급/저장 메서드
      */
     private TokenDto createAndStoreTokens(User user) {
-        Authentication authentication = createAuthentication(user);
-        TokenDto tokenDto = jwtUtil.createTokenDto(authentication);
+        Long userId = user.getId();
+        TokenDto tokenDto = jwtUtil.createTokenDto(userId);
 
-        saveRefreshToken(user.getId().toString(), tokenDto.refreshToken(), tokenDto.refreshTokenExp());
+        saveRefreshToken(userId.toString(), tokenDto.refreshToken(), tokenDto.refreshTokenExp());
 
         return tokenDto;
     }
@@ -40,23 +38,14 @@ public class TokenService {
     /**
      * 회원가입/로그인 시 토큰 응답 생성
      */
-    public UserResponse issueTokenResponse(User user) {
+    public JwtResponseDto issueTokenResponse(User user) {
         TokenDto token = createAndStoreTokens(user);
-        return UserResponse.of(
+        return JwtResponseDto.of(
                 token.accessToken(),
                 token.refreshToken(),
                 token.accessTokenExp(),
                 token.refreshTokenExp()
         );
-    }
-
-    /**
-     * 인증 객체 생성
-     */
-    private Authentication createAuthentication(User user) {
-        CustomUserDetails userDetails = new CustomUserDetails(user);
-        return new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
     }
 
     /**

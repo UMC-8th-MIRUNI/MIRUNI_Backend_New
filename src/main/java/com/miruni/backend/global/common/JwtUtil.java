@@ -1,7 +1,5 @@
 package com.miruni.backend.global.common;
 
-import com.miruni.backend.domain.user.dto.TokenDto;
-import com.miruni.backend.global.authroize.CustomUserDetails;
 import com.miruni.backend.global.exception.BaseException;
 import com.miruni.backend.global.exception.CommonErrorCode;
 import com.miruni.backend.global.properties.JwtProperties;
@@ -10,11 +8,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import jakarta.servlet.http.HttpServletRequest; // Spring Boot 3 기준 (부트2면 javax.servlet로 변경)
+import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -31,19 +28,11 @@ public class JwtUtil {
     private static final String TOKEN_TYPE_REFRESH = "REFRESH";
     private static final String TOKEN_TYPE_TEMP = "TEMP";
 
-    // 이메일 인증 등에서 사용할 임시 토큰 만료시간 (고정)
-    private static final long TEMP_TOKEN_EXPIRATION = 1000L * 60 * 5; // 5분
-
     // ===== 공통 내부 로직 =====
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = jwtProperties.secret().getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-    private Long extractUserId(Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        return userDetails.getId();
     }
 
     private String generateToken(Long userId, String tokenType, long validityMs) {
@@ -63,27 +52,24 @@ public class JwtUtil {
     // ===== 토큰 생성 =====
 
     /** Access Token 생성 */
-    public String generateAccessToken(Authentication authentication) {
-        Long userId = extractUserId(authentication);
+    public String generateAccessToken(Long userId) {
         return generateToken(userId, TOKEN_TYPE_ACCESS, jwtProperties.accessTokenExpiration());
     }
 
     /** Refresh Token 생성 */
-    public String generateRefreshToken(Authentication authentication) {
-        Long userId = extractUserId(authentication);
+    public String generateRefreshToken(Long userId) {
         return generateToken(userId, TOKEN_TYPE_REFRESH, jwtProperties.refreshTokenExpiration());
     }
 
     /** 임시 토큰 생성 (이메일 인증 등에 사용) */
-    public String generateTempToken(Authentication authentication) {
-        Long userId = extractUserId(authentication);
-        return generateToken(userId, TOKEN_TYPE_TEMP, TEMP_TOKEN_EXPIRATION);
+    public String generateTempToken(Long userId) {
+        return generateToken(userId, TOKEN_TYPE_TEMP, jwtProperties.tempTokenExpiration());
     }
 
     /** Access + Refresh 한 번에 생성해서 DTO로 리턴 */
-    public TokenDto createTokenDto(Authentication authentication) {
-        String accessToken = generateAccessToken(authentication);
-        String refreshToken = generateRefreshToken(authentication);
+    public TokenDto createTokenDto(Long userId) {
+        String accessToken = generateAccessToken(userId);
+        String refreshToken = generateRefreshToken(userId);
 
         long accessTokenExp = getAccessTokenExpirationInSeconds();
         long refreshTokenExp = getRefreshTokenExpirationInSeconds();
@@ -104,11 +90,7 @@ public class JwtUtil {
     /** 토큰의 남은 유효 시간 (초 단위) */
     public long getRemainingTimeInSeconds(String token) {
         try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+            Claims claims = parseClaims(token);
 
             Date expiration = claims.getExpiration();
             if (expiration == null) {
@@ -125,13 +107,24 @@ public class JwtUtil {
 
     // ===== 검증 / 파싱 =====
 
+    /** 토큰에서 Claims 전체를 파싱 */
+    public Claims parseClaims(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (Exception e) {
+            log.warn("JWT Claims 파싱 실패: {}", e.getMessage());
+            throw BaseException.type(CommonErrorCode.UNAUTHORIZED);
+        }
+    }
+
     /** 토큰 검증 (서명 + 만료) */
     public boolean validateToken(String token) {
         try {
-            Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token);
+            parseClaims(token);
             return true;
         } catch (Exception e) {
             log.warn("JWT 토큰 검증 실패: {}", e.getMessage());
@@ -142,12 +135,7 @@ public class JwtUtil {
     /** 토큰에서 사용자 ID 추출 (실패 시 UNAUTHORIZED 예외) */
     public Long getUserIdFromToken(String token) {
         try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-
+            Claims claims = parseClaims(token);
             return Long.parseLong(claims.getSubject());
         } catch (Exception e) {
             log.error("토큰에서 사용자 ID 추출 실패: {}", e.getMessage());
@@ -158,12 +146,7 @@ public class JwtUtil {
     /** 토큰 타입(ACCESS/REFRESH/TEMP) 추출 */
     public String getTokenType(String token) {
         try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-
+            Claims claims = parseClaims(token);
             return claims.get(CLAIM_TOKEN_TYPE, String.class);
         } catch (Exception e) {
             log.warn("토큰 타입 추출 실패: {}", e.getMessage());

@@ -32,4 +32,5 @@ management:
 jwt:
   secret: 5aedd2efbda1ac3267a4b4f3e76ae712a1efcbbaf75fbf6f2b1332fa948ff3e9e2b09ce5de6d102a81b11d48b7cc951b64b7d785effc985eee75fcac4d1b99ea
   access-token-expiration: 3600000      
-  refresh-token-expiration: 604800000   
+  refresh-token-expiration: 604800000
+  temp-token-expiration: 300000  

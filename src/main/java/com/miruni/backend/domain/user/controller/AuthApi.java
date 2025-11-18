@@ -1,7 +1,7 @@
 package com.miruni.backend.domain.user.controller;
 
 import com.miruni.backend.domain.user.dto.request.LoginRequest;
-import com.miruni.backend.domain.user.dto.response.UserResponse;
+import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.global.authroize.AuthToken;
 import com.miruni.backend.global.authroize.LoginUser;
 import com.miruni.backend.global.exception.CustomErrorResponse;
@@ -90,7 +90,7 @@ public interface AuthApi {
                     )
             )
     })
-    UserResponse login(@Valid @RequestBody LoginRequest request);
+    JwtResponseDto login(@Valid @RequestBody LoginRequest request);
 
     @Operation(
             summary = "로그아웃",

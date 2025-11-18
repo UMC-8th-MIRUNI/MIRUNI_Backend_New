@@ -1,7 +1,7 @@
 package com.miruni.backend.domain.user.controller;
 
 import com.miruni.backend.domain.user.dto.request.LoginRequest;
-import com.miruni.backend.domain.user.dto.response.UserResponse;
+import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.service.AuthCommandService;
 import com.miruni.backend.global.authroize.AuthToken;
 import com.miruni.backend.global.authroize.LoginUser;
@@ -21,7 +21,7 @@ public class AuthController implements AuthApi {
 
     // 일반 로그인 API
     @PostMapping("/token")
-    public UserResponse login(@Valid @RequestBody LoginRequest request) {
+    public JwtResponseDto login(@Valid @RequestBody LoginRequest request) {
         return authCommandService.login(request);
     }
 

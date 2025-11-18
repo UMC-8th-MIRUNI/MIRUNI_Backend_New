@@ -1,4 +1,4 @@
-package com.miruni.backend.domain.user.dto;
+package com.miruni.backend.global.common;
 
 import lombok.Builder;
 

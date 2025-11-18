@@ -1,7 +1,7 @@
 package com.miruni.backend.domain.user.service;
 
 import com.miruni.backend.domain.user.dto.request.LoginRequest;
-import com.miruni.backend.domain.user.dto.response.UserResponse;
+import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.exception.UserErrorCode;
 import com.miruni.backend.domain.user.repository.UserRepository;
@@ -26,7 +26,7 @@ public class AuthCommandService {
     /**
      * 일반 로그인
      */
-    public UserResponse login(LoginRequest request) {
+    public JwtResponseDto login(LoginRequest request) {
         // 이메일로 사용자 조회
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));

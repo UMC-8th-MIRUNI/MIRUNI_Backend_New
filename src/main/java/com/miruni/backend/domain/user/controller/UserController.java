@@ -4,7 +4,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
-import com.miruni.backend.domain.user.dto.response.UserResponse;
+import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.service.UserCommandService;
 import com.miruni.backend.global.authroize.AuthToken;
 import com.miruni.backend.global.authroize.LoginUser;
@@ -22,7 +22,7 @@ public class UserController implements UserApi {
 
     // 일반 회원가입 API
     @PostMapping
-    public UserResponse signup(@Valid @RequestBody UserSignupRequest request) {
+    public JwtResponseDto signup(@Valid @RequestBody UserSignupRequest request) {
         return userCommandService.signup(request);
     }
 

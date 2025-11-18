@@ -1,7 +1,7 @@
 package com.miruni.backend.domain.user.service;
 
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
-import com.miruni.backend.domain.user.dto.response.UserResponse;
+import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.entity.Agreement;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.exception.UserErrorCode;
@@ -32,12 +32,12 @@ public class UserCommandService {
     /**
      * 일반 회원가입
      */
-    public UserResponse signup(UserSignupRequest request) {
+    public JwtResponseDto signup(UserSignupRequest request) {
         // 이메일 중복 체크
-        userValidator.validateEmailNotExists(request.email());
+        validateEmailNotExists(request.email());
         
         // 닉네임 중복 체크
-        userValidator.validateNicknameNotExists(request.nickname());
+        validateNicknameNotExists(request.nickname());
         
         // 필수 약관 동의 체크
         userValidator.validateAgreements(request);
@@ -50,16 +50,30 @@ public class UserCommandService {
         userRepository.save(user);
         
         // Agreement 엔티티 생성 및 저장
-        Agreement agreement = Agreement.builder()
-                .user(user)
-                .serviceAgreed(request.serviceAgreed())
-                .privacyAgreed(request.privacyAgreed() != null ? request.privacyAgreed() : false)
-                .marketingAgreed(request.marketingAgreed() != null ? request.marketingAgreed() : false)
-                .build();
+        Agreement agreement = Agreement.create(user, request.serviceAgreed(), request.privacyAgreed(), request.marketingAgreed());
         agreementRepository.save(agreement);
         
         // JWT 토큰 생성 및 반환
         return tokenService.issueTokenResponse(user);
+    }
+
+    /**
+     * 이메일 중복 검증
+     * - 데이터 접근이 필요한 검증은 서비스 계층에서 수행
+     */
+    private void validateEmailNotExists(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw BaseException.type(UserErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+    }
+
+    /**
+     * 닉네임 중복 검증
+     */
+    private void validateNicknameNotExists(String nickname) {
+        if (userRepository.existsByNickname(nickname)) {
+            throw BaseException.type(UserErrorCode.NICKNAME_ALREADY_EXISTS);
+        }
     }
 
     /**
