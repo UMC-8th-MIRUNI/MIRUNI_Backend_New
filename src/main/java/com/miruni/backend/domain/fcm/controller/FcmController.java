@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/fcm")
-public class FcmController {
+public class FcmController implements FcmApi {
 
     private final FcmTokenCommandService fcmTokenCommandService;
 
