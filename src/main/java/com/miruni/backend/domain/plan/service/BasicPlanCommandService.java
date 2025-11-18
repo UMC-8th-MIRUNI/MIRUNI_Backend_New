@@ -1,6 +1,7 @@
 package com.miruni.backend.domain.plan.service;
 
-import com.miruni.backend.domain.plan.dto.request.BasicPlanSaveRequest;
+import com.miruni.backend.domain.plan.dto.command.BasicPlanCreateCommandDto;
+import com.miruni.backend.domain.plan.dto.command.BasicPlanUpdateCommandDto;
 import com.miruni.backend.domain.plan.dto.response.BasicPlanResponse;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Priority;
@@ -9,13 +10,11 @@ import com.miruni.backend.domain.plan.repository.BasicPlanRepository;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.exception.UserErrorCode;
 import com.miruni.backend.domain.user.repository.UserRepository;
+import com.miruni.backend.domain.user.service.UserQueryService;
 import com.miruni.backend.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Duration;
-import java.time.LocalTime;
 
 @Service
 @RequiredArgsConstructor
@@ -23,33 +22,41 @@ import java.time.LocalTime;
 public class BasicPlanCommandService {
 
     private final BasicPlanRepository basicPlanRepository;
-    private final UserRepository userRepository;
+    private final UserQueryService userQueryService;
+    private final BasicPlanQueryService basicPlanQueryService;
 
-    public BasicPlanResponse createBasicPlan(Long userId, BasicPlanSaveRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
-
-        Priority priority = mapPriority(request.priority());
-
-        BasicPlan plan = BasicPlan.create(user, request.title(), request.description(),
-                request.scheduledDate(), request.startTime(), request.endTime(), priority);
+    public BasicPlanResponse createBasicPlan(BasicPlanCreateCommandDto command) {
+        User user = userQueryService.getUserById(command.userId());
+        BasicPlan plan = BasicPlan.create(
+                user,
+                command.title(),
+                command.description(),
+                command.scheduledDate(),
+                command.startTime(),
+                command.endTime(),
+                mapPriority(command.priority())
+        );
 
         basicPlanRepository.save(plan);
         return BasicPlanResponse.from(plan);
     }
 
-    public BasicPlanResponse updateBasicPlan(Long userId, Long planId, BasicPlanSaveRequest request) {
-        BasicPlan plan = basicPlanRepository.findByIdAndUserId(planId, userId)
-                .orElseThrow(() -> BaseException.type(BasicPlanErrorCode.BASIC_PLAN_NOT_FOUND));
-        plan.update(request.title(), request.description(), request.scheduledDate(),
-                request.startTime(), request.endTime(), mapPriority(request.priority()));
+    public BasicPlanResponse updateBasicPlan(BasicPlanUpdateCommandDto command) {
+        BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+
+        plan.update(
+                command.title(),
+                command.description(),
+                command.scheduledDate(),
+                command.startTime(),
+                command.endTime(),
+                mapPriority(command.priority())
+        );
         return BasicPlanResponse.from(plan);
     }
 
     public Long deleteBasicPlan(Long userId, Long planId) {
-        BasicPlan plan = basicPlanRepository.findByIdAndUserId(planId, userId)
-                .orElseThrow(() -> BaseException.type(BasicPlanErrorCode.BASIC_PLAN_NOT_FOUND));
-
+        BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(planId, userId);
         basicPlanRepository.delete(plan);
         return planId;
     }
