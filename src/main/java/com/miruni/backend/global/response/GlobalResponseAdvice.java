@@ -45,3 +45,5 @@ public class GlobalResponseAdvice implements ResponseBodyAdvice<Object> {
 
     }
 }
+
+// 지금 ResponseEntity<CustomErrorResponse>는 래핑되지 않는 것 같은데 실패 응답도 성공이랑 동일하게 가져갈까?

@@ -7,7 +7,7 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "agreement")
 public class Agreement extends BaseEntity {
@@ -32,5 +32,15 @@ public class Agreement extends BaseEntity {
     // 마케팅 동의 (true/false 수정 가능)
     @Column(name = "marketing_agreed")
     private Boolean marketingAgreed;
+
+    // 정적 팩토리 메서드
+    public static Agreement create(User user, Boolean serviceAgreed, Boolean privacyAgreed, Boolean marketingAgreed) {
+        return Agreement.builder()
+                .user(user)
+                .serviceAgreed(serviceAgreed != null ? serviceAgreed : false)
+                .privacyAgreed(privacyAgreed != null ? privacyAgreed : false)
+                .marketingAgreed(marketingAgreed != null ? marketingAgreed : false)
+                .build();
+    }
 
 }
