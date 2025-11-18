@@ -76,4 +76,14 @@ public class FcmToken extends BaseEntity {
                 .token(token)
                 .build();
     }
+
+    public void updateAlarm(boolean before5minAlarm,
+                            boolean before10minAlarm,
+                            boolean popupAlarm,
+                            boolean nagAlarm) {
+        this.before5minAlarm = before5minAlarm;
+        this.before10minAlarm = before10minAlarm;
+        this.popupAlarm = popupAlarm;
+        this.nagAlarm = nagAlarm;
+    }
 }
