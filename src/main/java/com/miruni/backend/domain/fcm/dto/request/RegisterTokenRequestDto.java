@@ -1,6 +1,7 @@
 package com.miruni.backend.domain.fcm.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record RegisterTokenRequestDto(
 
@@ -8,6 +9,18 @@ public record RegisterTokenRequestDto(
         String token,
 
         @NotBlank
-        String deviceId
+        String deviceId,
+
+        @NotNull
+        boolean before5minAlarm,
+
+        @NotNull
+        boolean before10minAlarm,
+
+        @NotNull
+        boolean popupAlarm,
+
+        @NotNull
+        boolean nagAlarm
 ) {
 }
