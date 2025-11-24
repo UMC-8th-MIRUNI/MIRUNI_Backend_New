@@ -46,5 +46,6 @@ public class Plan extends BaseEntity {
     private List<AiPlan> aiPlans = new ArrayList<>();
 
     public void updateTitle(String title) {this.title = title;}
+    public void setIsDone(Boolean done) { this.isDone = done; }
 
 }

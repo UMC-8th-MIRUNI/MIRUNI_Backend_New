@@ -1,8 +1,13 @@
 package com.miruni.backend.domain.plan.controller;
 
 import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
+import com.miruni.backend.domain.plan.dto.command.PlanFinishCommand;
+import com.miruni.backend.domain.plan.dto.request.PlanFinishRequest;
 import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
+import com.miruni.backend.domain.plan.dto.response.PlanFinishResponse;
+import com.miruni.backend.domain.plan.service.PlanCommandService;
 import com.miruni.backend.domain.plan.service.PlanQueryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class PlanController implements PlanApi {
 
     private final PlanQueryService planQueryService;
+    private final PlanCommandService planCommandService;
 
     @Override
     @GetMapping("/duration")
@@ -21,4 +27,22 @@ public class PlanController implements PlanApi {
         PlanDurationCommand command = PlanDurationCommand.of(userId, planType, id);
         return planQueryService.getExpectedDuration(command);
     }
+
+    @Override
+    @PostMapping("/finish")
+    public PlanFinishResponse finishPlan(
+            @RequestParam Long userId,
+            @Valid @RequestBody PlanFinishRequest request
+    ) {
+        PlanFinishCommand command = PlanFinishCommand.of(
+                request.planType(),
+                request.id(),
+                userId,
+                request.expectedTime(),
+                request.actualTime()
+        );
+
+        return planCommandService.finishPlan(command);
+    }
+
 }

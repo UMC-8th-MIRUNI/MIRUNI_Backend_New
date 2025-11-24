@@ -1,10 +1,14 @@
 package com.miruni.backend.domain.plan.controller;
 
+import com.miruni.backend.domain.plan.dto.request.PlanFinishRequest;
 import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
+import com.miruni.backend.domain.plan.dto.response.PlanFinishResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Plan Execution", description = "일정 실행 관련 API")
@@ -20,4 +24,16 @@ public interface PlanApi {
     PlanDurationResponse getExpectedDuration(@RequestParam Long userId,
                                              @RequestParam String planType,
                                              @RequestParam Long id);
+
+    @Operation(summary = "일정 완료",
+            description = "사용자가 수행한 시간을 기반으로 땅콩 계산 및 일정 완료 처리")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "완료 처리 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "404", description = "플랜 또는 사용자 없음")
+    })
+    PlanFinishResponse finishPlan(
+            @RequestParam Long userId,
+            @Valid @RequestBody PlanFinishRequest request
+    );
 }
