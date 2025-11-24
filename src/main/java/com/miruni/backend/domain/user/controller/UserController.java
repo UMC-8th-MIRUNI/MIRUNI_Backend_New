@@ -1,7 +1,9 @@
 package com.miruni.backend.domain.user.controller;
 
 import com.miruni.backend.domain.user.dto.command.ProfileUpdateCommandDto;
+import com.miruni.backend.domain.user.dto.command.UserInfoUpdateCommandDto;
 import com.miruni.backend.domain.user.dto.request.ProfileUpdateRequestDto;
+import com.miruni.backend.domain.user.dto.request.UserInfoUpdateRequestDto;
 import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
 import com.miruni.backend.domain.user.service.UserQueryService;
 import org.springframework.validation.annotation.Validated;
@@ -59,7 +61,14 @@ public class UserController implements UserApi {
     }
 
     @PatchMapping("/profile")
-    public UserInfoResponseDto updateProfile(@LoginUser Long userId, ProfileUpdateRequestDto requestDto) {
+    public UserInfoResponseDto updateProfile(@LoginUser Long userId, @RequestBody ProfileUpdateRequestDto requestDto) {
         return userCommandService.updateProfile(ProfileUpdateCommandDto.of(userId, requestDto));
     }
+
+    @PatchMapping("/account")
+    public UserInfoResponseDto updateMyInfo(@LoginUser Long userId, @RequestBody UserInfoUpdateRequestDto requestDto
+    ) {
+        return userCommandService.updateUserInfo(UserInfoUpdateCommandDto.of(userId, requestDto));
+    }
+
 }

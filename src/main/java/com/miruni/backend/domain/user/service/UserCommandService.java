@@ -1,6 +1,7 @@
 package com.miruni.backend.domain.user.service;
 
 import com.miruni.backend.domain.user.dto.command.ProfileUpdateCommandDto;
+import com.miruni.backend.domain.user.dto.command.UserInfoUpdateCommandDto;
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
@@ -104,6 +105,15 @@ public class UserCommandService {
                 .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
 
         user.updateProfile(command.profileImage(), command.nickname());
+
+        return UserInfoResponseDto.from(user);
+    }
+
+    public UserInfoResponseDto updateUserInfo(UserInfoUpdateCommandDto command) {
+        User user = userRepository.findById(command.userId())
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        user.updateUserInfo(command.name(), command.birth(), command.phoneNumber(), command.email());
 
         return UserInfoResponseDto.from(user);
     }

@@ -77,4 +77,11 @@ public class User extends BaseEntity {
         this.profileImage = profileImage;
         this.nickname = nickname;
     }
+
+    public void updateUserInfo(String name, LocalDate birth, String phoneNumber, String email) {
+        this.name = name;
+        this.birth = birth;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
 }
