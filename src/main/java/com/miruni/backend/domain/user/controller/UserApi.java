@@ -1,6 +1,8 @@
 package com.miruni.backend.domain.user.controller;
 
+import com.miruni.backend.domain.user.dto.request.EmailVerificationRequest;
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
+import com.miruni.backend.domain.user.dto.request.EmailVerificationVerifyRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.global.authroize.AuthToken;
 import com.miruni.backend.global.authroize.LoginUser;
@@ -106,6 +108,96 @@ public interface UserApi {
             )
     })
     JwtResponseDto signup(@Valid @RequestBody UserSignupRequest request);
+
+    @Operation(
+            summary = "회원가입 이메일 인증코드 요청",
+            description = "회원가입 시 입력한 이메일로 6자리 인증코드를 발송합니다. \n" +
+                    "인증코드는 5분 동안만 유효하며, 추후 별도의 인증 코드 검증 API에서 사용됩니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "인증코드 발송 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = com.miruni.backend.global.response.ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 응답",
+                                    value = """
+                        {
+                            "errorCode": null,
+                            "message": "OK",
+                            "result": null
+                        }
+                        """
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "잘못된 이메일 형식",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "이메일 형식 오류",
+                                    value = """
+                        {
+                            "status": 400,
+                            "errorCode": "COMMON_002",
+                            "message": "입력값 검증에 실패했습니다."
+                        }
+                        """
+                            )
+                    )
+            )
+    })
+    void requestEmailVerification(@Valid @RequestBody EmailVerificationRequest request);
+
+    @Operation(
+            summary = "회원가입 이메일 인증코드 검증",
+            description = "이메일과 6자리 인증코드를 검증합니다. \n" +
+                    "코드가 일치하고 유효기간(5분) 이내라면 인증에 성공합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "인증 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = com.miruni.backend.global.response.ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 응답",
+                                    value = """
+                        {
+                            "errorCode": null,
+                            "message": "OK",
+                            "result": null
+                        }
+                        """
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "코드 만료 또는 불일치",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "코드 없음 또는 만료",
+                                            value = """
+                        {
+                            "status": 400,
+                            "errorCode": "USER400_9",
+                            "message": "이메일 인증 코드가 존재하지 않거나 만료되었습니다."
+                        }
+                        """
+                                    ),
+                                    @ExampleObject(
+                                            name = "코드 불일치",
+                                            value = """
+                        {
+                            "status": 400,
+                            "errorCode": "USER400_10",
+                            "message": "이메일 인증 코드가 올바르지 않습니다."
+                        }
+                        """
+                                    )
+                            }
+                    )
+            )
+    })
+    void verifyEmailVerification(@Valid @RequestBody EmailVerificationVerifyRequest request);
 
     @Operation(
             summary = "회원 탈퇴",

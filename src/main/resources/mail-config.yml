@@ -1,0 +1,11 @@
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: miruniumc@gmail.com
+    password: rgqj tyjm xorm ngde
+    properties:
+      mail.smtp.debug: true
+      mail.smtp.connectiontimeout: 1000 #1초
+      mail.smtp.starttls.enable: true
+      mail.smtp.auth: true
