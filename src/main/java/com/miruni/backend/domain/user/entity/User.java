@@ -52,7 +52,8 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "profile_image")
-    private ProfileImage profileImage;
+    @Builder.Default
+    private ProfileImage profileImage = ProfileImage.GREEN;
 
     @OneToMany(mappedBy = "user")
     private List<Agreement> agreements = new ArrayList<>();
