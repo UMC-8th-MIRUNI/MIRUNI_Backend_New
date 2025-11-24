@@ -1,7 +1,9 @@
 package com.miruni.backend.domain.user.service;
 
+import com.miruni.backend.domain.user.dto.command.ProfileUpdateCommandDto;
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
+import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
 import com.miruni.backend.domain.user.entity.Agreement;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.exception.UserErrorCode;
@@ -95,5 +97,14 @@ public class UserCommandService {
         tokenService.logout(accessToken, userId);
 
         log.info("회원 탈퇴 완료: userId={}", userId);
+    }
+
+    public UserInfoResponseDto updateProfile(ProfileUpdateCommandDto command) {
+        User user = userRepository.findById(command.userId())
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        user.updateProfile(command.profileImage(), command.nickname());
+
+        return UserInfoResponseDto.from(user);
     }
 }
