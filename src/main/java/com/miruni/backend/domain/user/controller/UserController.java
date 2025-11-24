@@ -1,5 +1,7 @@
 package com.miruni.backend.domain.user.controller;
 
+import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
+import com.miruni.backend.domain.user.service.UserQueryService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController implements UserApi {
 
     private final UserCommandService userCommandService;
+    private final UserQueryService userQueryService;
 
     // 일반 회원가입 API
     @PostMapping
@@ -47,4 +50,9 @@ public class UserController implements UserApi {
     // TODO: 추후 구현 예정
     // 비밀번호 변경
     // @PatchMapping("/me/password")
+
+    @GetMapping("/mypage")
+    public UserInfoResponseDto getUserInfo(@LoginUser Long userId) {
+        return userQueryService.getUserInfo(userId);
+    }
 }
