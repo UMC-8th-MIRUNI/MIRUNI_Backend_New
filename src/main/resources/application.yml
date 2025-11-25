@@ -37,19 +37,15 @@ management:
     health:
       show-details: always
 
+gemini:
+  api:
+    key: {GEMINI_API_KEY}
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
 jwt:
   secret: ${JWT_SECRET_KEY}
   access-token-expiration: 3600000      
   refresh-token-expiration: 604800000
   temp-token-expiration: 300000  
-
-aws: # 로컬 테스트를 위함
-  s3:
-    bucket: dummy-bucket
-    region: ap-northeast-2  
-    access-key: dummy-access-key
-    secret-key: dummy-secret-key
-
 
 miruni:
   email:

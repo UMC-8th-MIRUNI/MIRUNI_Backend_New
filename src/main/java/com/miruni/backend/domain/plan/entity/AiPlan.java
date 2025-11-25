@@ -39,4 +39,10 @@ public class AiPlan extends BaseEntity {
     @Builder.Default
     private boolean isDone = false;
 
+    public void updateDetails(String subTitle, LocalDate scheduledDate, LocalTime scheduledTime) {
+        this.subTitle = subTitle;
+        this.scheduledDate = scheduledDate;
+        this.scheduledTime = scheduledTime;
+    }
+
 }

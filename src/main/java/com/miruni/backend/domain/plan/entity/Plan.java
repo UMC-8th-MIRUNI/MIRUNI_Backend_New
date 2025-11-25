@@ -28,9 +28,6 @@ public class Plan extends BaseEntity {
     @Column(name = "title", nullable = false, length = 50)
     private String title;
 
-    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
-    private String description;
-
     @Column(name = "deadline", nullable = false)
     private LocalDateTime deadline;
 
@@ -47,5 +44,7 @@ public class Plan extends BaseEntity {
 
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AiPlan> aiPlans = new ArrayList<>();
+
+    public void updateTitle(String title) {this.title = title;}
 
 }
