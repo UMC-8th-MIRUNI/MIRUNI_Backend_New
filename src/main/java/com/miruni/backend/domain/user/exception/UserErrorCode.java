@@ -21,7 +21,10 @@ UserErrorCode implements ErrorCode {
     EMAIL_VERIFICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "USER500_9", "이메일 인증 코드 발송에 실패했습니다."),
     EMAIL_VERIFICATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER400_10", "이메일 인증 코드가 존재하지 않거나 만료되었습니다."),
     EMAIL_VERIFICATION_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "USER400_11", "이메일 인증 코드가 올바르지 않습니다."),
-    EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "USER400_12", "이메일 인증이 완료되지 않았습니다.");
+    EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "USER400_12", "이메일 인증이 완료되지 않았습니다."),
+    SOCIAL_USER_PASSWORD_CHANGE(HttpStatus.BAD_REQUEST, "USER400_13", "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다."),
+    WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "USER400_14", "현재 비밀번호가 올바르지 않습니다."),
+    SAME_PASSWORD(HttpStatus.BAD_REQUEST, "USER400_15", "새 비밀번호는 현재 비밀번호와 달라야 합니다.");
 
     private final HttpStatus status;
     private final String errorCode;

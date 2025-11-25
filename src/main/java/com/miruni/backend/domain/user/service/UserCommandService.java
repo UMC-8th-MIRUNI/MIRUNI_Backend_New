@@ -1,5 +1,6 @@
 package com.miruni.backend.domain.user.service;
 
+import com.miruni.backend.domain.user.dto.request.ResetPasswordRequest;
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.entity.Agreement;
@@ -28,14 +29,14 @@ public class UserCommandService {
     private final PasswordEncoder passwordEncoder;
     private final UserValidator userValidator;
     private final TokenService tokenService;
-    private final EmailVerificationService emailVerificationService;
+    private final VerificationService verificationService;
     
     /**
      * 일반 회원가입
      */
     public JwtResponseDto signup(UserSignupRequest request) {
         // 이메일 인증 여부 확인
-        emailVerificationService.assertSignUpEmailVerified(request.email());
+        verificationService.assertSignUpEmailVerified(request.email());
 
         // 이메일 중복 체크
         validateEmailNotExists(request.email());
@@ -114,4 +115,37 @@ public class UserCommandService {
 
         log.info("회원 탈퇴 완료: userId={}", userId);
     }
+
+    /**
+     * 비밀번호 재설정 완료
+     * - 비로그인 상태에서 resetToken을 사용하여 새 비밀번호로 변경
+     */
+    public void resetPassword(ResetPasswordRequest request) {
+        // resetToken으로 이메일 확인 (1회용 토큰 소비)
+        String email = verificationService.consumeResetToken(request.resetToken());
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        // 이미 탈퇴한 사용자인지 확인
+        if (user.isDeleted()) {
+            throw BaseException.type(UserErrorCode.USER_ALREADY_DELETED);
+        }
+
+        // 소셜 로그인 사용자는 비밀번호 재설정 불가
+        if (user.isSocialUser()) {
+            throw BaseException.type(UserErrorCode.SOCIAL_USER_PASSWORD_CHANGE);
+        }
+
+        // 새 비밀번호가 기존 비밀번호와 동일한지 확인
+        if (passwordEncoder.matches(request.newPassword(), user.getPassword())) {
+            throw BaseException.type(UserErrorCode.SAME_PASSWORD);
+        }
+
+        // 비밀번호 암호화 및 업데이트
+        user.updatePassword(passwordEncoder.encode(request.newPassword()));
+
+        log.info("비밀번호 재설정 완료: email={}", email);
+    }
+
 }

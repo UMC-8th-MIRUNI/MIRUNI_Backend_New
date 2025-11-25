@@ -25,7 +25,7 @@ import java.time.Duration;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class EmailVerificationService {
+public class VerificationService {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
@@ -56,6 +56,25 @@ public class EmailVerificationService {
                 
         log.info("인증 코드 검증 성공 - 이메일: {}, 토큰: {}", request.email(), resetToken);
         return new VerifyResponse(resetToken);
+    }
+
+    /**
+     * 비밀번호 재설정 토큰 소비
+     * - 유효한 resetToken이면 이메일을 반환하고, 토큰은 한 번만 사용되도록 삭제
+     */
+    public String consumeResetToken(String resetToken) {
+        String tokenKey = "reset_token:" + resetToken;
+        String email = redisTemplate.opsForValue().get(tokenKey);
+
+        if (email == null) {
+            throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+        }
+
+        // 토큰은 한 번 사용 후 삭제
+        redisTemplate.delete(tokenKey);
+
+        log.info("비밀번호 재설정 토큰 소비 완료: email={}", email);
+        return email;
     }
 
     /**

@@ -1,8 +1,9 @@
 package com.miruni.backend.domain.user.controller;
 
 import com.miruni.backend.domain.user.dto.request.EmailVerificationRequest;
-import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
 import com.miruni.backend.domain.user.dto.request.EmailVerificationVerifyRequest;
+import com.miruni.backend.domain.user.dto.request.ResetPasswordRequest;
+import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.dto.response.VerifyResponse;
 import com.miruni.backend.global.authroize.AuthToken;
@@ -318,6 +319,82 @@ public interface UserApi {
             )
     })
     VerifyResponse verifyPasswordResetCode(@Valid @RequestBody EmailVerificationVerifyRequest request);
+
+    @Operation(
+            summary = "비밀번호 재설정 완료",
+            description = "비밀번호 재설정 코드 검증으로 발급받은 resetToken을 사용해 새 비밀번호로 재설정합니다. \\n" +
+                    "토큰이 만료되었거나 유효하지 않으면 실패합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "비밀번호 재설정 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = com.miruni.backend.global.response.ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 응답",
+                                    value = """
+                        {
+                            "errorCode": null,
+                            "message": "OK",
+                            "result": null
+                        }
+                        """
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "비밀번호 재설정 실패",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유효하지 않은 또는 만료된 토큰",
+                                            value = """
+                        {
+                            "status": 400,
+                            "errorCode": "USER401_7",
+                            "message": "유효하지 않은 토큰입니다."
+                        }
+                        """
+                                    ),
+                                    @ExampleObject(
+                                            name = "새 비밀번호가 기존 비밀번호와 동일",
+                                            value = """
+                        {
+                            "status": 400,
+                            "errorCode": "USER400_15",
+                            "message": "새 비밀번호는 현재 비밀번호와 달라야 합니다."
+                        }
+                        """
+                                    ),
+                                    @ExampleObject(
+                                            name = "소셜 로그인 사용자",
+                                            value = """
+                        {
+                            "status": 400,
+                            "errorCode": "USER400_13",
+                            "message": "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다."
+                        }
+                        """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "사용자 없음",
+                                    value = """
+                        {
+                            "status": 404,
+                            "errorCode": "USER404_4",
+                            "message": "사용자를 찾을 수 없습니다."
+                        }
+                        """
+                            )
+                    )
+            )
+    })
+    void resetPassword(@Valid @RequestBody ResetPasswordRequest request);
 
     @Operation(
             summary = "회원 탈퇴",
