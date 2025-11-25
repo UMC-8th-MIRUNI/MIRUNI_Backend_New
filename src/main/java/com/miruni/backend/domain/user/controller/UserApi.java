@@ -23,8 +23,8 @@ public interface UserApi {
 
     @Operation(
             summary = "일반 회원가입",
-            description = "이메일, 비밀번호, 닉네임으로 회원가입합니다. \n" +
-                    "이메일 중복 체크 후 비밀번호를 암호화하여 저장하고, \n" +
+            description = "이름, 생년월일, 전화번호, 이메일, 비밀번호, 닉네임으로 회원가입합니다. \n" +
+                    "이메일, 닉네임, 전화번호 중복 체크 후 비밀번호를 암호화하여 저장하고, \n" +
                     "회원가입 성공 시 JWT 토큰을 발급합니다."
     )
     @ApiResponses({
@@ -49,7 +49,7 @@ public interface UserApi {
                             )
                     )
             ),
-            @ApiResponse(responseCode = "409", description = "중복된 이메일 또는 닉네임",
+            @ApiResponse(responseCode = "409", description = "중복된 이메일, 닉네임 또는 전화번호",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomErrorResponse.class),
                             examples = {
@@ -69,9 +69,20 @@ public interface UserApi {
                                             summary = "이미 사용 중인 닉네임",
                                             value = """
                             {
-                                "status": 404,
+                                "status": 409,
                                 "errorCode": "USER404_1",
                                 "message": "이미 사용 중인 닉네임입니다."
+                            }
+                            """
+                                    ),
+                                    @ExampleObject(
+                                            name = "전화번호 중복",
+                                            summary = "이미 사용 중인 전화번호",
+                                            value = """
+                            {
+                                "status": 409,
+                                "errorCode": "USER409_3",
+                                "message": "이미 사용 중인 전화번호입니다."
                             }
                             """
                                     )

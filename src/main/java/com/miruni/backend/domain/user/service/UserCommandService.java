@@ -43,6 +43,9 @@ public class UserCommandService {
         // 닉네임 중복 체크
         validateNicknameNotExists(request.nickname());
         
+        // 전화번호 중복 체크
+        validatePhoneNumberNotExists(request.phoneNumber());
+        
         // 필수 약관 동의 체크
         userValidator.validateAgreements(request);
         
@@ -76,6 +79,17 @@ public class UserCommandService {
     private void validateNicknameNotExists(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
             throw BaseException.type(UserErrorCode.NICKNAME_ALREADY_EXISTS);
+        }
+    }
+
+    /**
+     * 전화번호 중복 검증
+     */
+    private void validatePhoneNumberNotExists(String phoneNumber) {
+        // 하이픈 제거 후 검증
+        String normalizedPhoneNumber = phoneNumber.replace("-", "");
+        if (userRepository.existsByPhoneNumber(normalizedPhoneNumber)) {
+            throw BaseException.type(UserErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
         }
     }
 
