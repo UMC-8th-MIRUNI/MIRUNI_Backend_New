@@ -152,7 +152,7 @@ public class EmailVerificationService {
     }
 
     /**
-     * 사용자가 입력한 인증코드를 검증합니다.
+     * 회원가입 시 사용자가 입력한 인증코드를 검증합니다.
      */
     public void verifySignUpVerificationCode(String email, String code) {
         String key = emailVerificationProperties.prefix() + email;
@@ -169,6 +169,10 @@ public class EmailVerificationService {
 
         // 성공 시 한 번만 쓰도록 삭제
         redisTemplate.delete(key);
+
+        // 회원가입용 이메일 인증 완료 플래그 저장 (TTL 동일 적용)
+        markSignUpEmailVerified(email);
+
         log.info("이메일 인증 성공: email={}", email);
     }
 
@@ -203,6 +207,33 @@ public class EmailVerificationService {
         String combined = email + ":" + timestamp;
         
         return java.util.Base64.getEncoder().encodeToString(combined.getBytes()).substring(0, 32);
+    }
+
+    /**
+     * 회원가입용 이메일 인증 완료 플래그 저장
+     */
+    public void markSignUpEmailVerified(String email) {
+        String verifiedKey = getSignupVerifiedKey(email);
+        redisTemplate.opsForValue()
+                .set(verifiedKey, "true", Duration.ofMinutes(emailVerificationProperties.expireMinutes()));
+        log.info("회원가입 이메일 인증 완료 플래그 저장: email={}", email);
+    }
+
+    /**
+     * 회원가입 시 이메일이 사전에 인증되었는지 검증
+     */
+    public void assertSignUpEmailVerified(String email) {
+        String verifiedKey = getSignupVerifiedKey(email);
+        String verified = redisTemplate.opsForValue().get(verifiedKey);
+
+        if (!"true".equals(verified)) {
+            log.warn("이메일 인증이 완료되지 않은 상태에서 회원가입 시도: email={}", email);
+            throw BaseException.type(UserErrorCode.EMAIL_NOT_VERIFIED);
+        }
+    }
+
+    private String getSignupVerifiedKey(String email) {
+        return emailVerificationProperties.prefix() + "signup:verified:" + email;
     }
 
     /**

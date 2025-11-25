@@ -28,11 +28,15 @@ public class UserCommandService {
     private final PasswordEncoder passwordEncoder;
     private final UserValidator userValidator;
     private final TokenService tokenService;
+    private final EmailVerificationService emailVerificationService;
     
     /**
      * 일반 회원가입
      */
     public JwtResponseDto signup(UserSignupRequest request) {
+        // 이메일 인증 여부 확인
+        emailVerificationService.assertSignUpEmailVerified(request.email());
+
         // 이메일 중복 체크
         validateEmailNotExists(request.email());
         

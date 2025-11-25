@@ -19,7 +19,8 @@ UserErrorCode implements ErrorCode {
     USER_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "USER400_7", "이미 탈퇴한 사용자입니다."),
     EMAIL_VERIFICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "USER500_8", "이메일 인증 코드 발송에 실패했습니다."),
     EMAIL_VERIFICATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER400_9", "이메일 인증 코드가 존재하지 않거나 만료되었습니다."),
-    EMAIL_VERIFICATION_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "USER400_10", "이메일 인증 코드가 올바르지 않습니다.");
+    EMAIL_VERIFICATION_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "USER400_10", "이메일 인증 코드가 올바르지 않습니다."),
+    EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "USER400_11", "이메일 인증이 완료되지 않았습니다.");
 
     private final HttpStatus status;
     private final String errorCode;
