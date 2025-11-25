@@ -7,6 +7,7 @@ import com.miruni.backend.domain.user.dto.request.EmailVerificationRequest;
 import com.miruni.backend.domain.user.dto.request.EmailVerificationVerifyRequest;
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
+import com.miruni.backend.domain.user.dto.response.VerifyResponse;
 import com.miruni.backend.domain.user.service.EmailVerificationService;
 import com.miruni.backend.domain.user.service.UserCommandService;
 import com.miruni.backend.global.authroize.AuthToken;
@@ -48,14 +49,24 @@ public class UserController implements UserApi {
         emailVerificationService.verifySignUpVerificationCode(request.email(), request.code());
     }
 
+    // 비밀번호 재설정 요청
+    @PostMapping("/me/password/reset")
+    public void requestPasswordReset(@Valid @RequestBody EmailVerificationRequest request) {
+        emailVerificationService.requestPasswordReset(request.email());
+    }
+
+    // 비밀번호 재설정 코드 검증 - 인증하기
+    @PostMapping("/me/password/reset/verification")
+    public VerifyResponse verifyPasswordResetCode(@Valid @RequestBody EmailVerificationVerifyRequest request) {
+        return emailVerificationService.verifyPasswordResetCode(request);
+    }
+
 
     // 비밀번호 변경
     // @PatchMapping("/me/password")
     // public void changePassword(@Valid @RequestBody ChangePasswordRequest request) {
     //     userCommandService.changePassword(request);
     // }
-
-
 
 
 
