@@ -1,15 +1,11 @@
 package com.miruni.backend.domain.user.dto.request;
 
-import com.miruni.backend.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public record UserSignupRequest(
 
@@ -56,22 +52,4 @@ public record UserSignupRequest(
         Boolean marketingAgreed
 
 ) {
-        public User toEntity(String encodedPassword) {
-                // 생년월일 문자열을 LocalDate로 변환 (YYYYMMDD -> LocalDate)
-                LocalDate birth = LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
-                
-                // 전화번호에서 하이픈 제거
-                String normalizedPhoneNumber = phoneNumber.replace("-", "");
-                
-                return User.builder()
-                        .name(name)
-                        .birth(birth)
-                        .phoneNumber(normalizedPhoneNumber)
-                        .email(email)
-                        .password(encodedPassword)
-                        .nickname(nickname)
-                        .peanutCount(0)
-                        .oauthProvider(null)
-                        .build();
-        }
 }

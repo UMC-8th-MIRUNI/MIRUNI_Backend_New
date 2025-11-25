@@ -7,7 +7,9 @@ import com.miruni.backend.domain.question.entity.Question;
 import com.miruni.backend.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,8 +74,33 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokens = new ArrayList<>();
 
-    // ===== 비즈니스 메서드 =====
-    
+
+    /**
+     * 일반 회원가입용 팩토리 메서드
+     */
+    public static User create(
+            String name,
+            String rawBirthDate,
+            String rawPhoneNumber,
+            String email,
+            String encodedPassword,
+            String nickname
+    ) {
+        LocalDate birth = LocalDate.parse(rawBirthDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String normalizedPhoneNumber = rawPhoneNumber.replace("-", "");
+
+        return User.builder()
+                .name(name)
+                .birth(birth)
+                .phoneNumber(normalizedPhoneNumber)
+                .email(email)
+                .password(encodedPassword)
+                .nickname(nickname)
+                .peanutCount(0)
+                .oauthProvider(null)
+                .build();
+    }
+
     /**
      * 소셜 로그인 사용자인지 확인
      */

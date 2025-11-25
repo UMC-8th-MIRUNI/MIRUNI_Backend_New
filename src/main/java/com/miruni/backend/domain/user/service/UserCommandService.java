@@ -53,8 +53,15 @@ public class UserCommandService {
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.password());
         
-        // User 엔티티 생성 및 저장
-        User user = request.toEntity(encodedPassword);
+        // User 엔티티 생성 및 저장 
+        User user = User.create(
+                request.name(),
+                request.birthDate(),
+                request.phoneNumber(),
+                request.email(),
+                encodedPassword,
+                request.nickname()
+        );
         userRepository.save(user);
         
         // Agreement 엔티티 생성 및 저장
