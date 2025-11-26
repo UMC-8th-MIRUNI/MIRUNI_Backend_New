@@ -30,4 +30,16 @@ public interface AiPlanRepository extends JpaRepository<AiPlan, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    @Query("""
+        SELECT a
+        FROM AiPlan a
+        WHERE a.plan.user.id = :userId
+          AND a.scheduledDate = :date
+        ORDER BY a.scheduledTime
+    """)
+    List<AiPlan> findDailyAiPlans(
+            @Param("userId") Long userId,
+            @Param("date") LocalDate date
+    );
 }

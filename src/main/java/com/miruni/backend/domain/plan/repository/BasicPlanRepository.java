@@ -32,4 +32,17 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+
+    @Query("""
+        SELECT b
+        FROM BasicPlan b
+        WHERE b.user.id = :userId
+          AND b.scheduledDate = :date
+        ORDER BY b.scheduledTime
+    """)
+    List<BasicPlan> findDailyBasicPlans(
+            @Param("userId") Long userId,
+            @Param("date") LocalDate date
+    );
 }

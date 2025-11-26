@@ -1,14 +1,19 @@
 package com.miruni.backend.domain.plan.service;
 
+import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
+import com.miruni.backend.domain.plan.entity.AiPlan;
+import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.plan.repository.BasicPlanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,5 +41,27 @@ public class PlanQueryService {
                 .map(e -> new MonthlyPlanResponse(e.getKey(), e.getValue()))
                 .sorted(Comparator.comparing(MonthlyPlanResponse::date))
                 .toList();
+    }
+
+    public DailyPlanResponse getDailyPlan(Long userId, int year, int month, int day) {
+
+        LocalDate date = LocalDate.of(year, month, day);
+
+        List<DailyPlanResponse.DailyPlanItemResponse> allPlans = Stream.concat(
+                basicPlanRepository.findDailyBasicPlans(userId, date).stream()
+                        .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
+                aiPlanRepository.findDailyAiPlans(userId, date).stream()
+                        .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
+        ).toList();
+
+        Map<Boolean, List<DailyPlanResponse.DailyPlanItemResponse>> plansByStatus =
+                allPlans.stream()
+                        .collect(Collectors.partitioningBy(DailyPlanResponse.DailyPlanItemResponse::isDone));
+        // TODO: scheduledTime으로 정렬 추가할 것
+
+        return new DailyPlanResponse(
+                plansByStatus.get(false),
+                plansByStatus.get(true)
+        );
     }
 }

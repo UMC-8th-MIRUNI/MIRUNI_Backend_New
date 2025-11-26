@@ -1,5 +1,6 @@
 package com.miruni.backend.domain.plan.controller;
 
+import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
 import com.miruni.backend.domain.plan.service.PlanQueryService;
 import com.miruni.backend.global.authroize.LoginUser;
@@ -21,5 +22,10 @@ public class PlanController {
     @GetMapping("/monthly")
     public List<MonthlyPlanResponse> getMonthlyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month) {
         return planQueryService.getMonthlyPlan(userId, year, month);
+    }
+
+    @GetMapping("/daily")
+    public DailyPlanResponse getDailyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month, @RequestParam int day) {
+        return planQueryService.getDailyPlan(userId, year, month, day);
     }
 }
