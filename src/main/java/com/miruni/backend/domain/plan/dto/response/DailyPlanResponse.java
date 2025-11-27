@@ -11,6 +11,13 @@ public record DailyPlanResponse(
         List<DailyPlanItemResponse> unfinishedPlan,
         List<DailyPlanItemResponse> finishedPlan
 ) {
+    public static DailyPlanResponse of(List<DailyPlanItemResponse> unfinishedPlan, List<DailyPlanItemResponse> finishedPlan
+    ) {
+        return new DailyPlanResponse(
+                unfinishedPlan,
+                finishedPlan
+        );
+    }
 
     public record DailyPlanItemResponse(
             String planType,
@@ -21,7 +28,6 @@ public record DailyPlanResponse(
             Priority priority,
             boolean isDone
     ) {
-
         public static DailyPlanItemResponse fromBasic(BasicPlan plan) {
             return new DailyPlanItemResponse(
                     "BASIC",

@@ -21,6 +21,9 @@ public class PlanQueryService {
     private final AiPlanRepository aiPlanRepository;
     private final BasicPlanRepository basicPlanRepository;
 
+    /**
+     * 캘린더 조회
+     */
     public List<MonthlyPlanResponse> getMonthlyPlan(Long userId, int year, int month) {
 
         LocalDate startDate = LocalDate.of(year, month, 1);
@@ -35,11 +38,14 @@ public class PlanQueryService {
                         Collectors.summingLong(MonthlyPlanResponse::unfinishedPlanCount)
                 ))
                 .entrySet().stream()
-                .map(e -> new MonthlyPlanResponse(e.getKey(), e.getValue()))
+                .map(e -> MonthlyPlanResponse.of(e.getKey(), e.getValue()))
                 .sorted(Comparator.comparing(MonthlyPlanResponse::date))
                 .toList();
     }
 
+    /**
+     * (캘린더 아래) 특정 날짜의 일정 조회
+     */
     public DailyPlanResponse getDailyPlan(Long userId, int year, int month, int day) {
 
         LocalDate date = LocalDate.of(year, month, day);
@@ -56,9 +62,6 @@ public class PlanQueryService {
                         .collect(Collectors.partitioningBy(DailyPlanResponse.DailyPlanItemResponse::isDone));
         // TODO: scheduledTime으로 정렬 추가할 것
 
-        return new DailyPlanResponse(
-                plansByStatus.get(false),
-                plansByStatus.get(true)
-        );
+        return DailyPlanResponse.of(plansByStatus.get(false), plansByStatus.get(true));
     }
 }
