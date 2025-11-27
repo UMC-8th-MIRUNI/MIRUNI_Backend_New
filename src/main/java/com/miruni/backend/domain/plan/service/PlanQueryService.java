@@ -51,16 +51,16 @@ public class PlanQueryService {
         LocalDate date = LocalDate.of(year, month, day);
 
         List<DailyPlanResponse.DailyPlanItemResponse> plans = Stream.concat(
-                basicPlanRepository.findDailyBasicPlans(userId, date).stream()
-                        .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
-                aiPlanRepository.findDailyAiPlans(userId, date).stream()
-                        .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
-        ).toList();
+                    basicPlanRepository.findDailyBasicPlans(userId, date).stream()
+                            .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
+                    aiPlanRepository.findDailyAiPlans(userId, date).stream()
+                            .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
+                )
+                .sorted(Comparator.comparing(DailyPlanResponse.DailyPlanItemResponse::scheduledTime))
+                .toList();
 
-        Map<Boolean, List<DailyPlanResponse.DailyPlanItemResponse>> plansByStatus =
-                plans.stream()
-                        .collect(Collectors.partitioningBy(DailyPlanResponse.DailyPlanItemResponse::isDone));
-        // TODO: scheduledTime으로 정렬 추가할 것
+        Map<Boolean, List<DailyPlanResponse.DailyPlanItemResponse>> plansByStatus = plans.stream()
+                .collect(Collectors.partitioningBy(DailyPlanResponse.DailyPlanItemResponse::isDone));
 
         return DailyPlanResponse.of(plansByStatus.get(false), plansByStatus.get(true));
     }
