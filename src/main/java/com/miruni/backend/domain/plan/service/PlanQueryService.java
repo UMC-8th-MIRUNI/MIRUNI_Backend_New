@@ -2,10 +2,18 @@ package com.miruni.backend.domain.plan.service;
 
 import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
+import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
+import com.miruni.backend.domain.plan.entity.AiPlan;
+import com.miruni.backend.domain.plan.entity.BasicPlan;
+import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
+import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.plan.repository.BasicPlanRepository;
+import com.miruni.backend.global.exception.BaseException;
+import com.miruni.backend.global.exception.CommonErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -16,6 +24,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PlanQueryService {
 
     private final AiPlanRepository aiPlanRepository;
@@ -63,5 +72,36 @@ public class PlanQueryService {
                 .collect(Collectors.partitioningBy(DailyPlanResponse.DailyPlanItemResponse::isDone));
 
         return DailyPlanResponse.of(plansByStatus.get(false), plansByStatus.get(true));
+    }
+
+    /**
+     * 일정 상세 조회
+     */
+    public PlanDetailResponse getPlanDetail(Long userId, Long planId, String planType) {
+        return switch (planType) {
+            case "BASIC" -> getBasicPlanDetail(userId, planId);
+            case "AI" -> getAiPlanDetail(userId, planId);
+            default -> throw BaseException.type(CommonErrorCode.INVALID_REQUEST);
+        };
+    }
+
+    private PlanDetailResponse getBasicPlanDetail(Long userId, Long planId) {
+        BasicPlan basicPlan = basicPlanRepository.findById(planId)
+                .orElseThrow(() -> BaseException.type(BasicPlanErrorCode.BASIC_PLAN_NOT_FOUND));
+
+        if (!userId.equals(basicPlan.getUser().getId())) {
+            throw BaseException.type(BasicPlanErrorCode.BASIC_PLAN_FORBIDDEN);
+        }
+        return PlanDetailResponse.fromBasic(basicPlan);
+    }
+
+    private PlanDetailResponse getAiPlanDetail(Long userId, Long planId) {
+        AiPlan aiPlan = aiPlanRepository.findById(planId)
+                .orElseThrow(() -> BaseException.type(AiPlanErrorCode.AI_PLAN_NOT_FOUND));
+
+        if (!userId.equals(aiPlan.getPlan().getUser().getId())) {
+            throw BaseException.type(AiPlanErrorCode.AI_PLAN_FORBIDDEN);
+        }
+        return PlanDetailResponse.fromAi(aiPlan);
     }
 }
