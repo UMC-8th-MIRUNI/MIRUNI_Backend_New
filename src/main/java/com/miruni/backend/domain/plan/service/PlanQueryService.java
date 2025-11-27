@@ -50,7 +50,7 @@ public class PlanQueryService {
 
         LocalDate date = LocalDate.of(year, month, day);
 
-        List<DailyPlanResponse.DailyPlanItemResponse> allPlans = Stream.concat(
+        List<DailyPlanResponse.DailyPlanItemResponse> plans = Stream.concat(
                 basicPlanRepository.findDailyBasicPlans(userId, date).stream()
                         .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
                 aiPlanRepository.findDailyAiPlans(userId, date).stream()
@@ -58,7 +58,7 @@ public class PlanQueryService {
         ).toList();
 
         Map<Boolean, List<DailyPlanResponse.DailyPlanItemResponse>> plansByStatus =
-                allPlans.stream()
+                plans.stream()
                         .collect(Collectors.partitioningBy(DailyPlanResponse.DailyPlanItemResponse::isDone));
         // TODO: scheduledTime으로 정렬 추가할 것
 
