@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/plans")
 @RequiredArgsConstructor
-public class PlanController {
+public class PlanController implements PlanApi{
 
     private final PlanQueryService planQueryService;
 
