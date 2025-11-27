@@ -3,12 +3,13 @@ package com.miruni.backend.domain.plan.dto.response;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Priority;
+import com.miruni.backend.domain.plan.type.PlanType;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record PlanDetailResponse(
-        String planType,
+        PlanType planType,
         Long planId,
         String title,
         String subTitle, // AI
@@ -19,7 +20,7 @@ public record PlanDetailResponse(
 ) {
     public static PlanDetailResponse fromBasic(BasicPlan basicPlan) {
         return new PlanDetailResponse(
-                "BASIC",
+                PlanType.BASIC,
                 basicPlan.getId(),
                 basicPlan.getTitle(),
                 null,
@@ -32,7 +33,7 @@ public record PlanDetailResponse(
 
     public static PlanDetailResponse fromAi(AiPlan aiPlan) {
         return new PlanDetailResponse(
-                "AI",
+                PlanType.AI,
                 aiPlan.getId(),
                 aiPlan.getPlan().getTitle(),
                 aiPlan.getSubTitle(),

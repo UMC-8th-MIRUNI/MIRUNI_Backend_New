@@ -9,6 +9,7 @@ import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
 import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.plan.repository.BasicPlanRepository;
+import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.exception.BaseException;
 import com.miruni.backend.global.exception.CommonErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -77,10 +78,10 @@ public class PlanQueryService {
     /**
      * 일정 상세 조회
      */
-    public PlanDetailResponse getPlanDetail(Long userId, Long planId, String planType) {
+    public PlanDetailResponse getPlanDetail(Long userId, Long planId, PlanType planType) {
         return switch (planType) {
-            case "BASIC" -> getBasicPlanDetail(userId, planId);
-            case "AI" -> getAiPlanDetail(userId, planId);
+            case PlanType.BASIC -> getBasicPlanDetail(userId, planId);
+            case PlanType.AI -> getAiPlanDetail(userId, planId);
             default -> throw BaseException.type(CommonErrorCode.INVALID_REQUEST);
         };
     }

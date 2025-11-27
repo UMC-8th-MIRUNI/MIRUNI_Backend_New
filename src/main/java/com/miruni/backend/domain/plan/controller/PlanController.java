@@ -4,6 +4,7 @@ import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
 import com.miruni.backend.domain.plan.service.PlanQueryService;
+import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.authroize.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class PlanController {
     }
 
     @GetMapping("/{planId}")
-    public PlanDetailResponse getPlanDetail(@LoginUser Long userId, @PathVariable Long planId, @RequestParam String planType) {
+    public PlanDetailResponse getPlanDetail(@LoginUser Long userId, @PathVariable Long planId, @RequestParam PlanType planType) {
         return planQueryService.getPlanDetail(userId, planId, planType);
     }
 }
