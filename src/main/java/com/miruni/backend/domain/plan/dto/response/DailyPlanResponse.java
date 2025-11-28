@@ -5,8 +5,9 @@ import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Priority;
 import com.miruni.backend.domain.plan.type.PlanType;
 
-import java.time.LocalTime;
 import java.util.List;
+
+import static com.miruni.backend.global.common.DateTimeFormatUtil.formatTime;
 
 public record DailyPlanResponse(
         List<DailyPlanItemResponse> unfinishedPlan,
@@ -25,7 +26,7 @@ public record DailyPlanResponse(
             Long planId,
             String title,
             String subTitle,
-            LocalTime scheduledTime,
+            String scheduledTime,
             Priority priority,
             boolean isDone
     ) {
@@ -35,7 +36,7 @@ public record DailyPlanResponse(
                     plan.getId(),
                     plan.getTitle(),
                     null,
-                    plan.getScheduledTime(),
+                    formatTime(plan.getScheduledTime()),
                     plan.getPriority(),
                     plan.isDone()
             );
@@ -47,7 +48,7 @@ public record DailyPlanResponse(
                     aiPlan.getId(),
                     aiPlan.getPlan().getTitle(), // TODO
                     aiPlan.getSubTitle(),
-                    aiPlan.getScheduledTime(),
+                    formatTime(aiPlan.getScheduledTime()),
                     aiPlan.getPlan().getPriority(),
                     aiPlan.isDone()
             );
