@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -32,7 +34,7 @@ public class PlanCommandService {
         int actualMinutes = parseTimeToMinutes(command.actualTime());
         int peanutCount = calculatePeanuts(expectedMinutes, actualMinutes);
 
-        boolean isDone;
+       boolean isDone;
         if (command.planType() == PlanType.BASIC) {
             BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
             plan.setIsDone(true);
@@ -41,8 +43,8 @@ public class PlanCommandService {
             AiPlan plan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
             plan.setIsDone(true);
             isDone = plan.isDone();
-            // 상위 Plan 완료 여부 갱신
-            checkAndUpdateParentPlan(plan.getPlan());
+            // 상위 Plan progressRate 갱신
+            updateParentPlanProgress(plan.getPlan());
         } else {
             throw BaseException.type(BasicPlanErrorCode.PLAN_TYPE_NOT_FOUND);
         }
@@ -52,12 +54,16 @@ public class PlanCommandService {
         return PlanFinishResponse.of(peanutCount, command.planType(), command.planId(), isDone);
     }
 
-    private void checkAndUpdateParentPlan(Plan parentPlan) {
-        boolean allAiDone = aiPlanRepository.findByPlanId(parentPlan.getId())
-                .stream()
-                .allMatch(AiPlan::isDone);
+    private void updateParentPlanProgress(Plan parentPlan) {
+        List<AiPlan> aiPlans = aiPlanRepository.findByPlanId(parentPlan.getId());
 
-        if (allAiDone) {
+        int total = aiPlans.size();
+        int doneCount = (int) aiPlans.stream().filter(AiPlan::isDone).count();
+
+        int progressRate = (total == 0) ? 0 : (doneCount * 100 / total);
+        parentPlan.setProgressRate(progressRate);
+
+        if (progressRate == 100) {
             parentPlan.setIsDone(true);
         }
     }
