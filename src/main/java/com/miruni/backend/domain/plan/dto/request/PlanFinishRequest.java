@@ -1,13 +1,13 @@
 package com.miruni.backend.domain.plan.dto.request;
 
+import com.miruni.backend.domain.plan.type.PlanType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "일정 종료 요청 DTO")
 public record PlanFinishRequest(
         @Schema(description = "플랜 타입 (BASIC 또는 AI)", example = "BASIC")
-        @NotBlank
-        String planType,
+        PlanType planType,
 
         @Schema(description = "플랜 ID", example = "10")
         Long id,

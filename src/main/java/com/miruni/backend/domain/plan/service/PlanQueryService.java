@@ -5,6 +5,7 @@ import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
+import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,10 @@ public class PlanQueryService {
     public PlanDurationResponse getExpectedDuration(PlanDurationCommand command) {
         Long expectedDuration;
 
-        if ("BASIC".equalsIgnoreCase(command.planType())) {
+        if (command.planType() == PlanType.BASIC) {
             BasicPlan basicPlan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
             expectedDuration = basicPlan.getExpectedDuration();
-        } else if ("AI".equalsIgnoreCase(command.planType())) {
+        } else if (command.planType() == PlanType.AI) {
             AiPlan aiPlan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
             expectedDuration = (long) aiPlan.getExpectedDuration();
         } else {

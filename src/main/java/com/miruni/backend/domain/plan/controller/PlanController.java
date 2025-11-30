@@ -7,6 +7,7 @@ import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanFinishResponse;
 import com.miruni.backend.domain.plan.service.PlanCommandService;
 import com.miruni.backend.domain.plan.service.PlanQueryService;
+import com.miruni.backend.domain.plan.type.PlanType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class PlanController implements PlanApi {
     @Override
     @GetMapping("/duration")
     public PlanDurationResponse getExpectedDuration(@RequestParam Long userId,
-                                                    @RequestParam String planType,
+                                                    @RequestParam PlanType planType,
                                                     @RequestParam Long id) {
         PlanDurationCommand command = PlanDurationCommand.of(userId, planType, id);
         return planQueryService.getExpectedDuration(command);

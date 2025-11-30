@@ -3,6 +3,7 @@ package com.miruni.backend.domain.plan.controller;
 import com.miruni.backend.domain.plan.dto.request.PlanFinishRequest;
 import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanFinishResponse;
+import com.miruni.backend.domain.plan.type.PlanType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,7 +23,7 @@ public interface PlanApi {
             @ApiResponse(responseCode = "404", description = "플랜 없음")
     })
     PlanDurationResponse getExpectedDuration(@RequestParam Long userId,
-                                             @RequestParam String planType,
+                                             @RequestParam PlanType planType,
                                              @RequestParam Long id);
 
     @Operation(summary = "일정 완료",

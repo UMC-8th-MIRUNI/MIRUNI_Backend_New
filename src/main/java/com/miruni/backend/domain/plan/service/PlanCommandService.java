@@ -7,6 +7,7 @@ import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
+import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.service.UserQueryService;
 import com.miruni.backend.global.exception.BaseException;
@@ -32,11 +33,11 @@ public class PlanCommandService {
         int peanutCount = calculatePeanuts(expectedMinutes, actualMinutes);
 
         boolean isDone;
-        if ("BASIC".equalsIgnoreCase(command.planType())) {
+        if (command.planType() == PlanType.BASIC) {
             BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
             plan.setIsDone(true);
             isDone = plan.isDone();
-        } else if ("AI".equalsIgnoreCase(command.planType())) {
+        } else if (command.planType() == PlanType.AI) {
             AiPlan plan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
             plan.setIsDone(true);
             isDone = plan.isDone();
