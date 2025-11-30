@@ -4,6 +4,7 @@ import com.miruni.backend.domain.plan.entity.AiPlan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,4 +13,5 @@ public interface AiPlanRepository extends JpaRepository<AiPlan, Long> {
 
     Optional<AiPlan> findByIdAndPlanUserId(Long id, Long userId);
     List<AiPlan> findByPlanId(Long planId);
+    boolean existsByPlanUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
 }

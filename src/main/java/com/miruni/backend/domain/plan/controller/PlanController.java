@@ -2,9 +2,12 @@ package com.miruni.backend.domain.plan.controller;
 
 import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
 import com.miruni.backend.domain.plan.dto.command.PlanFinishCommand;
+import com.miruni.backend.domain.plan.dto.command.PlanPauseCommand;
 import com.miruni.backend.domain.plan.dto.request.PlanFinishRequest;
+import com.miruni.backend.domain.plan.dto.request.PlanPauseRequest;
 import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanFinishResponse;
+import com.miruni.backend.domain.plan.dto.response.PlanPauseResponse;
 import com.miruni.backend.domain.plan.service.PlanCommandService;
 import com.miruni.backend.domain.plan.service.PlanQueryService;
 import com.miruni.backend.domain.plan.type.PlanType;
@@ -44,6 +47,21 @@ public class PlanController implements PlanApi {
         );
 
         return planCommandService.finishPlan(command);
+    }
+
+    @Override
+    @PatchMapping("/pause")
+    public PlanPauseResponse pausePlan(
+            @RequestParam Long userId,
+            @Valid @RequestBody PlanPauseRequest request
+    ) {
+        PlanPauseCommand command = PlanPauseCommand.of(
+                request.planType(),
+                request.planId(),
+                userId,
+                request.resumeTime()
+        );
+        return planCommandService.pausePlan(command);
     }
 
 }

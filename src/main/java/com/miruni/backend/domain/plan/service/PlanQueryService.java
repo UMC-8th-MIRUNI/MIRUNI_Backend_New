@@ -4,7 +4,7 @@ import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
 import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
-import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
+import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class PlanQueryService {
             AiPlan aiPlan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
             expectedDuration = (long) aiPlan.getExpectedDuration();
         } else {
-            throw BaseException.type(BasicPlanErrorCode.PLAN_TYPE_NOT_FOUND);
+            throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
         }
 
         return PlanDurationResponse.of(command.planType(), command.planId(), expectedDuration);

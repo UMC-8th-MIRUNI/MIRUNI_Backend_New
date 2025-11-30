@@ -85,4 +85,5 @@ public class BasicPlan extends BaseEntity {
     }
 
     public void setIsDone(Boolean done) { this.isDone = done; }
+    public void setScheduledTime(LocalTime newScheduledTime) {this.scheduledTime = newScheduledTime;}
 }

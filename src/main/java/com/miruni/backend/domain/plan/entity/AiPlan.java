@@ -46,4 +46,5 @@ public class AiPlan extends BaseEntity {
     }
     public void setIsDone(Boolean done) { this.isDone = done; }
 
+    public void setScheduledTime(LocalTime newScheduledTime) {this.scheduledTime = newScheduledTime;}
 }
