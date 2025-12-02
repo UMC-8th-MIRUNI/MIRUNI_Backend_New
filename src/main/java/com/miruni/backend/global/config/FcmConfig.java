@@ -5,6 +5,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -12,11 +13,13 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-/*
-@Configuration
+
 @Slf4j
+@Configuration
 public class FcmConfig {
 
+
+    @Value("${fcm.key.path:firebase/miruni-9718b-firebase-adminsdk-fbsvc-c1afc8bb2e.json")
     private String fcmKeyPath;
 
     @Bean
@@ -53,4 +56,3 @@ public class FcmConfig {
         }
     }
 }
-*/
