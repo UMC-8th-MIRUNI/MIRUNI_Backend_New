@@ -17,7 +17,7 @@ public class AiPlanQueryService {
     private final UserQueryService userQueryService;
 
     public AiPlan getByPlanIdAndUserId(Long planId, Long userId) {
-        userQueryService.getUserById(userId); // 사용자 존재 여부 확인
+        //userQueryService.getUserById(userId);
 
         return aiPlanRepository.findByIdAndPlanUserId(planId, userId)
                 .orElseThrow(() -> BaseException.type(AiPlanErrorCode.AI_PLAN_NOT_FOUND));

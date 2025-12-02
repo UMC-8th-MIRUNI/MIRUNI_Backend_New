@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -38,6 +39,8 @@ public interface PlanApi {
     })
     PlanFinishResponse finishPlan(
             @RequestParam Long userId,
+            @PathVariable PlanType planType,
+            @PathVariable Long id,
             @Valid @RequestBody PlanFinishRequest request
     );
 

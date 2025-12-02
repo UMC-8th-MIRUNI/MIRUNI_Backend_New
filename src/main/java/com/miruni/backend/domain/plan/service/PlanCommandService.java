@@ -39,17 +39,17 @@ public class PlanCommandService {
        boolean isDone;
        switch (command.planType()) {
            case BASIC -> {
-               BasicPlan plan = getBasicPlan(command.planId(), command.userId());
-               plan.setIsDone(true);
-               isDone = plan.isDone();
+               BasicPlan basicplan = getBasicPlan(command.planId(), command.userId());
+               basicplan.complete();
+               isDone = basicplan.isDone();
            }
            case AI -> {
-               AiPlan plan = getAiPlan(command.planId(), command.userId());
-               plan.setIsDone(true);
-               isDone = plan.isDone();
+               AiPlan aiPlan = getAiPlan(command.planId(), command.userId());
+               aiPlan.complete();
+               isDone = aiPlan.isDone();
 
                // 상위 Plan progressRate 갱신
-               updateParentPlanProgress(plan.getPlan());
+               updateParentPlanProgress(aiPlan.getPlan());
            }
            default -> throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
        }
@@ -72,11 +72,11 @@ public class PlanCommandService {
         switch (command.planType()) {
             case BASIC -> {
                 BasicPlan plan = getBasicPlan(command.planId(), command.userId());
-                plan.setScheduledTime(newScheduledTime);
+                plan.rescheduleTime(newScheduledTime);
             }
             case AI -> {
                 AiPlan plan = getAiPlan(command.planId(), command.userId());
-                plan.setScheduledTime(newScheduledTime);
+                plan.rescheduleTime(newScheduledTime);
             }
             default -> throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
         }
@@ -99,10 +99,10 @@ public class PlanCommandService {
         int doneCount = (int) aiPlans.stream().filter(AiPlan::isDone).count();
 
         int progressRate = (total == 0) ? 0 : (doneCount * 100 / total);
-        parentPlan.setProgressRate(progressRate);
+        parentPlan.updateProgressRate(progressRate);
 
         if (progressRate == 100) {
-            parentPlan.setIsDone(true);
+            parentPlan.complete();
         }
     }
 

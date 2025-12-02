@@ -49,7 +49,7 @@ public class Plan extends BaseEntity {
     private List<AiPlan> aiPlans = new ArrayList<>();
 
     public void updateTitle(String title) {this.title = title;}
-    public void setIsDone(Boolean done) { this.isDone = done; }
-    public void setProgressRate(int progressRate) {this.progressRate = progressRate;}
+    public void complete() { this.isDone = true; }
+    public void updateProgressRate(int progressRate) {this.progressRate = progressRate;}
 
 }

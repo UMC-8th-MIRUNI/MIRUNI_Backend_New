@@ -11,6 +11,7 @@ import com.miruni.backend.domain.plan.dto.response.PlanPauseResponse;
 import com.miruni.backend.domain.plan.service.PlanCommandService;
 import com.miruni.backend.domain.plan.service.PlanQueryService;
 import com.miruni.backend.domain.plan.type.PlanType;
+import com.miruni.backend.global.authroize.LoginUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -25,22 +26,23 @@ public class PlanController implements PlanApi {
 
     @Override
     @GetMapping("/duration")
-    public PlanDurationResponse getExpectedDuration(@RequestParam Long userId,
+    public PlanDurationResponse getExpectedDuration(@LoginUser Long userId,
                                                     @RequestParam PlanType planType,
                                                     @RequestParam Long id) {
-        PlanDurationCommand command = PlanDurationCommand.of(userId, planType, id);
-        return planQueryService.getExpectedDuration(command);
+        return planQueryService.getExpectedDuration(PlanDurationCommand.of(userId, planType, id));
     }
 
     @Override
-    @PostMapping("/finish")
+    @PostMapping("/finish/{planType}/{id}")
     public PlanFinishResponse finishPlan(
-            @RequestParam Long userId,
+            @LoginUser Long userId,
+            @PathVariable PlanType planType,
+            @PathVariable Long id,
             @Valid @RequestBody PlanFinishRequest request
     ) {
         PlanFinishCommand command = PlanFinishCommand.of(
-                request.planType(),
-                request.id(),
+                planType,
+                id,
                 userId,
                 request.expectedTime(),
                 request.actualTime()
@@ -52,7 +54,7 @@ public class PlanController implements PlanApi {
     @Override
     @PatchMapping("/pause")
     public PlanPauseResponse pausePlan(
-            @RequestParam Long userId,
+            @LoginUser Long userId,
             @Valid @RequestBody PlanPauseRequest request
     ) {
         PlanPauseCommand command = PlanPauseCommand.of(
