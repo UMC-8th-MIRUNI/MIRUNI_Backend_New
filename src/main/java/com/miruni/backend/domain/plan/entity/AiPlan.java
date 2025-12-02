@@ -9,8 +9,6 @@ import java.time.LocalTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "ai_plan")
 public class AiPlan extends BaseEntity {
 
@@ -32,17 +30,42 @@ public class AiPlan extends BaseEntity {
     @Column(name = "scheduled_time", nullable = false)
     private LocalTime scheduledTime;
 
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
+
     @Column(name = "expected_duration", nullable = false)
     private int expectedDuration;
 
     @Column(name = "is_done", nullable = false)
-    @Builder.Default
     private boolean isDone = false;
 
-    public void updateDetails(String subTitle, LocalDate scheduledDate, LocalTime scheduledTime) {
+    @Builder(access = AccessLevel.PRIVATE)
+    public AiPlan(Plan plan, final String subTitle, final LocalDate scheduledDate, final LocalTime scheduledTime, final LocalTime endTime ,final int expectedDuration) {
+        this.plan = plan;
         this.subTitle = subTitle;
         this.scheduledDate = scheduledDate;
         this.scheduledTime = scheduledTime;
+        this.endTime = endTime;
+        this.expectedDuration = expectedDuration;
+    }
+
+    public static AiPlan create(Plan plan, final String subTitle, final LocalDate scheduledDate, final LocalTime scheduledTime, final LocalTime endTime, final int expectedDuration) {
+        return AiPlan.builder()
+                .plan(plan)
+                .subTitle(subTitle)
+                .scheduledDate(scheduledDate)
+                .scheduledTime(scheduledTime)
+                .endTime(endTime)
+                .expectedDuration(expectedDuration)
+                .build();
+    }
+
+    public void updateDetails(String subTitle, LocalDate scheduledDate, LocalTime scheduledTime, LocalTime endTime, int expectedDuration) {
+        this.subTitle = subTitle;
+        this.scheduledDate = scheduledDate;
+        this.scheduledTime = scheduledTime;
+        this.endTime = endTime;
+        this.expectedDuration = expectedDuration;
     }
 
 }

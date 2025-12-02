@@ -16,6 +16,9 @@ public record AiPlanUpdateRequest(
     LocalDate scheduledDate,
 
     @Schema(description = "시작시간", example = "14:20:59")
-    LocalTime startTime
+    LocalTime startTime,
+
+    @Schema(description = "종료시간", example = "17:20:00")
+    LocalTime endTime
 ) {
 }

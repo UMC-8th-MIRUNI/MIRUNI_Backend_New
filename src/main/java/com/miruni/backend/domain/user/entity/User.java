@@ -4,9 +4,12 @@ import com.miruni.backend.domain.fcm.entity.FcmToken;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.question.entity.Question;
+import com.miruni.backend.domain.user.exception.UserErrorCode;
 import com.miruni.backend.global.common.BaseEntity;
+import com.miruni.backend.global.exception.BaseException;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +49,10 @@ public class User extends BaseEntity {
     @Builder.Default
     private int peanutCount = 0;
 
+    @Column(name = "remain_count", nullable = false)
+    @Builder.Default
+    private int remainChance = 3;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "oauth_provider")
     private OauthProvider oauthProvider;
@@ -71,5 +78,22 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokens = new ArrayList<>();
+
+    public void deductAiChance(){
+        if(this.remainChance > 0){
+            this.remainChance--;
+        }else {
+            throw BaseException.type(UserErrorCode.NOT_ENOUGH_POINT);
+        }
+    }
+
+    public void tryRecharge(){
+        final int PEANUT_RECHARGE_PRICE = 30;
+
+        if(this.peanutCount >= PEANUT_RECHARGE_PRICE){
+            this.peanutCount -= PEANUT_RECHARGE_PRICE;
+            this.remainChance += 1;
+        }
+    }
 
 }

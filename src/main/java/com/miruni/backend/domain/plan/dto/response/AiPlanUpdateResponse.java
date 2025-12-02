@@ -22,6 +22,9 @@ public record AiPlanUpdateResponse(
         @Schema(description = "실행시간")
         LocalTime startTime,
 
+        @Schema(description = "종료시간")
+        LocalTime endTime,
+
         @Schema(description = "수정시각")
         LocalDateTime updatedAt
 ) {
@@ -30,6 +33,7 @@ public record AiPlanUpdateResponse(
                         plan.getTitle(),
                         aiPlan.getSubTitle(),
                         aiPlan.getScheduledDate(),
+                        aiPlan.getEndTime(),
                         aiPlan.getScheduledTime(),
                         aiPlan.getUpdatedAt()
                 );
