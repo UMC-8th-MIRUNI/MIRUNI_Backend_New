@@ -133,7 +133,7 @@ public class AiPlanCommandService {
         }
 
         for (AiPlan aiPlan : targetAiPlans) {
-            if (!aiPlan.getPlan().getId().equals(command.userId())) {
+            if (!aiPlan.getPlan().getId().equals(command.planId())) {
                 throw BaseException.type(AiPlanErrorCode.PLAN_NOT_MATCH);
             }
             if (!aiPlan.getPlan().getUser().getId().equals(command.userId())) {
