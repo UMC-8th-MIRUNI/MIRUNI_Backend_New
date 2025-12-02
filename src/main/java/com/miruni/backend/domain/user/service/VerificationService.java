@@ -81,6 +81,11 @@ public class VerificationService {
      * 회원가입 시 이메일로 인증코드를 발송하고, Redis에 TTL 동안 저장
      */
     public void sendSignUpVerificationCode(String email) {
+
+        if (userRepository.existsByEmail(email)) {
+            throw BaseException.type(UserErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+
         sendVerificationCode(email, VerificationType.SIGN_UP);
     }
 

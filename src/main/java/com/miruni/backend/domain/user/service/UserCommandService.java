@@ -47,8 +47,8 @@ public class UserCommandService {
         // 전화번호 중복 체크
         validatePhoneNumberNotExists(request.phoneNumber());
         
-        // 필수 약관 동의 체크
-        userValidator.validateAgreements(request);
+        // 필수 약관 동의 체크 (서비스 이용약관만 필수)
+        userValidator.validateAgreements(request.serviceAgreed());
         
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.password());
