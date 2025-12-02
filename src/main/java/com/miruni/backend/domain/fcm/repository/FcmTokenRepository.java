@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface FcmTokenRepository extends JpaRepository<FcmToken, Long> {
 
     Optional<FcmToken> findByDeviceIdAndUserId(String deviceId, Long userId);
+
+    boolean existsByDeviceId(String deviceId);
 }

@@ -24,6 +24,10 @@ public class FcmTokenCommandService {
 
         User user = userQueryService.getUserById(command.userId());
 
+        if(fcmTokenRepository.existsByDeviceId(command.deviceId())){
+            throw BaseException.type(FcmErrorCode.FCM_ALREADY_EXISTS);
+        }
+
         FcmToken fcmToken = FcmToken.create(
                 user,
                 command.before5minAlarm(),

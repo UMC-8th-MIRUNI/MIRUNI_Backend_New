@@ -36,7 +36,7 @@ public class FcmToken extends BaseEntity {
     @Column(name = "nag_alarm", nullable = false)
     private boolean nagAlarm;
 
-    @Column(name = "device_id", nullable = false, length = 100)
+    @Column(name = "device_id", nullable = false, length = 100, unique = true)
     private String deviceId;
 
     @Column(name = "token", nullable = false, length = 500)
