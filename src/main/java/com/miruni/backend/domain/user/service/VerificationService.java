@@ -131,17 +131,17 @@ public class VerificationService {
 
             helper.setFrom("noreply@miruni.com", "Miruni");
             helper.setTo(email);
-            helper.setSubject(type.getSubject());
+            helper.setSubject(type.subject);
 
             String htmlContent = loadEmailTemplate(code, type);
             helper.setText(htmlContent, true);
 
             // 이메일 전송
             javaMailSender.send(mimeMessage);
-            log.info("{} 인증 코드를 {}로 성공적으로 전송했습니다: {}", type.getLogPrefix(), email, code);
+            log.info("{} 인증 코드를 {}로 성공적으로 전송했습니다: {}", type.logPrefix, email, code);
 
         } catch (Exception e) {
-            log.error("{} 인증코드 발송 실패: 이메일: {}, 오류: {}", type.getLogPrefix(), email, e.getMessage(), e);
+            log.error("{} 인증코드 발송 실패: 이메일: {}, 오류: {}", type.logPrefix, email, e.getMessage(), e);
             throw BaseException.type(UserErrorCode.EMAIL_VERIFICATION_FAILED);
         }
     }
@@ -150,9 +150,9 @@ public class VerificationService {
         try {
             Context context = new Context();
             context.setVariable("code", code);
-            context.setVariable("title", type.getTitle());
-            context.setVariable("description", type.getDescription());
-            
+            context.setVariable("title", type.subject);
+            context.setVariable("description", type.description);
+
             return templateEngine.process("email", context);
         } catch (Exception e) {
             log.error("이메일 템플릿 로드 실패: {}", e.getMessage(), e);
@@ -166,7 +166,7 @@ public class VerificationService {
             context.setVariable("code", code);
             return templateEngine.process("mailTemplate", context);
         }catch(Exception e){
-            return type.getFallbackMessage() + ": " + code;
+            return type.fallbackMessage + ": " + code;
         }
     }
 
@@ -282,26 +282,6 @@ public class VerificationService {
             this.subject = subject;
             this.description = description;
             this.fallbackMessage = fallbackMessage;
-        }
-
-        public String getLogPrefix() {
-            return logPrefix;
-        }
-
-        public String getSubject() {
-            return subject;
-        }
-
-        public String getTitle() {
-            return subject;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getFallbackMessage() {
-            return fallbackMessage;
         }
     }
 }
