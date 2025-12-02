@@ -24,6 +24,10 @@ spring:
       max-file-size: 10MB
       max-request-size: 50MB
 
+fcm:
+  key:
+    path: firebase/miruni-9718b-firebase-adminsdk-fbsvc-a07f2f7db8.json
+
 management:
   endpoints:
     web:
