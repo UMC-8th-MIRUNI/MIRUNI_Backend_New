@@ -7,9 +7,7 @@ import lombok.*;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "fcm_token")
 public class FcmToken extends BaseEntity {
 
@@ -38,10 +36,54 @@ public class FcmToken extends BaseEntity {
     @Column(name = "nag_alarm", nullable = false)
     private boolean nagAlarm;
 
-    @Column(name = "device_id", nullable = false, length = 100)
+    @Column(name = "device_id", nullable = false, length = 100, unique = true)
     private String deviceId;
 
     @Column(name = "token", nullable = false, length = 500)
     private String token;
 
+    @Builder
+    private FcmToken(final User user,
+                     final boolean before5minAlarm,
+                     final boolean before10minAlarm,
+                     final boolean popupAlarm,
+                     final boolean nagAlarm,
+                     final String deviceId,
+                     final String token) {
+        this.user = user;
+        this.before5minAlarm = before5minAlarm;
+        this.before10minAlarm = before10minAlarm;
+        this.popupAlarm = popupAlarm;
+        this.nagAlarm = nagAlarm;
+        this.deviceId = deviceId;
+        this.token = token;
+    }
+
+    public static FcmToken create(final User user,
+                                  final boolean before5minAlarm,
+                                  final boolean before10minAlarm,
+                                  final boolean popupAlarm,
+                                  final boolean nagAlarm,
+                                  final String deviceId,
+                                  final String token) {
+        return FcmToken.builder()
+                .user(user)
+                .before5minAlarm(before5minAlarm)
+                .before10minAlarm(before10minAlarm)
+                .popupAlarm(popupAlarm)
+                .nagAlarm(nagAlarm)
+                .deviceId(deviceId)
+                .token(token)
+                .build();
+    }
+
+    public void updateAlarm(boolean before5minAlarm,
+                            boolean before10minAlarm,
+                            boolean popupAlarm,
+                            boolean nagAlarm) {
+        this.before5minAlarm = before5minAlarm;
+        this.before10minAlarm = before10minAlarm;
+        this.popupAlarm = popupAlarm;
+        this.nagAlarm = nagAlarm;
+    }
 }
