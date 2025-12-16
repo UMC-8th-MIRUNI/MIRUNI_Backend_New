@@ -44,5 +44,7 @@ public class AiPlan extends BaseEntity {
         this.scheduledDate = scheduledDate;
         this.scheduledTime = scheduledTime;
     }
+    public void complete() { this.isDone = true; }
 
+    public void rescheduleTime(LocalTime newScheduledTime) {this.scheduledTime = newScheduledTime;}
 }
