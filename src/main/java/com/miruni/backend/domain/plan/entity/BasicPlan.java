@@ -46,9 +46,10 @@ public class BasicPlan extends BaseEntity {
     @Column(name = "expected_duration", nullable = false)
     private Long expectedDuration;
 
-    @Column(name = "is_done", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     @Builder.Default
-    private boolean isDone = false;
+    private Status status = Status.TODO;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "priority", length = 10)
@@ -89,6 +90,7 @@ public class BasicPlan extends BaseEntity {
         }
     }
 
-    public void complete() { this.isDone = true; }
+    public void complete() { this.status = Status.DONE; }
+    public void start() { this.status = Status.IN_PROGRESS; }
     public void rescheduleTime(LocalTime newScheduledTime) {this.scheduledStartTime = newScheduledTime;}
 }

@@ -3,12 +3,16 @@ package com.miruni.backend.domain.plan.service;
 import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
+import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
+import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
 import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.plan.repository.BasicPlanRepository;
+import com.miruni.backend.domain.plan.entity.Status;
+import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.exception.BaseException;
 import com.miruni.backend.global.exception.CommonErrorCode;
@@ -116,14 +120,16 @@ public class PlanQueryService {
 
         if (command.planType() == PlanType.BASIC) {
             BasicPlan basicPlan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+            basicPlan.start();
             expectedDuration = basicPlan.getExpectedDuration();
         } else if (command.planType() == PlanType.AI) {
             AiPlan aiPlan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+            aiPlan.start();
             expectedDuration = (long) aiPlan.getExpectedDuration();
         } else {
             throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
         }
 
-        return PlanDurationResponse.of(command.planType(), command.planId(), expectedDuration);
+        return PlanDurationResponse.of(command.planType(), command.planId(), expectedDuration, Status.IN_PROGRESS);
     }
 }

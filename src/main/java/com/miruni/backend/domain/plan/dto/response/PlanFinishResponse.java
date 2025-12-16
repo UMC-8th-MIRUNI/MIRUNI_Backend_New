@@ -1,5 +1,6 @@
 package com.miruni.backend.domain.plan.dto.response;
 
+import com.miruni.backend.domain.plan.entity.Status;
 import com.miruni.backend.domain.plan.type.PlanType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -14,10 +15,10 @@ public record PlanFinishResponse(
     @Schema(description = "플랜 ID", example = "10")
     Long planId,
 
-    @Schema(description = "플랜 완료 여부", example = "true")
-    boolean isDone
+    @Schema(description = "플랜 상태", example = "DONE")
+    Status status
 ){
-    public static PlanFinishResponse of(int peanutCount, PlanType planType, Long planId, boolean isDone) {
-        return new PlanFinishResponse(peanutCount, planType, planId, isDone);
+    public static PlanFinishResponse of(int peanutCount, PlanType planType, Long planId, Status status) {
+        return new PlanFinishResponse(peanutCount, planType, planId, status);
     }
 }

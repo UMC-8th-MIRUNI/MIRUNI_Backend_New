@@ -46,7 +46,7 @@ public class PlanController implements PlanApi{
     }
 
     @Override
-    @GetMapping("/duration")
+    @GetMapping("/start")
     public PlanDurationResponse getExpectedDuration(@LoginUser Long userId,
                                                     @RequestParam PlanType planType,
                                                     @RequestParam Long id) {

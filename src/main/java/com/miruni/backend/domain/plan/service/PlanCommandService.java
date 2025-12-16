@@ -7,6 +7,7 @@ import com.miruni.backend.domain.plan.dto.response.PlanPauseResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
+import com.miruni.backend.domain.plan.entity.Status;
 import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.user.entity.User;
@@ -36,17 +37,17 @@ public class PlanCommandService {
         int actualMinutes = parseTimeToMinutes(command.actualTime());
         int peanutCount = calculatePeanuts(expectedMinutes, actualMinutes);
 
-       boolean isDone;
+       Status status;
        switch (command.planType()) {
            case BASIC -> {
                BasicPlan basicplan = getBasicPlan(command.planId(), command.userId());
                basicplan.complete();
-               isDone = basicplan.isDone();
+               status = basicplan.getStatus();
            }
            case AI -> {
                AiPlan aiPlan = getAiPlan(command.planId(), command.userId());
                aiPlan.complete();
-               isDone = aiPlan.isDone();
+               status = aiPlan.getStatus();
 
                // 상위 Plan progressRate 갱신
                updateParentPlanProgress(aiPlan.getPlan());
@@ -56,7 +57,7 @@ public class PlanCommandService {
 
         user.addPeanuts(peanutCount);
 
-        return PlanFinishResponse.of(peanutCount, command.planType(), command.planId(), isDone);
+        return PlanFinishResponse.of(peanutCount, command.planType(), command.planId(), status);
     }
 
     public PlanPauseResponse pausePlan(PlanPauseCommand command) {
@@ -96,7 +97,7 @@ public class PlanCommandService {
         List<AiPlan> aiPlans = aiPlanRepository.findByPlanId(parentPlan.getId());
 
         int total = aiPlans.size();
-        int doneCount = (int) aiPlans.stream().filter(AiPlan::isDone).count();
+        int doneCount = (int) aiPlans.stream().filter(aiPlan -> aiPlan.getStatus() == Status.DONE).count();
 
         int progressRate = (total == 0) ? 0 : (doneCount * 100 / total);
         parentPlan.updateProgressRate(progressRate);
