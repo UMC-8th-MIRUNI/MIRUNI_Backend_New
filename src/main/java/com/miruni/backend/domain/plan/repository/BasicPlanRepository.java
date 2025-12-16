@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
     Optional<BasicPlan> findByIdAndUserId(Long id, Long userId);
-    boolean existsByUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
+    boolean existsByUserIdAndScheduledStartTime(Long userId, LocalTime scheduledTime);
 }

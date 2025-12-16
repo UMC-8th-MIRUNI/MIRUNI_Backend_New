@@ -45,7 +45,7 @@ public record BasicPlanSaveRequest(
                 .title(this.title)
                 .description(this.description)
                 .scheduledDate(this.scheduledDate)
-                .scheduledTime(this.startTime)
+                .scheduledStartTime(this.startTime)
                 .expectedDuration(expectedDuration)
                 .priority(mappedPriority)
                 .user(user)
