@@ -47,4 +47,5 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
             @Param("date") LocalDate date
     );
     boolean existsByUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
+    boolean existsByUserIdAndScheduledStartTime(Long userId, LocalTime scheduledTime);
 }

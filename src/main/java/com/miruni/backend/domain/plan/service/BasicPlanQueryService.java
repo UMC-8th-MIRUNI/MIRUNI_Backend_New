@@ -25,6 +25,6 @@ public class BasicPlanQueryService {
     }
     public boolean isScheduledTimeConflict(Long userId, LocalTime scheduledTime) {
         userQueryService.getUserById(userId);
-        return basicPlanRepository.existsByUserIdAndScheduledTime(userId, scheduledTime);
+        return basicPlanRepository.existsByUserIdAndScheduledStartTime(userId, scheduledTime);
     }
 }
