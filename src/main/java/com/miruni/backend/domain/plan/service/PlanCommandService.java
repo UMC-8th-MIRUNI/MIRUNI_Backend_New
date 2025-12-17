@@ -95,20 +95,32 @@ public class PlanCommandService {
     public PlanPauseResponse pausePlan(PlanPauseCommand command) {
         LocalTime newScheduledTime = LocalTime.parse(command.resumeTime());
 
-        boolean isConflict = basicPlanQueryService.isScheduledTimeConflict(command.userId(), newScheduledTime)
-                || aiPlanQueryService.isScheduledTimeConflict(command.userId(), newScheduledTime);
-
-        if (isConflict) {
-            throw BaseException.type(PlanErrorCode.PLAN_CONFLICT);
-        }
-
+        long expectedDurationMinutes;
         switch (command.planType()) {
             case BASIC -> {
                 BasicPlan plan = getBasicPlan(command.planId(), command.userId());
+                expectedDurationMinutes = plan.getExpectedDuration();
+                scheduleValidator.validateConflict(
+                        command.userId(),
+                        command.planId(),
+                        LocalDate.now(),
+                        newScheduledTime,
+                        newScheduledTime.plusMinutes(expectedDurationMinutes)
+                );
+                plan.pause();
                 plan.rescheduleTime(newScheduledTime);
             }
             case AI -> {
                 AiPlan plan = getAiPlan(command.planId(), command.userId());
+                expectedDurationMinutes = (long) plan.getExpectedDuration();
+                scheduleValidator.validateConflict(
+                        command.userId(),
+                        command.planId(),
+                        LocalDate.now(),
+                        newScheduledTime,
+                        newScheduledTime.plusMinutes(expectedDurationMinutes)
+                );
+                plan.pause();
                 plan.rescheduleTime(newScheduledTime);
             }
             default -> throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
