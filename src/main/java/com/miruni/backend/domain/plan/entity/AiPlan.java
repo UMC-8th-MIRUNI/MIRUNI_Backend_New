@@ -54,6 +54,10 @@ public class AiPlan extends BaseEntity {
     }
     public void complete() { this.status = Status.DONE; }
     public void start() { this.status = Status.IN_PROGRESS; }
+    public void pause() { this.status = Status.TODO; }
 
-    public void rescheduleTime(LocalTime newScheduledTime) {this.scheduledTime = newScheduledTime;}
+    public void rescheduleTime(LocalTime newScheduledTime) {
+        this.scheduledTime = newScheduledTime;
+        this.endTime = newScheduledTime.plusMinutes(this.getExpectedDuration());
+    }
 }
