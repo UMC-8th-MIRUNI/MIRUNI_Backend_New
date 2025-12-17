@@ -119,17 +119,15 @@ public class PlanQueryService {
         Long expectedDuration;
 
         if (command.planType() == PlanType.BASIC) {
-            BasicPlan basicPlan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
-            basicPlan.start();
-            expectedDuration = basicPlan.getExpectedDuration();
+            BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+            expectedDuration = plan.getExpectedDuration();
         } else if (command.planType() == PlanType.AI) {
-            AiPlan aiPlan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
-            aiPlan.start();
-            expectedDuration = (long) aiPlan.getExpectedDuration();
+            AiPlan plan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+            expectedDuration = (long) plan.getExpectedDuration();
         } else {
             throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
         }
 
-        return PlanDurationResponse.of(command.planType(), command.planId(), expectedDuration, Status.IN_PROGRESS);
+        return PlanDurationResponse.of(command.planType(), command.planId(), expectedDuration);
     }
 }

@@ -25,7 +25,7 @@ public record BasicPlanResponse(
                 plan.getTitle(),
                 plan.getDescription(),
                 plan.getScheduledDate(),
-                plan.getScheduledStartTime(),
+                plan.getScheduledTime(),
                 plan.getExpectedDuration(),
                 plan.getStatus(),
                 plan.getPriority()

@@ -48,4 +48,35 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
     );
     boolean existsByUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
     boolean existsByUserIdAndScheduledStartTime(Long userId, LocalTime scheduledTime);
+
+    @Query("""
+        SELECT COUNT(b) > 0
+        FROM BasicPlan b
+        WHERE b.user.id = :userId
+            AND b.scheduledDate = :date
+            AND (b.scheduledTime < :reqEndTime AND b.endTime > :reqStartTime)
+    """)
+    boolean existsOverlap(
+            @Param("userId") Long userId,
+            @Param("date") LocalDate date,
+            @Param("reqStartTime") LocalTime reqStartTime,
+            @Param("reqEndTime") LocalTime reqEndTime
+    );
+
+    @Query("""
+        SELECT COUNT(b) > 0
+        FROM BasicPlan b
+        WHERE b.user.id = :userId
+            AND b.id != :excludeId
+            AND b.scheduledDate = :date
+            AND (b.scheduledTime < :reqEndTime AND b.endTime > :reqStartTime)
+    """)
+    boolean existsOverlapWithinUpdate(
+            @Param("userId") Long userId,
+            @Param("excludeId") Long excludeId,
+            @Param("date") LocalDate date,
+            @Param("reqStartTime") LocalTime reqStartTime,
+            @Param("reqEndTime") LocalTime reqEndTime
+    );
+
 }
