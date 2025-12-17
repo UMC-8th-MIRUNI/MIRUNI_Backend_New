@@ -37,11 +37,11 @@ public class BasicPlan extends BaseEntity {
     @Column(name = "scheduled_date", nullable = false)
     private LocalDate scheduledDate;
 
-    @Column(name = "scheduled_start_time", nullable = false, columnDefinition = "TIME")
-    private LocalTime scheduledStartTime;
+    @Column(name = "scheduled_time", nullable = false)
+    private LocalTime scheduledTime;
 
-    @Column(name = "scheduled_end_time", nullable = false, columnDefinition = "TIME")
-    private LocalTime scheduledEndTime;
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
 
     @Column(name = "expected_duration", nullable = false)
     private Long expectedDuration;
@@ -62,8 +62,8 @@ public class BasicPlan extends BaseEntity {
         this.title = title;
         this.description = description;
         this.scheduledDate = scheduledDate;
-        this.scheduledStartTime = startTime;
-        this.scheduledEndTime = endTime;
+        this.scheduledTime = startTime;
+        this.endTime = endTime;
         this.expectedDuration = Duration.between(startTime, endTime).toMinutes();
         this.priority = priority;
     }
@@ -77,8 +77,8 @@ public class BasicPlan extends BaseEntity {
                 .title(title)
                 .description(description)
                 .scheduledDate(scheduledDate)
-                .scheduledStartTime(startTime)
-                .scheduledEndTime(endTime)
+                .scheduledTime(startTime)
+                .endTime(endTime)
                 .expectedDuration(expectedDuration)
                 .priority(priority)
                 .build();
@@ -92,5 +92,5 @@ public class BasicPlan extends BaseEntity {
 
     public void complete() { this.status = Status.DONE; }
     public void start() { this.status = Status.IN_PROGRESS; }
-    public void rescheduleTime(LocalTime newScheduledTime) {this.scheduledStartTime = newScheduledTime;}
+    public void rescheduleTime(LocalTime newScheduledTime) {this.scheduledTime = newScheduledTime;}
 }

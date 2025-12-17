@@ -32,6 +32,9 @@ public class AiPlan extends BaseEntity {
     @Column(name = "scheduled_time", nullable = false)
     private LocalTime scheduledTime;
 
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
+
     @Column(name = "expected_duration", nullable = false)
     private int expectedDuration;
 
