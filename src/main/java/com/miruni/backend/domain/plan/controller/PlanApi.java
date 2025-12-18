@@ -25,7 +25,7 @@ public interface PlanApi {
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
             @ApiResponse(responseCode = "404", description = "플랜 없음")
     })
-    PlanDurationResponse getExpectedDuration(@RequestParam Long userId,
+    PlanDurationResponse getExpectedDuration(@LoginUser Long userId,
                                              @RequestParam PlanType planType,
                                              @PathVariable Long planId);
 
@@ -65,7 +65,7 @@ public interface PlanApi {
     })
     @PatchMapping("/pause")
     PlanPauseResponse pausePlan(
-            @RequestParam Long userId,
+            @LoginUser Long userId,
             @Valid @RequestBody PlanPauseRequest request
     );
 }
