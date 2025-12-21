@@ -7,18 +7,33 @@ import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.user.service.UserQueryService;
 import com.miruni.backend.global.exception.BaseException;
 import com.miruni.backend.global.exception.CommonErrorCode;
+import com.miruni.backend.domain.plan.entity.AiPlan;
+import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
+import com.miruni.backend.domain.plan.repository.AiPlanRepository;
+import com.miruni.backend.domain.user.service.UserQueryService;
+import com.miruni.backend.global.exception.BaseException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-@Service
-public class AiPlanQueryService {
+import java.time.LocalTime;
 
+@Service
+@RequiredArgsConstructor
+public class AiPlanQueryService {
+    private final AiPlanRepository aiPlanRepository;
     private final UserQueryService userQueryService;
     private final PlanQueryService planQueryService;
 
-    public AiPlanQueryService(UserQueryService userQueryService, PlanQueryService planQueryService) {
-        this.userQueryService = userQueryService;
-        this.planQueryService = planQueryService;
+    public AiPlan getByPlanIdAndUserId(Long planId, Long userId) {
+        //userQueryService.getUserById(userId);
+
+        return aiPlanRepository.findByIdAndPlanUserId(planId, userId)
+                .orElseThrow(() -> BaseException.type(AiPlanErrorCode.AI_PLAN_NOT_FOUND));
+    }
+    public boolean isScheduledTimeConflict(Long userId, LocalTime scheduledTime) {
+        userQueryService.getUserById(userId);
+        return aiPlanRepository.existsByPlanUserIdAndScheduledTime(userId, scheduledTime);
     }
 
     public AiPlanResponse findAiPlans(Long userId, Long planId) {

@@ -67,5 +67,7 @@ public class AiPlan extends BaseEntity {
         this.endTime = endTime;
         this.expectedDuration = expectedDuration;
     }
+    public void complete() { this.isDone = true; }
 
+    public void rescheduleTime(LocalTime newScheduledTime) {this.scheduledTime = newScheduledTime;}
 }

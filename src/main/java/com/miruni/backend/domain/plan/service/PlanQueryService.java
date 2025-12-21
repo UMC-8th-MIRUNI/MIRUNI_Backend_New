@@ -2,12 +2,16 @@ package com.miruni.backend.domain.plan.service;
 
 import com.miruni.backend.domain.plan.dto.response.PlanPreviewDto;
 import com.miruni.backend.domain.plan.dto.response.PlanReadResponse;
+import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
+import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
+import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import com.miruni.backend.domain.plan.repository.PlanRepository;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.service.UserQueryService;
+import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class PlanQueryService {
     private final PlanRepository planRepository;
     private final UserQueryService userQueryService;
@@ -25,6 +29,8 @@ public class PlanQueryService {
     public Plan findById(Long planId) {
         return planRepository.findById(planId).orElseThrow(() -> BaseException.type(PlanErrorCode.PLAN_NOT_FOUND));
     }
+    private final BasicPlanQueryService basicPlanQueryService;
+    private final AiPlanQueryService aiPlanQueryService;
 
     public PlanReadResponse findPlans(Long userId) {
         User user = userQueryService.getUserById(userId);
@@ -58,4 +64,21 @@ public class PlanQueryService {
 
         return PlanReadResponse.of(remainingCnt, planDtos);
     }
+
+    public PlanDurationResponse getExpectedDuration(PlanDurationCommand command) {
+        Long expectedDuration;
+
+        if (command.planType() == PlanType.BASIC) {
+            BasicPlan basicPlan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+            expectedDuration = basicPlan.getExpectedDuration();
+        } else if (command.planType() == PlanType.AI) {
+            AiPlan aiPlan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+            expectedDuration = (long) aiPlan.getExpectedDuration();
+        } else {
+            throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
+        }
+
+        return PlanDurationResponse.of(command.planType(), command.planId(), expectedDuration);
+    }
+
 }

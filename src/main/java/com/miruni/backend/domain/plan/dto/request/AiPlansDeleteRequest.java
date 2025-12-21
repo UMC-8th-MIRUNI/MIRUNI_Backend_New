@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record AiPlansDeleteRequest(
-        @Schema(description = "삭제할 일정 아이디 리스트")
+        @Schema(description = "삭제할 일정 아이디 리스트", example = "1,3,5")
         @NotEmpty
         List<Long> aiPlansId
 ) {

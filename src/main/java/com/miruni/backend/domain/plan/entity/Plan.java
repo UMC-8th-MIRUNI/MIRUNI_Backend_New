@@ -41,6 +41,9 @@ public class Plan extends BaseEntity {
     @Column(name = "priority", length = 10)
     private Priority priority;
 
+    @Column(name = "progress_rate")
+    private int progressRate = 0;
+
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AiPlan> aiPlans = new ArrayList<>();
 
@@ -73,5 +76,7 @@ public class Plan extends BaseEntity {
                 .priority(priority)
                 .build();
     }
+    public void complete() { this.isDone = true; }
+    public void updateProgressRate(int progressRate) {this.progressRate = progressRate;}
 
 }
