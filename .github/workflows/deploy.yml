@@ -79,8 +79,9 @@ jobs:
           echo "DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/miruni-backend:${{ github.sha }}" >> .env
           echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
           echo "GRAFANA_USER=${{ secrets.GRAFANA_USER }}" >> .env
-          echo "GRAFANㅈA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}" >> .env
+          echo "GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}" >> .env
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+          echo "GEMINI_API_URL=${{ secrets.GEMINI_API_URL }}" >> .env
 
       - name: Deploy to EC2
         env:
