@@ -17,6 +17,8 @@ services:
       - SPRING_DATA_REDIS_PASSWORD=${REDIS_PASSWORD:-defaultpass}
       - JWT_SECRET=${JWT_SECRET}
       - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus,metrics
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_API_URL=${GEMINI_API_URL}
     depends_on:
       redis:
         condition: service_healthy

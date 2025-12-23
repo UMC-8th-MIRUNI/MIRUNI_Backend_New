@@ -72,4 +72,7 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokens = new ArrayList<>();
 
+    public void addPeanuts(int count) {
+        this.peanutCount += count;
+    }
 }

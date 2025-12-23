@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Repository
@@ -45,4 +46,5 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
             @Param("userId") Long userId,
             @Param("date") LocalDate date
     );
+    boolean existsByUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
 }

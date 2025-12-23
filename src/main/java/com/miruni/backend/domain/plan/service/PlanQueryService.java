@@ -12,6 +12,9 @@ import com.miruni.backend.domain.plan.repository.BasicPlanRepository;
 import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.exception.BaseException;
 import com.miruni.backend.global.exception.CommonErrorCode;
+import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
+import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
+import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,8 @@ public class PlanQueryService {
 
     private final AiPlanRepository aiPlanRepository;
     private final BasicPlanRepository basicPlanRepository;
+    private final BasicPlanQueryService basicPlanQueryService;
+    private final AiPlanQueryService aiPlanQueryService;
 
     /**
      * 캘린더 조회
@@ -104,5 +109,21 @@ public class PlanQueryService {
             throw BaseException.type(AiPlanErrorCode.AI_PLAN_FORBIDDEN);
         }
         return PlanDetailResponse.fromAi(aiPlan);
+    }
+
+    public PlanDurationResponse getExpectedDuration(PlanDurationCommand command) {
+        Long expectedDuration;
+
+        if (command.planType() == PlanType.BASIC) {
+            BasicPlan basicPlan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+            expectedDuration = basicPlan.getExpectedDuration();
+        } else if (command.planType() == PlanType.AI) {
+            AiPlan aiPlan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+            expectedDuration = (long) aiPlan.getExpectedDuration();
+        } else {
+            throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
+        }
+
+        return PlanDurationResponse.of(command.planType(), command.planId(), expectedDuration);
     }
 }

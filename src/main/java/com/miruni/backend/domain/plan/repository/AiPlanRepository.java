@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.time.LocalTime;
+import java.util.Optional;
 
 @Repository
 public interface AiPlanRepository extends JpaRepository<AiPlan, Long> {
@@ -42,4 +44,7 @@ public interface AiPlanRepository extends JpaRepository<AiPlan, Long> {
             @Param("userId") Long userId,
             @Param("date") LocalDate date
     );
+    Optional<AiPlan> findByIdAndPlanUserId(Long id, Long userId);
+    List<AiPlan> findByPlanId(Long planId);
+    boolean existsByPlanUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
 }
