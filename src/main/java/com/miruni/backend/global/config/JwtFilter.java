@@ -45,13 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     }
                     
                     Long userId = jwtUtil.getUserIdFromToken(token);
-                    
-                    // 임시 토큰인지 확인
-                    String tokenType = jwtUtil.getTokenType(token);
-                    if ("temp".equals(tokenType)) {
-                        log.debug("임시 토큰 사용: userId={}", userId);
-                    }
-                    
+
                     UserDetails userDetails = customUserDetailService.loadUserById(userId);
                     
                     UsernamePasswordAuthenticationToken authentication =

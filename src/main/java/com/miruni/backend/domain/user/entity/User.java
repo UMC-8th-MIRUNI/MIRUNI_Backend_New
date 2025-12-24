@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "user")
 public class User extends BaseEntity {
@@ -47,6 +47,11 @@ public class User extends BaseEntity {
     private int peanutCount = 0;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    @Builder.Default
+    private UserRole role = UserRole.USER;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "oauth_provider")
     private OauthProvider oauthProvider;
 
@@ -72,7 +77,46 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokens = new ArrayList<>();
 
+    // ===== 비즈니스 로직 =====
+
     public void addPeanuts(int count) {
         this.peanutCount += count;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changeRole(UserRole role) {
+        this.role = role;
+    }
+
+    // ===== 정적 팩토리 메서드 =====
+
+    /**
+     * 일반 회원가입용 USER 생성
+     */
+    public static User createNormalUser(String email, String encodedPassword, String nickname) {
+        return User.builder()
+                .email(email)
+                .password(encodedPassword)
+                .nickname(nickname)
+                .peanutCount(0)
+                .role(UserRole.USER)
+                .build();
+    }
+
+    /**
+     * 소셜 로그인 신규 유저 (ROLE_GUEST)
+     */
+    public static User createSocialGuest(String name, String email, String encodedPassword, String nickname, OauthProvider provider) {
+        return User.builder()
+                .name(name)
+                .email(email)
+                .password(encodedPassword)
+                .nickname(nickname)
+                .oauthProvider(provider)
+                .role(UserRole.GUEST)
+                .build();
     }
 }

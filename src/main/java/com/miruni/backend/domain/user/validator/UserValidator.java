@@ -14,8 +14,15 @@ public class UserValidator {
      * 약관 동의 검증
      */
     public void validateAgreements(UserSignupRequest request) {
+        validateAgreements(request.serviceAgreed(), request.privacyAgreed());
+    }
+
+    /**
+     * 약관 동의 검증 (필드 기반)
+     */
+    public void validateAgreements(Boolean serviceAgreed, Boolean privacyAgreed) {
         // 서비스 이용약관은 필수
-        if (request.serviceAgreed() == null || !request.serviceAgreed()) {
+        if (serviceAgreed == null || !serviceAgreed) {
             throw BaseException.type(UserErrorCode.AGREEMENT_REQUIRED);
         }
     }

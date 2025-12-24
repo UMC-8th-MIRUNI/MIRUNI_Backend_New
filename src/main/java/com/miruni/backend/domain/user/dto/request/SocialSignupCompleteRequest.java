@@ -1,23 +1,12 @@
 package com.miruni.backend.domain.user.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
-import io.swagger.v3.oas.annotations.media.Schema;
 
-public record UserSignupRequest(
-
-        @NotBlank(message = "이메일은 필수입니다.")
-        @Email(message = "올바른 이메일 형식이 아닙니다.")
-        @Size(max = 255, message = "이메일은 255자 이하여야 합니다.")
-        @Schema(description = "이메일 주소", example = "dhzktldh@gmail.com")
-        String email,
-
-        @NotBlank(message = "비밀번호는 필수입니다.")
-        @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
-        @Schema(description = "비밀번호", example = "password123!")
-        String password,
+@Schema(description = "소셜 로그인 완료(회원가입 완료) 요청 DTO")
+public record SocialSignupCompleteRequest(
 
         @NotBlank(message = "닉네임은 필수입니다.")
         @Size(max = 20, message = "닉네임은 20자 이하여야 합니다.")
@@ -34,6 +23,7 @@ public record UserSignupRequest(
 
         @Schema(description = "마케팅 정보 수신 동의 (선택)", example = "false")
         Boolean marketingAgreed
-
 ) {
 }
+
+
