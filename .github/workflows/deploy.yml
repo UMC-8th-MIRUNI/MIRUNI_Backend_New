@@ -82,6 +82,7 @@ jobs:
           echo "GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}" >> .env
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
           echo "GEMINI_API_URL=${{ secrets.GEMINI_API_URL }}" >> .env
+          echo "FCM_KEY_PATH=/app/firebase/serviceAccount.json" >> .env
 
       - name: Deploy to EC2
         env:
@@ -113,7 +114,13 @@ jobs:
             # Before pull, free up space
             docker image prune -af || true
             docker builder prune -af || true
-          
+
+            mkdir -p /home/$EC2_USERNAME/firebase
+            cat > /home/$EC2_USERNAME/firebase/serviceAccount.json << 'EOF'
+            ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
+            EOF
+            chmod 600 /home/$EC2_USERNAME/firebase/serviceAccount.json
+
             # Pull latest image and start services
             docker-compose pull
             docker-compose up -d
