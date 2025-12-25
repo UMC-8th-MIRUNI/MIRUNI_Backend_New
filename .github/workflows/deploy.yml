@@ -134,7 +134,7 @@ jobs:
           
             # Wait for services to be healthy
             echo 'Waiting for services to start...'
-            sleep 30
+            sleep 90
           
             # Check if services are running
             docker-compose ps
