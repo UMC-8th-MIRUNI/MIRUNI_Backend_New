@@ -18,7 +18,6 @@ import com.miruni.backend.domain.user.repository.AgreementRepository;
 import com.miruni.backend.domain.user.repository.UserRepository;
 import com.miruni.backend.domain.user.validator.UserValidator;
 import com.miruni.backend.global.authroize.TokenService;
-import com.miruni.backend.global.common.JwtUtil;
 import com.miruni.backend.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +65,16 @@ public class AuthCommandService {
      */
     public void logout(String accessToken, Long userId) {
         tokenService.logout(accessToken, userId);
+    }
+
+    /**
+     * 액세스/리프레시 토큰 재발급
+     */
+    public JwtResponseDto reissueToken(Long userId, String refreshToken) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        return tokenService.reissueToken(user, refreshToken);
     }
 
     /**

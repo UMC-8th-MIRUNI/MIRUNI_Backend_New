@@ -3,6 +3,7 @@ package com.miruni.backend.domain.user.controller;
 import com.miruni.backend.domain.user.dto.request.GoogleLoginRequest;
 import com.miruni.backend.domain.user.dto.request.KakaoLoginRequest;
 import com.miruni.backend.domain.user.dto.request.LoginRequest;
+import com.miruni.backend.domain.user.dto.request.ReissueTokenRequest;
 import com.miruni.backend.domain.user.dto.request.SocialSignupCompleteRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.dto.response.SocialLoginResponseDto;
@@ -28,6 +29,15 @@ public class AuthController implements AuthApi {
     @PostMapping("/token")
     public JwtResponseDto login(@Valid @RequestBody LoginRequest request) {
         return authCommandService.login(request);
+    }
+
+    // 액세스/리프레시 토큰 재발급 API
+    @PostMapping("/token/refresh")
+    public JwtResponseDto refreshToken(
+            @LoginUser Long userId,
+            @Valid @RequestBody ReissueTokenRequest request
+    ) {
+        return authCommandService.reissueToken(userId, request.refreshToken());
     }
 
     // 일반 로그아웃 API

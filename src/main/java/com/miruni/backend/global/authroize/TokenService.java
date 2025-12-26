@@ -2,8 +2,10 @@ package com.miruni.backend.global.authroize;
 
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.entity.User;
+import com.miruni.backend.domain.user.exception.UserErrorCode;
 import com.miruni.backend.global.common.JwtUtil;
 import com.miruni.backend.global.common.TokenDto;
+import com.miruni.backend.global.exception.BaseException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,57 @@ public class TokenService {
                 token.accessTokenExp(),
                 token.refreshTokenExp()
         );
+    }
+
+    /**
+     * 토큰 재발급 (Refresh Token Rotation)
+     */
+    public JwtResponseDto reissueToken(User user, String refreshToken) {
+        Long userId = user.getId();
+
+        try {
+            // 토큰 유효성 및 타입 검증
+            if (!jwtUtil.validateToken(refreshToken) || !jwtUtil.isRefreshToken(refreshToken)) {
+                throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+            }
+
+            // 블랙리스트 여부 확인
+            if (isTokenBlacklisted(refreshToken)) {
+                throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+            }
+
+            // 토큰에 담긴 사용자 정보와 현재 인증된 사용자 일치 여부 확인
+            Long tokenUserId = jwtUtil.getUserIdFromToken(refreshToken);
+            if (!userId.equals(tokenUserId)) {
+                throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+            }
+
+            // Redis 에 저장된 리프레시 토큰 조회
+            String storedRefreshToken = getRefreshToken(userId.toString());
+            if (storedRefreshToken == null || !refreshToken.equals(storedRefreshToken)) {
+                throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+            }
+
+            // 기존 리프레시 토큰 삭제 (Rotation)
+            deleteRefreshToken(userId.toString());
+
+            // 새 토큰 발급 및 저장
+            TokenDto token = createAndStoreTokens(user);
+
+            log.info("토큰 재발급 완료: userId={}", userId);
+
+            return JwtResponseDto.of(
+                    token.accessToken(),
+                    token.refreshToken(),
+                    token.accessTokenExp(),
+                    token.refreshTokenExp()
+            );
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("토큰 재발급 중 오류 발생: {}", e.getMessage());
+            throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+        }
     }
 
     /**

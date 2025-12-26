@@ -3,6 +3,7 @@ package com.miruni.backend.domain.user.controller;
 import com.miruni.backend.domain.user.dto.request.GoogleLoginRequest;
 import com.miruni.backend.domain.user.dto.request.KakaoLoginRequest;
 import com.miruni.backend.domain.user.dto.request.LoginRequest;
+import com.miruni.backend.domain.user.dto.request.ReissueTokenRequest;
 import com.miruni.backend.domain.user.dto.request.SocialSignupCompleteRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.dto.response.SocialLoginResponseDto;
@@ -97,6 +98,54 @@ public interface AuthApi {
             )
     })
     JwtResponseDto login(@Valid @RequestBody LoginRequest request);
+
+    @Operation(
+            summary = "액세스/리프레시 토큰 재발급",
+            description = "유효한 리프레시 토큰을 가진 인증된 사용자에게 새로운 액세스/리프레시 토큰 세트를 발급합니다. (Refresh Token Rotation)"
+    )
+    @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "JWT")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = com.miruni.backend.global.response.ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 응답",
+                                    value = """
+                        {
+                          "errorCode": null,
+                          "message": "OK",
+                          "result": {
+                            "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+                            "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+                            "tokenType": "Bearer",
+                            "accessTokenExpiresIn": 3600,
+                            "refreshTokenExpiresIn": 604800
+                          }
+                        }
+                        """
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "401", description = "유효하지 않은 리프레시 토큰",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "유효하지 않은 리프레시 토큰",
+                                    value = """
+                        {
+                          "status": 401,
+                          "errorCode": "USER401_6",
+                          "message": "유효하지 않은 토큰입니다."
+                        }
+                        """
+                            )
+                    )
+            )
+    })
+    JwtResponseDto refreshToken(
+            @LoginUser Long userId,
+            @Valid @RequestBody ReissueTokenRequest request
+    );
 
     @Operation(
             summary = "로그아웃",
