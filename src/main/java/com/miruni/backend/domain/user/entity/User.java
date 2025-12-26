@@ -62,8 +62,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<Agreement> agreements = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<Survey> surveys = new ArrayList<>();
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Survey survey;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Plan> plans = new ArrayList<>();
@@ -89,6 +89,10 @@ public class User extends BaseEntity {
 
     public void changeRole(UserRole role) {
         this.role = role;
+    }
+
+    public Survey getSurvey() {
+        return this.survey;
     }
 
     // ===== 정적 팩토리 메서드 =====

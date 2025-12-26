@@ -59,24 +59,27 @@ public class TokenService {
         try {
             // 토큰 유효성 및 타입 검증
             if (!jwtUtil.validateToken(refreshToken) || !jwtUtil.isRefreshToken(refreshToken)) {
-                throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+                throw BaseException.type(UserErrorCode.INVALID_REFRESH_TOKEN);
             }
 
             // 블랙리스트 여부 확인
             if (isTokenBlacklisted(refreshToken)) {
-                throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+                throw BaseException.type(UserErrorCode.BLACKLISTED_REFRESH_TOKEN);
             }
 
             // 토큰에 담긴 사용자 정보와 현재 인증된 사용자 일치 여부 확인
             Long tokenUserId = jwtUtil.getUserIdFromToken(refreshToken);
             if (!userId.equals(tokenUserId)) {
-                throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+                throw BaseException.type(UserErrorCode.REFRESH_TOKEN_USER_MISMATCH);
             }
 
             // Redis 에 저장된 리프레시 토큰 조회
             String storedRefreshToken = getRefreshToken(userId.toString());
-            if (storedRefreshToken == null || !refreshToken.equals(storedRefreshToken)) {
-                throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+            if (storedRefreshToken == null) {
+                throw BaseException.type(UserErrorCode.REFRESH_TOKEN_NOT_FOUND);
+            }
+            if (!refreshToken.equals(storedRefreshToken)) {
+                throw BaseException.type(UserErrorCode.REFRESH_TOKEN_MISMATCH);
             }
 
             // 기존 리프레시 토큰 삭제 (Rotation)
@@ -97,7 +100,7 @@ public class TokenService {
             throw e;
         } catch (Exception e) {
             log.error("토큰 재발급 중 오류 발생: {}", e.getMessage());
-            throw BaseException.type(UserErrorCode.INVALID_TOKEN);
+            throw BaseException.type(UserErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
 
