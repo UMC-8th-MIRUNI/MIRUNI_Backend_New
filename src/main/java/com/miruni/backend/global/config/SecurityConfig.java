@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
 
                 //http Basic 인증 비활성화 - jwt 구현 전 임시 활성화
-                //.httpBasic(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
 
                 // JWT 필터 추가
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -51,6 +51,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 );
+                // .httpBasic(Customizer.withDefaults()); //임시로 httpBasic 활성화
 
         return http.build();
 

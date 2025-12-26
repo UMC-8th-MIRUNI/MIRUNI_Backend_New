@@ -122,4 +122,7 @@ public class User extends BaseEntity {
         this.password = encodedPassword;
     }
 
+    public void addPeanuts(int count) {
+        this.peanutCount += count;
+    }
 }

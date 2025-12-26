@@ -20,7 +20,7 @@ public class AiPlan extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", nullable = false)
+    @JoinColumn(name = "plan_id", nullable = false)
     private Plan plan;
 
     @Column(name = "sub_title", nullable = false, length = 50)
@@ -44,5 +44,7 @@ public class AiPlan extends BaseEntity {
         this.scheduledDate = scheduledDate;
         this.scheduledTime = scheduledTime;
     }
+    public void complete() { this.isDone = true; }
 
+    public void rescheduleTime(LocalTime newScheduledTime) {this.scheduledTime = newScheduledTime;}
 }

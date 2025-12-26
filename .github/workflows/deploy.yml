@@ -67,7 +67,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create .env file for production
+      - name: Create Firebase Config and .env file for production
         run: |
           echo "SPRING_PROFILES_ACTIVE=prod" >> .env
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env           
@@ -80,6 +80,14 @@ jobs:
           echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
           echo "GRAFANA_USER=${{ secrets.GRAFANA_USER }}" >> .env
           echo "GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}" >> .env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+          echo "GEMINI_API_URL=${{ secrets.GEMINI_API_URL }}" >> .env
+          echo "FCM_KEY_PATH=/app/firebase/serviceAccount.json" >> .env
+
+          cat << 'EOF' > ./serviceAccount.json
+          ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
+          EOF
+        shell: bash
 
       - name: Deploy to EC2
         env:
@@ -93,8 +101,14 @@ jobs:
           # Copy deployment files to server
           echo "=== Copying docker-compose.yml ==="
           scp -i private_key.pem -o StrictHostKeyChecking=no docker-compose.yml $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/
+          
           echo "=== Copying .env file ==="
           scp -i private_key.pem -o StrictHostKeyChecking=no .env $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/
+          
+          echo "=== Copying firebase config ==="
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "mkdir -p /home/$EC2_USERNAME/firebase"
+          scp -i private_key.pem -o StrictHostKeyChecking=no serviceAccount.json $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/firebase/
+
           echo "=== Copying monitoring configs ==="
           scp -i private_key.pem -o StrictHostKeyChecking=no -r prometheus/ $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/
           scp -i private_key.pem -o StrictHostKeyChecking=no -r grafana/ $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/
@@ -107,14 +121,20 @@ jobs:
           
             # Stop and remove containers but preserve volumes(수정, 볼륩 보존)
             docker-compose down --remove-orphans
-          
+
+            # Before pull, free up space
+            docker image prune -af || true
+            docker builder prune -af || true
+
+            chmod 600 /home/$EC2_USERNAME/firebase/serviceAccount.json
+
             # Pull latest image and start services
             docker-compose pull
             docker-compose up -d
           
             # Wait for services to be healthy
             echo 'Waiting for services to start...'
-            sleep 30
+            sleep 90
           
             # Check if services are running
             docker-compose ps

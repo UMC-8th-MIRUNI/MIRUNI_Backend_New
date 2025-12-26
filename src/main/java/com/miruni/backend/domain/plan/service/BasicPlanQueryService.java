@@ -8,6 +8,8 @@ import com.miruni.backend.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+
 @Service
 @RequiredArgsConstructor
 public class BasicPlanQueryService {
@@ -20,5 +22,9 @@ public class BasicPlanQueryService {
 
         return basicPlanRepository.findByIdAndUserId(planId, userId)
                 .orElseThrow(() -> BaseException.type(BasicPlanErrorCode.BASIC_PLAN_NOT_FOUND));
+    }
+    public boolean isScheduledTimeConflict(Long userId, LocalTime scheduledTime) {
+        userQueryService.getUserById(userId);
+        return basicPlanRepository.existsByUserIdAndScheduledTime(userId, scheduledTime);
     }
 }
