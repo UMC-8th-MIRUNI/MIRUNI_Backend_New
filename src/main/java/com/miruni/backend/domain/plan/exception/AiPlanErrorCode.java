@@ -15,8 +15,9 @@ public enum AiPlanErrorCode implements ErrorCode {
     DEADLINE_AFTER(HttpStatus.BAD_REQUEST, "AI_PLAN400_001", "진행날짜는 마감기한 이전이어야 합니다."),
     INVALID_TIME_DURATION(HttpStatus.BAD_REQUEST, "AI_PLAN400_002", "예상 소요시간은 종료 시간과 시작 시간의 차이와 같아야 합니다."),
     PLAN_NOT_MATCH(HttpStatus.BAD_REQUEST, "AI_PLAN400_003", "상위 일정 아이디가 다릅니다."),
-    AI_PLAN_CONFLICT(HttpStatus.BAD_REQUEST, "AI_PLAN400_004", "같은 시간에 다른 일정이 예정되어 있습니다.");
+    AI_PLAN_CONFLICT(HttpStatus.BAD_REQUEST, "AI_PLAN400_004", "같은 시간에 다른 일정이 예정되어 있습니다."),
 
+    AI_PLAN_FORBIDDEN(HttpStatus.FORBIDDEN, "AI_PLAN403_1", "해당 일정에 대한 권한이 없습니다.");
 
     private final HttpStatus status;
     private final String errorCode;

@@ -1,5 +1,6 @@
 package com.miruni.backend.domain.user.service;
 
+import com.miruni.backend.domain.user.dto.request.ResetPasswordRequest;
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.entity.Agreement;
@@ -28,25 +29,39 @@ public class UserCommandService {
     private final PasswordEncoder passwordEncoder;
     private final UserValidator userValidator;
     private final TokenService tokenService;
+    private final VerificationService verificationService;
     
     /**
      * 일반 회원가입
      */
     public JwtResponseDto signup(UserSignupRequest request) {
+        // 이메일 인증 여부 확인
+        verificationService.assertSignUpEmailVerified(request.email());
+
         // 이메일 중복 체크
         validateEmailNotExists(request.email());
         
         // 닉네임 중복 체크
         validateNicknameNotExists(request.nickname());
         
-        // 필수 약관 동의 체크
-        userValidator.validateAgreements(request);
+        // 전화번호 중복 체크
+        validatePhoneNumberNotExists(request.phoneNumber());
+        
+        // 필수 약관 동의 체크 (서비스 이용약관만 필수)
+        userValidator.validateAgreements(request.serviceAgreed());
         
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.password());
         
-        // User 엔티티 생성 및 저장
-        User user = request.toEntity(encodedPassword);
+        // User 엔티티 생성 및 저장 
+        User user = User.create(
+                request.name(),
+                request.birthDate(),
+                request.phoneNumber(),
+                request.email(),
+                encodedPassword,
+                request.nickname()
+        );
         userRepository.save(user);
         
         // Agreement 엔티티 생성 및 저장
@@ -76,6 +91,17 @@ public class UserCommandService {
     }
 
     /**
+     * 전화번호 중복 검증
+     */
+    private void validatePhoneNumberNotExists(String phoneNumber) {
+        // 하이픈 제거 후 검증
+        String normalizedPhoneNumber = phoneNumber.replace("-", "");
+        if (userRepository.existsByPhoneNumber(normalizedPhoneNumber)) {
+            throw BaseException.type(UserErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
+        }
+    }
+
+    /**
      * 회원 탈퇴
      */
     public void withdrawUser(String accessToken, Long userId) {
@@ -96,4 +122,37 @@ public class UserCommandService {
 
         log.info("회원 탈퇴 완료: userId={}", userId);
     }
+
+    /**
+     * 비밀번호 재설정 완료
+     * - 비로그인 상태에서 resetToken을 사용하여 새 비밀번호로 변경
+     */
+    public void resetPassword(ResetPasswordRequest request) {
+        // resetToken으로 이메일 확인 (1회용 토큰 소비)
+        String email = verificationService.consumeResetToken(request.resetToken());
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        // 이미 탈퇴한 사용자인지 확인
+        if (user.isDeleted()) {
+            throw BaseException.type(UserErrorCode.USER_ALREADY_DELETED);
+        }
+
+        // 소셜 로그인 사용자는 비밀번호 재설정 불가
+        if (user.isSocialUser()) {
+            throw BaseException.type(UserErrorCode.SOCIAL_USER_PASSWORD_CHANGE);
+        }
+
+        // 새 비밀번호가 기존 비밀번호와 동일한지 확인
+        if (passwordEncoder.matches(request.newPassword(), user.getPassword())) {
+            throw BaseException.type(UserErrorCode.SAME_PASSWORD);
+        }
+
+        // 비밀번호 암호화 및 업데이트
+        user.updatePassword(passwordEncoder.encode(request.newPassword()));
+
+        log.info("비밀번호 재설정 완료: email={}", email);
+    }
+
 }
