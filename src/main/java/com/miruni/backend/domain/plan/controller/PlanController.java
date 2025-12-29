@@ -14,7 +14,7 @@ import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
 import com.miruni.backend.domain.plan.service.PlanCommandService;
-import com.miruni.backend.domain.plan.service.PlanQueryService;
+import com.miruni.backend.domain.plan.service.PlanDurationQueryService;
 import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.authroize.LoginUser;
 import jakarta.validation.Valid;
@@ -30,6 +30,7 @@ import jakarta.validation.Valid;
 @RequiredArgsConstructor
 public class PlanController implements PlanApi{
 
+    private final PlanDurationQueryService planDurationQueryService;
     private final PlanCommandService planCommandService;
     private final PlanQueryService planQueryService;
 
@@ -53,7 +54,7 @@ public class PlanController implements PlanApi{
     public PlanDurationResponse getExpectedDuration(@LoginUser Long userId,
                                                     @RequestParam PlanType planType,
                                                     @PathVariable Long planId) {
-        return planQueryService.getExpectedDuration(PlanDurationCommand.of(userId, planType, planId));
+        return planDurationQueryService.getExpectedDuration(PlanDurationCommand.of(userId, planType, planId));
     }
 
     @Override
