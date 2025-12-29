@@ -7,7 +7,6 @@ import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Priority;
 import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
 import com.miruni.backend.domain.plan.repository.BasicPlanRepository;
-import com.miruni.backend.domain.plan.validator.ScheduleValidator;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.service.UserQueryService;
 import com.miruni.backend.global.exception.BaseException;
@@ -23,18 +22,9 @@ public class BasicPlanCommandService {
     private final BasicPlanRepository basicPlanRepository;
     private final UserQueryService userQueryService;
     private final BasicPlanQueryService basicPlanQueryService;
-    private final ScheduleValidator scheduleValidator;
 
     public BasicPlanResponse createBasicPlan(BasicPlanCreateCommand command) {
         User user = userQueryService.getUserById(command.userId());
-
-        scheduleValidator.validateConflict(
-                user.getId(),
-                command.scheduledDate(),
-                command.startTime(),
-                command.endTime()
-        );
-
         BasicPlan plan = BasicPlan.create(
                 user,
                 command.title(),
@@ -51,14 +41,6 @@ public class BasicPlanCommandService {
 
     public BasicPlanResponse updateBasicPlan(BasicPlanUpdateCommand command) {
         BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
-
-        scheduleValidator.validateConflictForBasicPlan(
-                command.userId(),
-                command.planId(),
-                command.scheduledDate(),
-                command.startTime(),
-                command.endTime()
-        );
 
         plan.update(
                 command.title(),
