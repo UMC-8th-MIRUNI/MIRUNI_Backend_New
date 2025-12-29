@@ -23,7 +23,7 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
          )
         FROM BasicPlan b
         WHERE b.user.id = :userId
-          AND b.isDone = false
+          AND b.status != com.miruni.backend.domain.plan.entity.Status.DONE
           AND b.scheduledDate BETWEEN :startDate AND :endDate
         GROUP BY b.scheduledDate
         ORDER BY b.scheduledDate
@@ -46,8 +46,8 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
             @Param("userId") Long userId,
             @Param("date") LocalDate date
     );
-    boolean existsByUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
-    boolean existsByUserIdAndScheduledStartTime(Long userId, LocalTime scheduledTime);
+    //boolean existsByUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
+    //boolean existsByUserIdAndScheduledStartTime(Long userId, LocalTime scheduledTime);
 
     @Query("""
         SELECT COUNT(b) > 0

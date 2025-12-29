@@ -15,6 +15,7 @@ import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
 import com.miruni.backend.domain.plan.service.PlanCommandService;
 import com.miruni.backend.domain.plan.service.PlanDurationQueryService;
+import com.miruni.backend.domain.plan.service.PlanQueryService;
 import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.authroize.LoginUser;
 import jakarta.validation.Valid;
