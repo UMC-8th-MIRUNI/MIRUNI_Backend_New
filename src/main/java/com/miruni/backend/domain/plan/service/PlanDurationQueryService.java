@@ -1,7 +1,6 @@
 package com.miruni.backend.domain.plan.service;
 
 import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
-import com.miruni.backend.domain.plan.dto.request.PlanStartRequest;
 import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
@@ -15,11 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PlanQueryService {
+public class PlanDurationQueryService {
     private final BasicPlanQueryService basicPlanQueryService;
     private final AiPlanQueryService aiPlanQueryService;
 
-    @Transactional
     public PlanDurationResponse getExpectedDuration(PlanDurationCommand command) {
         Long expectedDuration;
 

@@ -24,7 +24,7 @@ public class ScheduleValidator {
         }
 
         if(aiPlanRepository.existsOverlap(userId, date, startTime, endTime)) {
-            throw BaseException.type(AiPlanErrorCode.AI_PLAN_NOT_FOUND);
+            throw BaseException.type(AiPlanErrorCode.AI_PLAN_CONFLICT);
         }
     }
 

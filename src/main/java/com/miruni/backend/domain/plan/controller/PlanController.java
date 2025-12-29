@@ -11,7 +11,7 @@ import com.miruni.backend.domain.plan.dto.response.PlanFinishResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanPauseResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanStartResponse;
 import com.miruni.backend.domain.plan.service.PlanCommandService;
-import com.miruni.backend.domain.plan.service.PlanQueryService;
+import com.miruni.backend.domain.plan.service.PlanDurationQueryService;
 import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.authroize.LoginUser;
 import jakarta.validation.Valid;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/plans")
 public class PlanController implements PlanApi {
 
-    private final PlanQueryService planQueryService;
+    private final PlanDurationQueryService planDurationQueryService;
     private final PlanCommandService planCommandService;
 
     @Override
@@ -31,7 +31,7 @@ public class PlanController implements PlanApi {
     public PlanDurationResponse getExpectedDuration(@LoginUser Long userId,
                                                     @RequestParam PlanType planType,
                                                     @PathVariable Long planId) {
-        return planQueryService.getExpectedDuration(PlanDurationCommand.of(userId, planType, planId));
+        return planDurationQueryService.getExpectedDuration(PlanDurationCommand.of(userId, planType, planId));
     }
 
     @Override
