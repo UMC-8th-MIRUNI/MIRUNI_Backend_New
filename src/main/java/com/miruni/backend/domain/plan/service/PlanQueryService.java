@@ -1,8 +1,6 @@
 package com.miruni.backend.domain.plan.service;
 
-import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
-import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
+import com.miruni.backend.domain.plan.dto.response.*;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
@@ -13,13 +11,13 @@ import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.exception.BaseException;
 import com.miruni.backend.global.exception.CommonErrorCode;
 import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
-import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +33,40 @@ public class PlanQueryService {
     private final BasicPlanRepository basicPlanRepository;
     private final BasicPlanQueryService basicPlanQueryService;
     private final AiPlanQueryService aiPlanQueryService;
+
+    public PlanHomeResponse getPlanHome(Long userId) {
+//        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+
+        List<DailyPlanResponse.DailyPlanItemResponse> allPlans =
+                Stream.concat(
+                        basicPlanRepository.findDailyBasicPlans(userId, today).stream()
+                                .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
+                        aiPlanRepository.findDailyAiPlans(userId, today).stream()
+                                .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
+                ).toList();
+
+        int progressRate = calculateProgressRate(allPlans);
+
+        List<DailyPlanResponse.DailyPlanItemResponse> todayPlans = allPlans.stream()
+                .filter(p -> !p.isDone())
+                .sorted(Comparator.comparing(
+                        DailyPlanResponse.DailyPlanItemResponse::scheduledTime
+                ))
+                .toList();
+
+        return PlanHomeResponse.of(progressRate, todayPlans);
+    }
+
+    private int calculateProgressRate(List<DailyPlanResponse.DailyPlanItemResponse> plans) {
+        if (plans.isEmpty()) return 0;
+
+        long completedCount = plans.stream()
+                .filter(DailyPlanResponse.DailyPlanItemResponse::isDone)
+                .count();
+
+        return (int) Math.round(completedCount * 100.0 / plans.size());
+    }
 
     /**
      * 캘린더 조회
