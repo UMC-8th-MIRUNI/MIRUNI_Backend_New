@@ -1,8 +1,11 @@
 package com.miruni.backend.domain.user.service;
 
+import com.miruni.backend.domain.user.dto.command.ProfileUpdateCommandDto;
+import com.miruni.backend.domain.user.dto.command.UserInfoUpdateCommandDto;
 import com.miruni.backend.domain.user.dto.request.ResetPasswordRequest;
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
+import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
 import com.miruni.backend.domain.user.entity.Agreement;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.exception.UserErrorCode;
@@ -123,6 +126,24 @@ public class UserCommandService {
         log.info("회원 탈퇴 완료: userId={}", userId);
     }
 
+    public UserInfoResponseDto updateProfile(ProfileUpdateCommandDto command) {
+        User user = userRepository.findById(command.userId())
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        user.updateProfile(command.profileImage(), command.nickname());
+
+        return UserInfoResponseDto.from(user);
+    }
+
+    public UserInfoResponseDto updateUserInfo(UserInfoUpdateCommandDto command) {
+        User user = userRepository.findById(command.userId())
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        user.updateUserInfo(command.name(), command.birth(), command.phoneNumber(), command.email());
+
+        return UserInfoResponseDto.from(user);
+    }
+
     /**
      * 비밀번호 재설정 완료
      * - 비로그인 상태에서 resetToken을 사용하여 새 비밀번호로 변경
@@ -154,5 +175,4 @@ public class UserCommandService {
 
         log.info("비밀번호 재설정 완료: email={}", email);
     }
-
 }

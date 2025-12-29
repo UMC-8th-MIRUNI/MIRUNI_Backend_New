@@ -54,7 +54,8 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "profile_image")
-    private ProfileImage profileImage;
+    @Builder.Default
+    private ProfileImage profileImage = ProfileImage.GREEN;
 
     @OneToMany(mappedBy = "user")
     private List<Agreement> agreements = new ArrayList<>();
@@ -73,7 +74,6 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokens = new ArrayList<>();
-
 
     /**
      * 일반 회원가입용 팩토리 메서드
@@ -124,5 +124,17 @@ public class User extends BaseEntity {
 
     public void addPeanuts(int count) {
         this.peanutCount += count;
+    }
+
+    public void updateProfile(ProfileImage profileImage, String nickname) {
+        this.profileImage = profileImage;
+        this.nickname = nickname;
+    }
+
+    public void updateUserInfo(String name, LocalDate birth, String phoneNumber, String email) {
+        this.name = name;
+        this.birth = birth;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
     }
 }
