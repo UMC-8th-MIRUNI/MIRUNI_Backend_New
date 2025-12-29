@@ -45,9 +45,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/actuator/**",
-                                "/api/users", // 회원가입 API
-                                "/api/auth/token", // 로그인 API
-                                "/api/users/**" // 이메일 인증코드 요청, 검증
+                                "/api/auth/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );
