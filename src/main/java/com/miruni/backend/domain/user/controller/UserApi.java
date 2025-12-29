@@ -1,5 +1,11 @@
 package com.miruni.backend.domain.user.controller;
 
+import com.miruni.backend.domain.user.dto.command.ProfileUpdateCommandDto;
+import com.miruni.backend.domain.user.dto.command.UserInfoUpdateCommandDto;
+import com.miruni.backend.domain.user.dto.request.ProfileUpdateRequestDto;
+import com.miruni.backend.domain.user.dto.request.UserInfoUpdateRequestDto;
+import com.miruni.backend.domain.user.dto.response.UserHomeResponse;
+import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
 import com.miruni.backend.global.authroize.AuthToken;
 import com.miruni.backend.global.authroize.LoginUser;
 import com.miruni.backend.global.exception.CustomErrorResponse;
@@ -10,6 +16,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "사용자 API", description = "사용자 정보 및 계정 관리 API")
 public interface UserApi {
@@ -86,4 +95,40 @@ public interface UserApi {
             @AuthToken String accessToken,
             @LoginUser Long userId
     );
+
+    @Operation(
+            summary = "사용자 정보 조회",
+            description = "사용자의 정보를 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "사용자 정보 조회 성공")
+    })
+    UserInfoResponseDto getUserInfo(@LoginUser Long userId);
+
+    @Operation(
+            summary = "프로필 수정",
+            description = "사용자의 프로필을 수정합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "사용자 프로필 수정 성공")
+    })
+    UserInfoResponseDto updateProfile(@LoginUser Long userId, @RequestBody ProfileUpdateRequestDto requestDto);
+
+    @Operation(
+            summary = "개인 정보 수정",
+            description = "사용자의 개인 정보를 수정합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "사용자 개인 정보 수정 성공")
+    })
+    UserInfoResponseDto updateMyInfo(@LoginUser Long userId, @RequestBody UserInfoUpdateRequestDto requestDto);
+
+    @Operation(
+            summary = "홈페이지 사용자 조회",
+            description = "사용자 닉네임과 땅콩 개수를 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "사용자 조회 성공")
+    })
+    UserHomeResponse getUserHome(@LoginUser Long userId);
 }

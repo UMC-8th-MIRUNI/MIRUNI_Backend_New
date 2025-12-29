@@ -1,6 +1,7 @@
 package com.miruni.backend.domain.user.service;
 
 import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
+import com.miruni.backend.domain.user.dto.response.UserHomeResponse;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.exception.UserErrorCode;
 import com.miruni.backend.domain.user.repository.UserRepository;
@@ -23,5 +24,11 @@ public class UserQueryService {
         User user = getUserById(userId);
 
         return UserInfoResponseDto.from(user);
+    }
+
+    public UserHomeResponse getUserHome(Long id) {
+        User user = getUserById(id);
+
+        return UserHomeResponse.from(user);
     }
 }
