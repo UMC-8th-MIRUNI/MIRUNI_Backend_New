@@ -1,15 +1,12 @@
 package com.miruni.backend.domain.plan.dto.command;
 
-
 import com.miruni.backend.domain.plan.dto.request.BasicPlanSaveRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record BasicPlanUpdateCommandDto(
-
+public record BasicPlanCreateCommand(
         Long userId,
-        Long planId,
         String title,
         String description,
         LocalDate scheduledDate,
@@ -18,10 +15,9 @@ public record BasicPlanUpdateCommandDto(
         String priority
 ) {
 
-    public static BasicPlanUpdateCommandDto of(Long userId, Long planId, BasicPlanSaveRequest request) {
-        return new BasicPlanUpdateCommandDto(
+    public static BasicPlanCreateCommand of(Long userId, BasicPlanSaveRequest request) {
+        return new BasicPlanCreateCommand(
                 userId,
-                planId,
                 request.title(),
                 request.description(),
                 request.scheduledDate(),

@@ -7,7 +7,9 @@ import com.miruni.backend.domain.question.entity.Question;
 import com.miruni.backend.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +74,57 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FcmToken> fcmTokens = new ArrayList<>();
+
+    /**
+     * 일반 회원가입용 팩토리 메서드
+     */
+    public static User create(
+            String name,
+            String rawBirthDate,
+            String rawPhoneNumber,
+            String email,
+            String encodedPassword,
+            String nickname
+    ) {
+        LocalDate birth = LocalDate.parse(rawBirthDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String normalizedPhoneNumber = rawPhoneNumber.replace("-", "");
+
+        return User.builder()
+                .name(name)
+                .birth(birth)
+                .phoneNumber(normalizedPhoneNumber)
+                .email(email)
+                .password(encodedPassword)
+                .nickname(nickname)
+                .peanutCount(0)
+                .oauthProvider(null)
+                .build();
+    }
+
+    /**
+     * 소셜 로그인 사용자인지 확인
+     */
+    public boolean isSocialUser() {
+        return this.oauthProvider != null;
+    }
+    
+    /**
+     * 비밀번호가 설정되어 있는지 확인
+     */
+    public boolean hasPassword() {
+        return this.password != null && !this.password.isBlank();
+    }
+    
+    /**
+     * 비밀번호 업데이트
+     */
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public void addPeanuts(int count) {
+        this.peanutCount += count;
+    }
 
     public void updateProfile(ProfileImage profileImage, String nickname) {
         this.profileImage = profileImage;
