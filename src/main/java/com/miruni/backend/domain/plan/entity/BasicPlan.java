@@ -37,15 +37,19 @@ public class BasicPlan extends BaseEntity {
     @Column(name = "scheduled_date", nullable = false)
     private LocalDate scheduledDate;
 
-    @Column(name = "scheduled_time", nullable = false, columnDefinition = "TIME")
+    @Column(name = "scheduled_time", nullable = false)
     private LocalTime scheduledTime;
+
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
 
     @Column(name = "expected_duration", nullable = false)
     private Long expectedDuration;
 
-    @Column(name = "is_done", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     @Builder.Default
-    private boolean isDone = false;
+    private Status status = Status.TODO;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "priority", length = 10)
@@ -59,6 +63,7 @@ public class BasicPlan extends BaseEntity {
         this.description = description;
         this.scheduledDate = scheduledDate;
         this.scheduledTime = startTime;
+        this.endTime = endTime;
         this.expectedDuration = Duration.between(startTime, endTime).toMinutes();
         this.priority = priority;
     }
@@ -73,6 +78,7 @@ public class BasicPlan extends BaseEntity {
                 .description(description)
                 .scheduledDate(scheduledDate)
                 .scheduledTime(startTime)
+                .endTime(endTime)
                 .expectedDuration(expectedDuration)
                 .priority(priority)
                 .build();
@@ -84,6 +90,11 @@ public class BasicPlan extends BaseEntity {
         }
     }
 
-    public void complete() { this.isDone = true; }
-    public void rescheduleTime(LocalTime newScheduledTime) {this.scheduledTime = newScheduledTime;}
+    public void complete() { this.status = Status.DONE; }
+    public void start() { this.status = Status.IN_PROGRESS; }
+    public void pause() { this.status = Status.TODO; }
+    public void rescheduleTime(LocalTime newScheduledTime) {
+        this.scheduledTime = newScheduledTime;
+        this.endTime = newScheduledTime.plusMinutes(this.getExpectedDuration());
+    }
 }
