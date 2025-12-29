@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PlanDurationQueryService {
+public class PlanQueryService {
     private final BasicPlanQueryService basicPlanQueryService;
     private final AiPlanQueryService aiPlanQueryService;
 

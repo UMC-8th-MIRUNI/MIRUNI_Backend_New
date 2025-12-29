@@ -1,8 +1,12 @@
 spring:
+  config:
+      import: 
+        - classpath:mail-config.yml
+
   datasource:
     url: jdbc:mysql://localhost:3306/miruni
-    username: root
-    password: 1234
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -39,6 +43,15 @@ gemini:
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
 jwt:
   secret: ${JWT_SECRET_KEY}
-  access-token-expiration: 3600000
+  access-token-expiration: 3600000      
   refresh-token-expiration: 604800000
-  temp-token-expiration: 300000
+  temp-token-expiration: 300000  
+
+miruni:
+  email:
+    verification:
+      prefix: "email_verification:"
+      expire-minutes: 5
+      from-address: "miruniumc@gmail.com"
+      from-name: "Miruni"
+      subject: "🔐 Miruni 회원가입 인증 코드"

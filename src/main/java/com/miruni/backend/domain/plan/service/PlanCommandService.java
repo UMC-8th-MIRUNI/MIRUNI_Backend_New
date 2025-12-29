@@ -46,7 +46,7 @@ public class PlanCommandService {
         LocalTime startTime = now.toLocalTime();
         LocalTime endTimeOnly = endTime.toLocalTime();
 
-        scheduleValidator.validateConflict(request.userId(), request.planId(), date, startTime, endTimeOnly);
+        scheduleValidator.validateConflictForBasicPlan(request.userId(), request.planId(), date, startTime, endTimeOnly);
 
         // 일정 상태 변경
         if (request.planType() == PlanType.BASIC) {
@@ -100,7 +100,7 @@ public class PlanCommandService {
             case BASIC -> {
                 BasicPlan plan = getBasicPlan(command.planId(), command.userId());
                 expectedDurationMinutes = plan.getExpectedDuration();
-                scheduleValidator.validateConflict(
+                scheduleValidator.validateConflictForBasicPlan(
                         command.userId(),
                         command.planId(),
                         LocalDate.now(),
@@ -113,7 +113,7 @@ public class PlanCommandService {
             case AI -> {
                 AiPlan plan = getAiPlan(command.planId(), command.userId());
                 expectedDurationMinutes = (long) plan.getExpectedDuration();
-                scheduleValidator.validateConflict(
+                scheduleValidator.validateConflictForBasicPlan(
                         command.userId(),
                         command.planId(),
                         LocalDate.now(),

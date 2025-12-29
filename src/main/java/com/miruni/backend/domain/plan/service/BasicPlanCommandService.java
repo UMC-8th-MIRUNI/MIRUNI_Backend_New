@@ -52,7 +52,7 @@ public class BasicPlanCommandService {
     public BasicPlanResponse updateBasicPlan(BasicPlanUpdateCommand command) {
         BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
 
-        scheduleValidator.validateConflict(
+        scheduleValidator.validateConflictForBasicPlan(
                 command.userId(),
                 command.planId(),
                 command.scheduledDate(),

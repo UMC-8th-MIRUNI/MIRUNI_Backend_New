@@ -29,15 +29,15 @@ public class ScheduleValidator {
     }
 
     // 오버로딩
-    public void validateConflict(Long userId, Long excludeId, LocalDate date, LocalTime startTime, LocalTime endTime) {
+    public void validateConflictForBasicPlan(Long userId, Long excludeId, LocalDate date, LocalTime startTime, LocalTime endTime) {
 
-        // BasicPlan 검증
+        // BasicPlan 검증 (excludeId 제외한 채로 검사)
         if (basicPlanRepository.existsOverlapWithinUpdate(userId, excludeId, date, startTime, endTime)) {
             throw BaseException.type(BasicPlanErrorCode.BASIC_PLAN_CONFLICT);
         }
 
         // AiPlan 검증
-        if (aiPlanRepository.existsOverlapWithinUpdate(userId, excludeId, date, startTime, endTime)) {
+        if (aiPlanRepository.existsOverlap(userId, date, startTime, endTime)) {
             throw BaseException.type(AiPlanErrorCode.AI_PLAN_CONFLICT);
         }
     }
