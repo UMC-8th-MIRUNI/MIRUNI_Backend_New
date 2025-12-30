@@ -32,19 +32,32 @@ public class AiPlan extends BaseEntity {
     @Column(name = "scheduled_time", nullable = false)
     private LocalTime scheduledTime;
 
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
+
     @Column(name = "expected_duration", nullable = false)
     private int expectedDuration;
 
-    @Column(name = "is_done", nullable = false)
+//    @Column(name = "is_done", nullable = false)
+//    @Builder.Default
+//    private boolean isDone = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     @Builder.Default
-    private boolean isDone = false;
+    private Status status = Status.TODO;
 
     public void updateDetails(String subTitle, LocalDate scheduledDate, LocalTime scheduledTime) {
         this.subTitle = subTitle;
         this.scheduledDate = scheduledDate;
         this.scheduledTime = scheduledTime;
     }
-    public void complete() { this.isDone = true; }
+    public void complete() { this.status = Status.DONE; }
+    public void start() { this.status = Status.IN_PROGRESS; }
+    public void pause() { this.status = Status.TODO; }
 
-    public void rescheduleTime(LocalTime newScheduledTime) {this.scheduledTime = newScheduledTime;}
+    public void rescheduleTime(LocalTime newScheduledTime) {
+        this.scheduledTime = newScheduledTime;
+        this.endTime = newScheduledTime.plusMinutes(this.getExpectedDuration());
+    }
 }

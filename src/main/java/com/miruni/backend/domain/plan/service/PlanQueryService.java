@@ -66,10 +66,10 @@ public class PlanQueryService {
         LocalDate date = LocalDate.of(year, month, day);
 
         List<DailyPlanResponse.DailyPlanItemResponse> plans = Stream.concat(
-                    basicPlanRepository.findDailyBasicPlans(userId, date).stream()
-                            .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
-                    aiPlanRepository.findDailyAiPlans(userId, date).stream()
-                            .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
+                        basicPlanRepository.findDailyBasicPlans(userId, date).stream()
+                                .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
+                        aiPlanRepository.findDailyAiPlans(userId, date).stream()
+                                .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
                 )
                 .sorted(Comparator.comparing(DailyPlanResponse.DailyPlanItemResponse::scheduledTime))
                 .toList();

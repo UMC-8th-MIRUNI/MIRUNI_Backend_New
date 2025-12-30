@@ -3,18 +3,22 @@ package com.miruni.backend.domain.plan.controller;
 import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
 import com.miruni.backend.domain.plan.dto.command.PlanFinishCommand;
 import com.miruni.backend.domain.plan.dto.command.PlanPauseCommand;
+import com.miruni.backend.domain.plan.dto.request.PlanStartRequest;
 import com.miruni.backend.domain.plan.dto.request.PlanFinishRequest;
 import com.miruni.backend.domain.plan.dto.request.PlanPauseRequest;
 import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanFinishResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanPauseResponse;
+import com.miruni.backend.domain.plan.dto.response.PlanStartResponse;
 import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
 import com.miruni.backend.domain.plan.service.PlanCommandService;
+import com.miruni.backend.domain.plan.service.PlanDurationQueryService;
 import com.miruni.backend.domain.plan.service.PlanQueryService;
 import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.authroize.LoginUser;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +31,7 @@ import jakarta.validation.Valid;
 @RequiredArgsConstructor
 public class PlanController implements PlanApi{
 
+    private final PlanDurationQueryService planDurationQueryService;
     private final PlanCommandService planCommandService;
     private final PlanQueryService planQueryService;
 
@@ -46,11 +51,20 @@ public class PlanController implements PlanApi{
     }
 
     @Override
-    @GetMapping("/duration")
+    @GetMapping("/{planId}/expected-duration")
     public PlanDurationResponse getExpectedDuration(@LoginUser Long userId,
                                                     @RequestParam PlanType planType,
-                                                    @RequestParam Long id) {
-        return planQueryService.getExpectedDuration(PlanDurationCommand.of(userId, planType, id));
+                                                    @PathVariable Long planId) {
+        return planDurationQueryService.getExpectedDuration(PlanDurationCommand.of(userId, planType, planId));
+    }
+
+    @Override
+    @PostMapping("/{planId}/start")
+    public PlanStartResponse startPlan(@LoginUser Long userId,
+                                       @RequestParam PlanType planType,
+                                       @PathVariable Long planId,
+                                       @RequestParam String durationStr ) {
+        return planCommandService.startPlan(PlanStartRequest.of(userId, planType, planId, durationStr));
     }
 
     @Override

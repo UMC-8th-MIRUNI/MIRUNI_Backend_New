@@ -1,6 +1,6 @@
 spring:
   config:
-      import: 
+      import:
         - classpath:mail-config.yml
 
   datasource:
@@ -39,7 +39,7 @@ management:
 
 gemini:
   api:
-    key: {GEMINI_API_KEY}
+    key: ${GEMINI_API_KEY}
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
 jwt:
   secret: ${JWT_SECRET_KEY}
