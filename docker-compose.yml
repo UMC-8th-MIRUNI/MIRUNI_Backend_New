@@ -33,8 +33,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
-    mem_limit: 600m     
-    cpus: "0.5"         
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 600M
 
   redis:
     image: redis:7-alpine
@@ -52,8 +55,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    mem_limit: 96m      
-    cpus: "0.2"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 96M
 
   prometheus:
     image: prom/prometheus:latest
@@ -78,8 +84,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    mem_limit: 224m    
-    cpus: "0.3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: 224M
 
   grafana:
     image: grafana/grafana:latest
@@ -104,8 +113,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    mem_limit: 160m    
-    cpus: "0.2"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 160M
 
 volumes:
   redis-data:

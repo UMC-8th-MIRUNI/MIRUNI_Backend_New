@@ -6,16 +6,21 @@ import com.miruni.backend.domain.plan.dto.response.AiPlanTableDto;
 import com.miruni.backend.domain.plan.dto.response.PlanDeleteAllResponse;
 import com.miruni.backend.domain.plan.dto.command.PlanFinishCommand;
 import com.miruni.backend.domain.plan.dto.command.PlanPauseCommand;
+import com.miruni.backend.domain.plan.dto.request.PlanStartRequest;
 import com.miruni.backend.domain.plan.dto.response.PlanFinishResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanPauseResponse;
+import com.miruni.backend.domain.plan.dto.response.PlanStartResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
+import com.miruni.backend.domain.plan.entity.Status;
 import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import com.miruni.backend.domain.plan.repository.PlanRepository;
 import com.miruni.backend.domain.plan.validator.ScheduleValidator;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
+import com.miruni.backend.domain.plan.type.PlanType;
+import com.miruni.backend.domain.plan.validator.ScheduleValidator;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.service.UserQueryService;
 import com.miruni.backend.global.exception.BaseException;
@@ -26,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +50,21 @@ public class PlanCommandService {
     private final UserQueryService userQueryService;
     private final AiPlanRepository aiPlanRepository;
 
+    private int parseTimeToMinutes(String time) {
+        String[] parts = time.split(":");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+        return hours * 60 + minutes;
+    }
+
+    private int calculatePeanuts(int expectedMinutes, int actualMinutes) {
+        double ratio = (double) actualMinutes / expectedMinutes * 100;
+
+        if (ratio < 30) return 0;
+        if (ratio < 65) return 1;
+        if (ratio < 100) return 2;
+        return 3;
+    }
 
     private static void checkWithinDeadline(LocalDate deadline, LocalDate scheduledDate) {
         if (scheduledDate.isAfter(deadline)) {
@@ -78,23 +99,6 @@ public class PlanCommandService {
             parentPlan.complete();
         }
     }
-
-    private int parseTimeToMinutes(String time) {
-        String[] parts = time.split(":");
-        int hours = Integer.parseInt(parts[0]);
-        int minutes = Integer.parseInt(parts[1]);
-        return hours * 60 + minutes;
-    }
-
-    private int calculatePeanuts(int expectedMinutes, int actualMinutes) {
-        double ratio = (double) actualMinutes / expectedMinutes * 100;
-
-        if (ratio < 30) return 0;
-        if (ratio < 65) return 1;
-        if (ratio < 100) return 2;
-        return 3;
-    }
-
 
     public PlanDeleteAllResponse deletePlanAll(Long userId, Long planId) {
         Plan plan = planRepository.findById(planId).orElseThrow(() -> BaseException.type(PlanErrorCode.PLAN_NOT_FOUND));
@@ -162,6 +166,31 @@ public class PlanCommandService {
         return AiPlanResponse.of(command.planId(), plan.getTitle(), plan.getDeadline().toLocalDate(), plan.getScope(), plan.getPriority(), progressRate, savedDtos);
     }
 
+    public PlanStartResponse startPlan(PlanStartRequest request) {
+        LocalDateTime now = LocalDateTime.now();
+        int durationMinutes = parseTimeToMinutes(request.durationStr());
+        LocalDateTime endTime = now.plusMinutes(durationMinutes);
+
+        LocalDate date = now.toLocalDate();
+        LocalTime startTime = now.toLocalTime();
+        LocalTime endTimeOnly = endTime.toLocalTime();
+
+        scheduleValidator.validateConflict(request.userId(), request.planId(), date, startTime, endTimeOnly);
+
+        // 일정 상태 변경
+        if (request.planType() == PlanType.BASIC) {
+            BasicPlan basicPlan = basicPlanQueryService.getByPlanIdAndUserId(request.planId(), request.userId());
+            basicPlan.start();
+            return PlanStartResponse.of(PlanType.BASIC,basicPlan.getId(), basicPlan.getStatus());
+        } else if (request.planType() == PlanType.AI) {
+            AiPlan aiPlan = aiPlanQueryService.getByPlanIdAndUserId(request.planId(), request.userId());
+            aiPlan.start();
+            return PlanStartResponse.of(PlanType.AI, aiPlan.getId(), aiPlan.getStatus());
+        } else {
+            throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
+        }
+    }
+
     public PlanFinishResponse finishPlan(PlanFinishCommand command) {
         User user = userQueryService.getUserById(command.userId());
 
@@ -169,17 +198,17 @@ public class PlanCommandService {
         int actualMinutes = parseTimeToMinutes(command.actualTime());
         int peanutCount = calculatePeanuts(expectedMinutes, actualMinutes);
 
-        boolean isDone;
-        switch (command.planType()) {
-            case BASIC -> {
-                BasicPlan basicplan = getBasicPlan(command.planId(), command.userId());
-                basicplan.complete();
-                isDone = basicplan.isDone();
-            }
-            case AI -> {
-                AiPlan aiPlan = getAiPlan(command.planId(), command.userId());
-                aiPlan.complete();
-                isDone = aiPlan.isDone();
+       Status status;
+       switch (command.planType()) {
+           case BASIC -> {
+               BasicPlan basicplan = getBasicPlan(command.planId(), command.userId());
+               basicplan.complete();
+               status = basicplan.getStatus();
+           }
+           case AI -> {
+               AiPlan aiPlan = getAiPlan(command.planId(), command.userId());
+               aiPlan.complete();
+               status = aiPlan.getStatus();
 
                 // 상위 Plan progressRate 갱신
                 updateParentPlanProgress(aiPlan.getPlan());
@@ -189,26 +218,38 @@ public class PlanCommandService {
 
         user.addPeanuts(peanutCount);
 
-        return PlanFinishResponse.of(peanutCount, command.planType(), command.planId(), isDone);
+        return PlanFinishResponse.of(peanutCount, command.planType(), command.planId(), status);
     }
 
     public PlanPauseResponse pausePlan(PlanPauseCommand command) {
         LocalTime newScheduledTime = LocalTime.parse(command.resumeTime());
 
-        boolean isConflict = basicPlanQueryService.isScheduledTimeConflict(command.userId(), newScheduledTime)
-                || aiPlanQueryService.isScheduledTimeConflict(command.userId(), newScheduledTime);
-
-        if (isConflict) {
-            throw BaseException.type(PlanErrorCode.PLAN_CONFLICT);
-        }
-
+        long expectedDurationMinutes;
         switch (command.planType()) {
             case BASIC -> {
                 BasicPlan plan = getBasicPlan(command.planId(), command.userId());
+                expectedDurationMinutes = plan.getExpectedDuration();
+                scheduleValidator.validateConflict(
+                        command.userId(),
+                        command.planId(),
+                        LocalDate.now(),
+                        newScheduledTime,
+                        newScheduledTime.plusMinutes(expectedDurationMinutes)
+                );
+                plan.pause();
                 plan.rescheduleTime(newScheduledTime);
             }
             case AI -> {
                 AiPlan plan = getAiPlan(command.planId(), command.userId());
+                expectedDurationMinutes = (long) plan.getExpectedDuration();
+                scheduleValidator.validateConflict(
+                        command.userId(),
+                        command.planId(),
+                        LocalDate.now(),
+                        newScheduledTime,
+                        newScheduledTime.plusMinutes(expectedDurationMinutes)
+                );
+                plan.pause();
                 plan.rescheduleTime(newScheduledTime);
             }
             default -> throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);

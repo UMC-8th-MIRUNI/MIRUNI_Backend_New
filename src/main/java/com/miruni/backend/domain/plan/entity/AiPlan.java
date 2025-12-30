@@ -39,6 +39,10 @@ public class AiPlan extends BaseEntity {
     @Column(name = "is_done", nullable = false)
     private boolean isDone = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private Status status = Status.TODO;
+
     @Builder(access = AccessLevel.PRIVATE)
     public AiPlan(Plan plan, final String subTitle, final LocalDate scheduledDate, final LocalTime scheduledTime, final LocalTime endTime ,final int expectedDuration) {
         this.plan = plan;
@@ -67,7 +71,12 @@ public class AiPlan extends BaseEntity {
         this.endTime = endTime;
         this.expectedDuration = expectedDuration;
     }
-    public void complete() { this.isDone = true; }
+    public void complete() { this.status = Status.DONE; }
+    public void start() { this.status = Status.IN_PROGRESS; }
+    public void pause() { this.status = Status.TODO; }
 
-    public void rescheduleTime(LocalTime newScheduledTime) {this.scheduledTime = newScheduledTime;}
+    public void rescheduleTime(LocalTime newScheduledTime) {
+        this.scheduledTime = newScheduledTime;
+        this.endTime = newScheduledTime.plusMinutes(this.getExpectedDuration());
+    }
 }

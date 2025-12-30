@@ -1,5 +1,6 @@
 package com.miruni.backend.domain.fcm.service;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.miruni.backend.domain.plan.service.AiPlanQueryService;
 import com.miruni.backend.domain.plan.service.BasicPlanQueryService;
 import io.netty.util.concurrent.ScheduledFuture;

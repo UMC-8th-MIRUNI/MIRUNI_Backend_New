@@ -29,7 +29,7 @@ public interface AiPlanRepository extends JpaRepository<AiPlan, Long> {
         )
         FROM AiPlan a
         WHERE a.plan.user.id = :userId
-          AND a.isDone = false
+          AND a.status != com.miruni.backend.domain.plan.entity.Status.DONE
           AND a.scheduledDate BETWEEN :startDate AND :endDate
         GROUP BY a.scheduledDate
         ORDER BY a.scheduledDate

@@ -43,7 +43,7 @@ management:
 
 gemini:
   api:
-    key: {GEMINI_API_KEY}
+    key: ${GEMINI_API_KEY}
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
 
 jwt:

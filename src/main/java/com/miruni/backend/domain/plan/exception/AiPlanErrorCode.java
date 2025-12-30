@@ -17,6 +17,7 @@ public enum AiPlanErrorCode implements ErrorCode {
     PLAN_NOT_MATCH(HttpStatus.BAD_REQUEST, "AI_PLAN400_003", "상위 일정 아이디가 다릅니다."),
     AI_PLAN_CONFLICT(HttpStatus.BAD_REQUEST, "AI_PLAN400_004", "같은 시간에 다른 일정이 예정되어 있습니다."),
 
+    PLAN_FORBIDDEN(HttpStatus.FORBIDDEN, "AI_PLAN403_1", "해당 일정에 대한 권한이 없습니다."),
     AI_PLAN_FORBIDDEN(HttpStatus.FORBIDDEN, "AI_PLAN403_1", "해당 일정에 대한 권한이 없습니다.");
 
     private final HttpStatus status;

@@ -3,6 +3,7 @@ package com.miruni.backend.domain.plan.dto.response;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Priority;
+import com.miruni.backend.domain.plan.entity.Status;
 import com.miruni.backend.domain.plan.type.PlanType;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public record DailyPlanResponse(
                     null,
                     formatTime(plan.getScheduledTime()),
                     plan.getPriority(),
-                    plan.isDone()
+                    plan.getStatus() == Status.DONE
             );
         }
 
@@ -50,7 +51,7 @@ public record DailyPlanResponse(
                     aiPlan.getSubTitle(),
                     formatTime(aiPlan.getScheduledTime()),
                     aiPlan.getPlan().getPriority(),
-                    aiPlan.isDone()
+                    aiPlan.getStatus() == Status.DONE
             );
         }
     }

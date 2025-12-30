@@ -85,23 +85,6 @@ public class PlanQueryService {
 
         return PlanReadResponse.of(remainingCnt, planDtos);
     }
-
-    public PlanDurationResponse getExpectedDuration(PlanDurationCommand command) {
-        Long expectedDuration;
-
-        if (command.planType() == PlanType.BASIC) {
-            BasicPlan basicPlan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
-            expectedDuration = basicPlan.getExpectedDuration();
-        } else if (command.planType() == PlanType.AI) {
-            AiPlan aiPlan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
-            expectedDuration = (long) aiPlan.getExpectedDuration();
-        } else {
-            throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
-        }
-
-        return PlanDurationResponse.of(command.planType(), command.planId(), expectedDuration);
-    }
-
     /**
      * 캘린더 조회
      */
@@ -177,4 +160,19 @@ public class PlanQueryService {
         return PlanDetailResponse.fromAi(aiPlan);
     }
 
+    public PlanDurationResponse getExpectedDuration(PlanDurationCommand command) {
+        Long expectedDuration;
+
+        if (command.planType() == PlanType.BASIC) {
+            BasicPlan basicPlan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+            expectedDuration = basicPlan.getExpectedDuration();
+        } else if (command.planType() == PlanType.AI) {
+            AiPlan aiPlan = aiPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+            expectedDuration = (long) aiPlan.getExpectedDuration();
+        } else {
+            throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
+        }
+
+        return PlanDurationResponse.of(command.planType(), command.planId(), expectedDuration);
+    }
 }
