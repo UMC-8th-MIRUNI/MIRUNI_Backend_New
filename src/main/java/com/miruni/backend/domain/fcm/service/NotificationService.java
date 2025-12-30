@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import com.miruni.backend.domain.fcm.entity.FcmErrorResponse;
 import com.miruni.backend.domain.fcm.entity.FcmToken;
 import com.miruni.backend.domain.fcm.exception.FcmErrorCode;
 import com.miruni.backend.domain.plan.entity.AiPlan;
@@ -41,6 +42,7 @@ public class NotificationService {
     private final FirebaseMessaging firebaseMessaging;
     private final BasicPlanQueryService basicPlanQueryService;
     private final AiPlanQueryService aiPlanQueryService;
+    private final FcmTokenCommandService fcmTokenCommandService;
 
     //Plan 알림 등록
     public void scheduleNotification(BasicPlan plan){
@@ -94,53 +96,83 @@ public class NotificationService {
         log.info("AiPlan 알림 스케줄 등록 완료: planId = {}, startTime = {}", aiplan.getId(), aiplan.getScheduledTime());
     }
 
+    //알람 취소
+    public void cancelNotification(AiPlan aiplan){
+        cancelAllNotifications(aiplan.getPlan().getUser().getId(), aiplan.getId(), PlanType.AI_PLAN);
+    }
 
-    //활성화 토큰 여부 확인
+    //알람취소
+    public void cancelNotification(BasicPlan basicPlan){
+        cancelAllNotifications(basicPlan.getUser().getId(), basicPlan.getId(), PlanType.BASIC_PLAN);
+    }
+
+    //토큰 스케줄링
     private void scheduleAllNotifications(NotificationTask task) {
-        List<FcmToken> fcmTokens = fcmTokenQueryService.getTokensByUserId(task.userId());
+        scheduleAlarm(task, AlarmType.BEFORE_5MIN);
 
-        for (FcmToken fcmToken : fcmTokens) {
-            scheduleAlarm(task, AlarmType.BEFORE_5MIN, fcmToken.getToken());
+        scheduleAlarm(task, AlarmType.BEFORE_10MIN);
 
-            scheduleAlarm(task, AlarmType.BEFORE_10MIN, fcmToken.getToken());
+        scheduleAlarm(task, AlarmType.POPUP);
 
-            scheduleAlarm(task, AlarmType.POPUP, fcmToken.getToken());
+        scheduleAlarm(task, AlarmType.NAG);
 
-            scheduleAlarm(task, AlarmType.NAG, fcmToken.getToken());
-        }
+    }
+
+    private void cancelAllNotifications(Long userId, Long targetId, PlanType planType) {
+        cancelExistingSchedule(createScheduleKey(planType, targetId, AlarmType.BEFORE_5MIN ,userId));
+
+        cancelExistingSchedule(createScheduleKey(planType, targetId, AlarmType.BEFORE_10MIN ,userId));
+
+        cancelExistingSchedule(createScheduleKey(planType, targetId, AlarmType.NAG ,userId));
+
+        cancelExistingSchedule(createScheduleKey(planType, targetId, AlarmType.POPUP ,userId));
+
     }
 
 
     //스케줄러에 알람 등록
-    private void scheduleAlarm(NotificationTask task, AlarmType alarmType, String token) {
+    private void scheduleAlarm(NotificationTask task, AlarmType alarmType) {
         LocalDateTime notificationTime = calculateTime(task.scheduledTime, alarmType);
 
-        String scheduleKey = createScheduleKey(task.type(), task.targetId(), alarmType, token);
+        String scheduleKey = createScheduleKey(task.type(), task.targetId(), alarmType, task.userId());
 
 
         ScheduledFuture<?> future = taskScheduler.schedule(
-                () -> executeNotification(task, alarmType, token),
+                () -> executeNotification(task, alarmType, task.userId),
                 notificationTime.atZone(ZoneId.systemDefault()).toInstant()
         );
 
         scheduledTasks.put(scheduleKey, future);
     }
 
+    // == 알림 삭제 관련 메서드 == //
+    private void cancelExistingSchedule(String scheduleKey){
+        ScheduledFuture<?> existingFuture = scheduledTasks.remove(scheduleKey);
+        if (existingFuture != null && !existingFuture.isDone()) {
+            boolean cancelled = existingFuture.cancel(false);
+            log.debug("스케줄 취소: key = {}, 성공 = {}", scheduleKey, cancelled);
+        }
+    }
+
     //알람 실행 메서드
-    private void executeNotification(NotificationTask task, AlarmType alarmType, String token) {
+    private void executeNotification(NotificationTask task, AlarmType alarmType, Long userId) {
+        List<FcmToken>  fcmTokens = fcmTokenQueryService.getTokensByUserId(userId);
+
         try {
             if (!isTaskTodo(task))
                 return;
 
-            if(!canReceiveAlarm(alarmType, token))
-                return;
+            for (FcmToken fcmToken : fcmTokens) {
 
-            sendNotification(task, alarmType, token);
+                if (!canReceiveAlarm(alarmType, fcmToken.getToken()))
+                    continue;
 
+                sendNotification(task, alarmType, fcmToken.getToken());
+            }
         } catch (Exception e) {
             log.error("알림 전송 실패", e);
         } finally {
-            String scheduleKey = createScheduleKey(task.type(), task.targetId(), alarmType, token);
+            String scheduleKey = createScheduleKey(task.type(), task.targetId(), alarmType, task.userId);
             scheduledTasks.remove(scheduleKey);
         }
     }
@@ -179,8 +211,8 @@ public class NotificationService {
     }
 
     //스케줄키 생성
-    private String createScheduleKey(PlanType type, Long targetId, AlarmType alarmType, String token) {
-        return String.format("%s_%d_%s_%s", type.name(), targetId, alarmType.name(), token);
+    private String createScheduleKey(PlanType type, Long targetId, AlarmType alarmType, Long userId) {
+        return String.format("%s_%d_%s_%d", type.name(), targetId, alarmType.name(), userId);
     }
 
     //실제 알람 전송
@@ -202,10 +234,18 @@ public class NotificationService {
             firebaseMessaging.send(message);
 
         }catch (FirebaseMessagingException e){
-        throw BaseException.type(FcmErrorCode.FCM_SEND_FAILED);
+            String errorCode = e.getErrorCode().name();
+            if(shouldDeleteToken(errorCode)) {
+                fcmTokenCommandService.deleteInvalidToken(token);
+                log.warn("무효한 FCM 토큰 삭제: token={}, errorCode={}", token, errorCode);
+            } else{
+                log.warn("FCM 전송 실패: token={}, alarmType={}, errorCode={}, message={}",
+                        token, alarmType, errorCode, e.getMessage());
+            }
         }
     }
 
+    //스케줄 타임 계산
     private LocalDateTime validateAndGetScheduledTime(Status status, Long planId, LocalDateTime scheduledTime) {
         if (status == Status.DONE) {
             throw BaseException.type(FcmErrorCode.ALREADY_FINISHED_TASK);
@@ -219,6 +259,7 @@ public class NotificationService {
         return scheduledTime;
     }
 
+    // 일정 시작 했는지 안했는지 확인
     private boolean isTaskTodo(NotificationTask task){
         if(task.type == PlanType.BASIC_PLAN){
             BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(task.targetId, task.userId);
@@ -231,6 +272,7 @@ public class NotificationService {
         }
     }
 
+    //토큰 활성화 여부 체크
     private boolean canReceiveAlarm(AlarmType alarmType, String token) {
         FcmToken fcmToken = fcmTokenQueryService.getTokenByToken(token);
         if (fcmToken == null) return false;
@@ -241,6 +283,11 @@ public class NotificationService {
             case POPUP -> fcmToken.isPopupAlarm();
             case NAG -> fcmToken.isNagAlarm();
         };
+    }
+
+    // 유효한 토큰인지 확인
+    private boolean shouldDeleteToken(String errorCode){
+        return FcmErrorResponse.fromErrorCode(errorCode).isShouldDeleteToken();
     }
 
     // == 관련 record == //
