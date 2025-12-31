@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -53,30 +54,28 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
         SELECT COUNT(b) > 0
         FROM BasicPlan b
         WHERE b.user.id = :userId
-            AND b.scheduledDate = :date
-            AND (b.scheduledTime < :reqEndTime AND b.endTime > :reqStartTime)
+              AND b.startDateTime < :reqEndDateTime
+              AND b.endDateTime > :reqStartDateTime
     """)
     boolean existsOverlap(
             @Param("userId") Long userId,
-            @Param("date") LocalDate date,
-            @Param("reqStartTime") LocalTime reqStartTime,
-            @Param("reqEndTime") LocalTime reqEndTime
+            @Param("reqStartDateTime") LocalDateTime reqStartDateTime,
+            @Param("reqEndDateTime") LocalDateTime reqEndDateTime
     );
 
     @Query("""
         SELECT COUNT(b) > 0
         FROM BasicPlan b
         WHERE b.user.id = :userId
-            AND b.id != :excludeId
-            AND b.scheduledDate = :date
-            AND (b.scheduledTime < :reqEndTime AND b.endTime > :reqStartTime)
+              AND b.id != :excludeId
+              AND b.startDateTime < :reqEndDateTime
+              AND b.endDateTime > :reqStartDateTime
     """)
     boolean existsOverlapWithinUpdate(
             @Param("userId") Long userId,
             @Param("excludeId") Long excludeId,
-            @Param("date") LocalDate date,
-            @Param("reqStartTime") LocalTime reqStartTime,
-            @Param("reqEndTime") LocalTime reqEndTime
+            @Param("reqStartDateTime") LocalDateTime reqStartDateTime,
+            @Param("reqEndDateTime") LocalDateTime reqEndDateTime
     );
 
 }

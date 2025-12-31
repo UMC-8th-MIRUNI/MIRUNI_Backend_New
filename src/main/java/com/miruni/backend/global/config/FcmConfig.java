@@ -50,11 +50,11 @@ public class FcmConfig {
         // try (InputStream serviceAccount = new ClassPathResource(fcmKeyPath).getInputStream()) {
         try {
             FileInputStream serviceAccount = new FileInputStream(fcmKeyPath);
-            
+
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
-                    
+
             return FirebaseApp.initializeApp(options);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());

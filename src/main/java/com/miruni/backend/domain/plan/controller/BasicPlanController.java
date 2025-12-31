@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/plans")
 @RequiredArgsConstructor
@@ -19,8 +21,8 @@ public class BasicPlanController implements BasicPlanApi{
 
     @Override
     @PostMapping
-    public BasicPlanResponse createBasicPlan(@LoginUser Long userId,
-                                             @Valid @RequestBody BasicPlanSaveRequest request) {
+    public List<BasicPlanResponse> createBasicPlan(@LoginUser Long userId,
+                                                   @Valid @RequestBody BasicPlanSaveRequest request) {
 
         return basicPlanCommandService.createBasicPlan(BasicPlanCreateCommand.of(userId, request));
     }

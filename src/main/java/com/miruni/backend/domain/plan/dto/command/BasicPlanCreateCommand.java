@@ -9,18 +9,23 @@ public record BasicPlanCreateCommand(
         Long userId,
         String title,
         String description,
-        LocalDate scheduledDate,
+        LocalDate startDate,
+        LocalDate endDate,     // nullable
         LocalTime startTime,
         LocalTime endTime,
         String priority
 ) {
 
-    public static BasicPlanCreateCommand of(Long userId, BasicPlanSaveRequest request) {
+    public static BasicPlanCreateCommand of(
+            Long userId,
+            BasicPlanSaveRequest request
+    ) {
         return new BasicPlanCreateCommand(
                 userId,
                 request.title(),
                 request.description(),
-                request.scheduledDate(),
+                request.startDate(),
+                request.endDate(),   // nullable
                 request.startTime(),
                 request.endTime(),
                 request.priority()

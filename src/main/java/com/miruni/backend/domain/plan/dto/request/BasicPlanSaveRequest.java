@@ -8,7 +8,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public record BasicPlanSaveRequest(
@@ -21,34 +23,28 @@ public record BasicPlanSaveRequest(
         @Schema(example = "설명입니다")
         String description,
 
-        @NotNull(message = "날짜는 필수입니다.")
-        @JsonFormat(pattern = "yyyy.MM.dd")
-        @Schema(type = "string", example = "2025.11.08")
-        LocalDate scheduledDate,
+        @NotNull(message = "시작 날짜는 필수입니다.")
+        @Schema(description = "시작 날짜", example = "2025-11-20", type = "string", format = "date")
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDate startDate,
 
-        @NotNull(message = "시작 시각은 필수입니다.")
+        @Schema(description = "종료 날짜(없으면 단일 일정)", example = "2025-11-22", nullable = true, type = "string", format = "date")
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDate endDate,
+
+        @NotNull(message = "시작 시간은 필수입니다.")
+        @NotNull
+        @Schema(description = "시작 시간", example = "23:00", type = "string", format = "time")
         @JsonFormat(pattern = "HH:mm")
-        @Schema(type = "string", example = "10:00")
         LocalTime startTime,
 
-        @NotNull(message = "종료 시각은 필수입니다.")
+        @NotNull(message = "종료 시간은 필수입니다.")
+        @Schema(description = "종료 시간", example = "00:30", type = "string", format = "time")
         @JsonFormat(pattern = "HH:mm")
-        @Schema(type = "string", example = "11:30")
         LocalTime endTime,
 
         @NotBlank(message = "우선 순위는 필수입니다.")
         @Schema(example = "상")
         String priority
 ) {
-    public BasicPlan toEntity(User user, Long expectedDuration, Priority mappedPriority) {
-        return BasicPlan.builder()
-                .title(this.title)
-                .description(this.description)
-                .scheduledDate(this.scheduledDate)
-                .scheduledTime(this.startTime)
-                .expectedDuration(expectedDuration)
-                .priority(mappedPriority)
-                .user(user)
-                .build();
-    }
 }

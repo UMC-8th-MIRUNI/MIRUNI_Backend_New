@@ -4,6 +4,7 @@ package com.miruni.backend.domain.plan.dto.command;
 import com.miruni.backend.domain.plan.dto.request.BasicPlanSaveRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public record BasicPlanUpdateCommand(
@@ -12,21 +13,42 @@ public record BasicPlanUpdateCommand(
         Long planId,
         String title,
         String description,
-        LocalDate scheduledDate,
-        LocalTime startTime,
-        LocalTime endTime,
+        LocalDateTime startDateTime,
+        LocalDateTime endDateTime,
         String priority
 ) {
 
-    public static BasicPlanUpdateCommand of(Long userId, Long planId, BasicPlanSaveRequest request) {
+    public static BasicPlanUpdateCommand of(
+            Long userId,
+            Long planId,
+            BasicPlanSaveRequest request
+    ) {
+        LocalDate startDate = request.startDate();
+        LocalDate endDate = request.endDate(); // nullable
+        LocalTime startTime = request.startTime();
+        LocalTime endTime = request.endTime();
+
+        // 시작 시간
+        LocalDateTime startDateTime =
+                LocalDateTime.of(startDate, startTime);
+
+        LocalDateTime endDateTime;
+
+        if (endDate == null) {
+            // 단일 일정
+            endDateTime = LocalDateTime.of(startDate, endTime);
+        } else {
+            // 기간 일정
+            endDateTime = LocalDateTime.of(endDate, endTime);
+        }
+
         return new BasicPlanUpdateCommand(
                 userId,
                 planId,
                 request.title(),
                 request.description(),
-                request.scheduledDate(),
-                request.startTime(),
-                request.endTime(),
+                startDateTime,
+                endDateTime,
                 request.priority()
         );
     }
