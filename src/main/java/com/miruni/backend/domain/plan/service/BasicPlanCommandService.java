@@ -15,11 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,7 +87,7 @@ public class BasicPlanCommandService {
             }
         }
 
-        // 검증 모두 통과하면 한 번에 저장
+        // 여러 일정들 검증 모두 통과하면 한 번에 저장
         basicPlanRepository.saveAll(plans);
 
         return plans.stream()

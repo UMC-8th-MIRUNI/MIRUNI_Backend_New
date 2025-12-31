@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -41,15 +42,6 @@ public class PlanCommandService {
         LocalDateTime now = LocalDateTime.now();
         int durationMinutes = parseTimeToMinutes(request.durationStr());
         LocalDateTime endDateTime = now.plusMinutes(durationMinutes);
-
-        LocalDate date = now.toLocalDate();
-        LocalTime startTime = now.toLocalTime();
-        LocalTime endTimeOnly = endDateTime.toLocalTime();
-
-        if (!endTimeOnly.isAfter(startTime)) {
-            endDateTime = endDateTime.plusDays(1);
-            endTimeOnly = endDateTime.toLocalTime();
-        }
 
         if (request.planType() == PlanType.BASIC) {
             scheduleValidator.validateConflictForBasicPlan(request.userId(), request.planId(), now, endDateTime);
@@ -75,18 +67,20 @@ public class PlanCommandService {
         User user = userQueryService.getUserById(command.userId());
 
         int expectedMinutes = parseTimeToMinutes(command.expectedTime());
-        int actualMinutes = parseTimeToMinutes(command.actualTime());
-        int peanutCount = calculatePeanuts(expectedMinutes, actualMinutes);
+        int actualMinutes;
 
        Status status;
        switch (command.planType()) {
            case BASIC -> {
-               BasicPlan basicplan = getBasicPlan(command.planId(), command.userId());
-               basicplan.complete();
-               status = basicplan.getStatus();
+               BasicPlan basicPlan = getBasicPlan(command.planId(), command.userId());
+               actualMinutes = (int) Duration.between(basicPlan.getUpdatedAt(), LocalDateTime.now()).toMinutes();
+               basicPlan.complete();
+               status = basicPlan.getStatus();
            }
            case AI -> {
                AiPlan aiPlan = getAiPlan(command.planId(), command.userId());
+               actualMinutes = (int) Duration.between(aiPlan.getUpdatedAt(), LocalDateTime.now()).toMinutes();
+
                aiPlan.complete();
                status = aiPlan.getStatus();
 
@@ -96,6 +90,7 @@ public class PlanCommandService {
            default -> throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
        }
 
+        int peanutCount = calculatePeanuts(expectedMinutes, actualMinutes);
         user.addPeanuts(peanutCount);
 
         return PlanFinishResponse.of(peanutCount, command.planType(), command.planId(), status);

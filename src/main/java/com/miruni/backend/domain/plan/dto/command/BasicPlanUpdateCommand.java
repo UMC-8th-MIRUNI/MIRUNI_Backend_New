@@ -24,7 +24,7 @@ public record BasicPlanUpdateCommand(
             BasicPlanSaveRequest request
     ) {
         LocalDate startDate = request.startDate();
-        LocalDate endDate = request.endDate(); // nullable
+        LocalDate endDate = request.endDate();
         LocalTime startTime = request.startTime();
         LocalTime endTime = request.endTime();
 
