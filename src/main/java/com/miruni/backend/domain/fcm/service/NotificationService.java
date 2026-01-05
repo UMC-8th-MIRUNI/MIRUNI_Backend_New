@@ -161,7 +161,7 @@ public class NotificationService {
 
             for (FcmToken fcmToken : fcmTokens) {
 
-                if (!canReceiveAlarm(alarmType, fcmToken.getToken()))
+                if (!canReceiveAlarm(alarmType, fcmToken))
                     continue;
 
                 sendNotification(task, alarmType, fcmToken.getToken());
@@ -270,8 +270,7 @@ public class NotificationService {
     }
 
     //토큰 활성화 여부 체크
-    private boolean canReceiveAlarm(AlarmType alarmType, String token) {
-        FcmToken fcmToken = fcmTokenQueryService.getTokenByToken(token);
+    private boolean canReceiveAlarm(AlarmType alarmType, FcmToken fcmToken) {
         if (fcmToken == null) return false;
 
         return switch (alarmType) {
