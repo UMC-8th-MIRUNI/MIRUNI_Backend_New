@@ -2,6 +2,9 @@ package com.miruni.backend.domain.user.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
@@ -29,14 +32,10 @@ public enum DelayReason {
         return mask & ~reason.getValue();
     }
 
-    public static java.util.Set<DelayReason> fromMask(long mask) {
-        java.util.Set<DelayReason> reasons = new java.util.HashSet<>();
-        for (DelayReason reason : values()) {
-            if (isSet(mask, reason)) {
-                reasons.add(reason);
-            }
-        }
-        return reasons;
+    public static Set<DelayReason> fromMask(long mask) {
+        return Arrays.stream(values())
+            .filter(reason -> isSet(mask, reason))
+            .collect(Collectors.toSet());
     }
 
     public static long createMask(java.util.Set<DelayReason> reasons) {

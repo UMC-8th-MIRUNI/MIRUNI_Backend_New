@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/surveys")
 @RequiredArgsConstructor
-@Validated
 public class SurveyController implements SurveyApi {
 
     private final UserQueryService userQueryService;

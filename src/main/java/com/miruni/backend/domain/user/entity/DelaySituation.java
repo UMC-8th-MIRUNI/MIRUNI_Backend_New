@@ -2,6 +2,9 @@ package com.miruni.backend.domain.user.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
@@ -28,17 +31,13 @@ public enum DelaySituation {
         return mask & ~situation.getValue();
     }
 
-    public static java.util.Set<DelaySituation> fromMask(long mask) {
-        java.util.Set<DelaySituation> situations = new java.util.HashSet<>();
-        for (DelaySituation situation : values()) {
-            if (isSet(mask, situation)) {
-                situations.add(situation);
-            }
-        }
-        return situations;
+    public static Set<DelaySituation> fromMask(long mask) {
+        return Arrays.stream(values())
+            .filter(situation -> isSet(mask, situation))
+            .collect(Collectors.toSet());
     }
 
-    public static long createMask(java.util.Set<DelaySituation> situations) {
+    public static long createMask(Set<DelaySituation> situations) {
         long mask = 0;
         for (DelaySituation situation : situations) {
             mask = addToMask(mask, situation);

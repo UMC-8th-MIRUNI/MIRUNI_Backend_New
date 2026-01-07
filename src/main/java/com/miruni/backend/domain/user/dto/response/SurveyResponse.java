@@ -5,7 +5,6 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-@Builder
 @Schema(description = "설문조사 수정/완료 응답")
 public record SurveyResponse(
         @Schema(description = "메시지", example = "설문조사가 수정되었습니다!")
