@@ -20,6 +20,8 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_API_URL=${GEMINI_API_URL}
       - FCM_KEY_PATH=${FCM_KEY_PATH}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
     volumes:
       - /home/ubuntu/firebase/serviceAccount.json:/app/firebase/serviceAccount.json:ro
     depends_on:
