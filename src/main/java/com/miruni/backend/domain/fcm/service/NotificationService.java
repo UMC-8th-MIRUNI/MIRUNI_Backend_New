@@ -30,7 +30,6 @@ import java.util.concurrent.ScheduledFuture;
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
-
     private final TaskScheduler taskScheduler;
 
     // 스케줄된 작업들을 추적하는 맵
