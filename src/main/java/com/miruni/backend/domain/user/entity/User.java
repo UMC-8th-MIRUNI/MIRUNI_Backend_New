@@ -9,7 +9,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,6 +93,26 @@ public class User extends BaseEntity {
 
     public void changeRole(UserRole role) {
         this.role = role;
+    }
+
+    public void updateProfile(ProfileImage profileImage, String nickname) {
+        this.profileImage = profileImage;
+        this.nickname = nickname;
+    }
+
+    public void updateUserInfo(String name, LocalDate birth, String phoneNumber, String email) {
+        this.name = name;
+        this.birth = birth;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
+
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public boolean isSocialUser() {
+        return this.oauthProvider != null;
     }
 
     // ===== 정적 팩토리 메서드 =====

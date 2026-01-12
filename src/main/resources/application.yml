@@ -43,7 +43,7 @@ gemini:
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
 
 jwt:
-  secret: ${JWT_SECRET_KEY}
+  secret: ${JWT_SECRET}
   access-token-expiration: 3600000      
   refresh-token-expiration: 604800000
   temp-token-expiration: 300000
@@ -56,3 +56,5 @@ miruni:
       from-address: "miruniumc@gmail.com"
       from-name: "Miruni"
       subject: "🔐 Miruni 회원가입 인증 코드"
+
+
