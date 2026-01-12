@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,10 @@ public class PlanQueryService {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
 
-        List<MonthlyPlanResponse> basicPlans = basicPlanRepository.countUnfinishedBasicPlansByDate(userId, startDate, endDate);
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+
+        List<MonthlyPlanResponse> basicPlans = basicPlanRepository.countUnfinishedBasicPlansByDate(userId, startDateTime, endDateTime);
         List<MonthlyPlanResponse> aiPlans = aiPlanRepository.countUnfinishedAiPlansByDate(userId, startDate, endDate);
 
         return Stream.concat(basicPlans.stream(), aiPlans.stream())
@@ -71,7 +75,7 @@ public class PlanQueryService {
                         aiPlanRepository.findDailyAiPlans(userId, date).stream()
                                 .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
                 )
-                .sorted(Comparator.comparing(DailyPlanResponse.DailyPlanItemResponse::scheduledTime))
+                .sorted(Comparator.comparing(DailyPlanResponse.DailyPlanItemResponse::startTime))
                 .toList();
 
         Map<Boolean, List<DailyPlanResponse.DailyPlanItemResponse>> plansByStatus = plans.stream()

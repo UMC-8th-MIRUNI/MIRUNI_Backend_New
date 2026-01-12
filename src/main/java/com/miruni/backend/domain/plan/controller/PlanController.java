@@ -79,8 +79,7 @@ public class PlanController implements PlanApi{
                 planType,
                 id,
                 userId,
-                request.expectedTime(),
-                request.actualTime()
+                request.expectedTime()
         );
 
         return planCommandService.finishPlan(command);

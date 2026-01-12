@@ -8,8 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -34,14 +33,11 @@ public class BasicPlan extends BaseEntity {
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "scheduled_date", nullable = false)
-    private LocalDate scheduledDate;
+    @Column(name = "start_date_time", nullable = false)
+    private LocalDateTime startDateTime;
 
-    @Column(name = "scheduled_time", nullable = false)
-    private LocalTime scheduledTime;
-
-    @Column(name = "end_time", nullable = false)
-    private LocalTime endTime;
+    @Column(name = "end_date_time", nullable = false)
+    private LocalDateTime endDateTime;
 
     @Column(name = "expected_duration", nullable = false)
     private Long expectedDuration;
@@ -55,46 +51,37 @@ public class BasicPlan extends BaseEntity {
     @Column(name = "priority", length = 10)
     private Priority priority;
 
-    public void update(String title, String description, LocalDate scheduledDate,
-                       LocalTime startTime, LocalTime endTime, Priority priority) {
-        validateTimeRange(startTime, endTime);
+    public void update(String title, String description, LocalDateTime startDateTime,
+                       LocalDateTime endDateTime, Priority priority) {
 
         this.title = title;
         this.description = description;
-        this.scheduledDate = scheduledDate;
-        this.scheduledTime = startTime;
-        this.endTime = endTime;
-        this.expectedDuration = Duration.between(startTime, endTime).toMinutes();
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.expectedDuration = Duration.between(startDateTime, endDateTime).toMinutes();
         this.priority = priority;
     }
 
-    public static BasicPlan create(User user, String title, String description, LocalDate scheduledDate,
-                            LocalTime startTime, LocalTime endTime, Priority priority) {
-        validateTimeRange(startTime, endTime);
-        long expectedDuration = Duration.between(startTime, endTime).toMinutes();
+    public static BasicPlan create(User user, String title, String description, LocalDateTime startDateTime,
+                            LocalDateTime endDateTime, Priority priority) {
+        long expectedDuration = Duration.between(startDateTime, endDateTime).toMinutes();
         return BasicPlan.builder()
                 .user(user)
                 .title(title)
                 .description(description)
-                .scheduledDate(scheduledDate)
-                .scheduledTime(startTime)
-                .endTime(endTime)
+                .startDateTime(startDateTime)
+                .endDateTime(endDateTime)
                 .expectedDuration(expectedDuration)
                 .priority(priority)
                 .build();
     }
 
-    private static void validateTimeRange(LocalTime start, LocalTime end) {
-        if (start.isAfter(end)) {
-            throw BaseException.type(BasicPlanErrorCode.INVALID_TIME_RANGE);
-        }
-    }
 
     public void complete() { this.status = Status.DONE; }
     public void start() { this.status = Status.IN_PROGRESS; }
     public void pause() { this.status = Status.TODO; }
-    public void rescheduleTime(LocalTime newScheduledTime) {
-        this.scheduledTime = newScheduledTime;
-        this.endTime = newScheduledTime.plusMinutes(this.getExpectedDuration());
+    public void rescheduleTime(LocalDateTime newScheduledTime) {
+        this.startDateTime = newScheduledTime;
+        this.endDateTime = newScheduledTime.plusMinutes(this.getExpectedDuration());
     }
 }
