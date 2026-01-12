@@ -11,4 +11,4 @@ public record EmailVerificationProperties (
         String subject
 ){
 
-}
+}       

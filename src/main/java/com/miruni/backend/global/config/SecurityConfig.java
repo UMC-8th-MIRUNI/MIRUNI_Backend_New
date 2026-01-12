@@ -55,9 +55,20 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/actuator/**",
-                                "/api/**"
+                                "/actuator/**"
                         ).permitAll()
+
+                        .requestMatchers(
+                            "/api/auth/token",
+                            "/api/auth/signup",
+                            "/api/auth/signup/**",
+                            "/api/auth/social/google",
+                            "/api/auth/social/kakao",
+                            "/api/auth/password/reset",
+                            "/api/auth/password/reset/**"
+                        ).permitAll()
+                        
+                        // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
                 // 인증/인가 예외 처리
@@ -78,33 +89,31 @@ public class SecurityConfig {
 
     /**
      * 인증 실패 시 처리 (401 Unauthorized)
-     * 인증되지 않은 사용자가 보호된 리소스에 접근할 때
      */
     @Bean
     public AuthenticationEntryPoint customAuthenticationEntryPoint() {
         return (request, response, authException) -> {
             log.warn("인증 실패: {}", authException.getMessage());
-            setErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, CommonErrorCode.UNAUTHORIZED);
+            setErrorResponse(response, CommonErrorCode.UNAUTHORIZED);
         };
     }
 
     /**
      * 인가 실패 시 처리 (403 Forbidden)
-     * 인증은 되었지만 권한이 없을 때
      */
     @Bean
     public AccessDeniedHandler customAccessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
             log.warn("접근 거부: {}", accessDeniedException.getMessage());
-            setErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, CommonErrorCode.FORBIDDEN);
+            setErrorResponse(response, CommonErrorCode.FORBIDDEN);
         };
     }
 
     /**
      * 공통 에러 응답 설정
      */
-    private void setErrorResponse(HttpServletResponse response, int status, CommonErrorCode errorCode) throws IOException {
-        response.setStatus(status);
+    private void setErrorResponse(HttpServletResponse response, CommonErrorCode errorCode) throws IOException {
+        response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
