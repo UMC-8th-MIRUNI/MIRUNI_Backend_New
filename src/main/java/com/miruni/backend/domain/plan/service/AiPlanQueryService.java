@@ -4,6 +4,7 @@ import com.miruni.backend.domain.plan.dto.response.AiPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.AiPlanTableDto;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
+import com.miruni.backend.domain.plan.entity.Status;
 import com.miruni.backend.domain.user.service.UserQueryService;
 import com.miruni.backend.global.exception.BaseException;
 import com.miruni.backend.global.exception.CommonErrorCode;
@@ -44,9 +45,10 @@ public class AiPlanQueryService {
         }
         List<AiPlan> aiPlanList = plan.getAiPlans();
 
-        // 진행률 계산 로직(임시)
         int totalCnt = aiPlanList.size();
-        int doneCnt = (int) aiPlanList.stream().filter(AiPlan::isDone).count();
+        int doneCnt = (int) aiPlanList.stream()
+                .filter(aiPlan -> aiPlan.getStatus() == Status.DONE)
+                .count();
         int progressRate = (totalCnt == 0) ? 0 : (int) ((double) doneCnt / totalCnt * 100);
 
         List<AiPlanTableDto> aiPlanResponses = aiPlanList.stream()
@@ -57,7 +59,8 @@ public class AiPlanQueryService {
                             aiPlan.getStartDateTime().toLocalTime(),
                             aiPlan.getEndDateTime().toLocalTime(),
                             aiPlan.getSubTitle(),
-                            aiPlan.getExpectedDuration()
+                            aiPlan.getExpectedDuration(),
+                            aiPlan.getStatus()
                     );
                 }).toList();
 

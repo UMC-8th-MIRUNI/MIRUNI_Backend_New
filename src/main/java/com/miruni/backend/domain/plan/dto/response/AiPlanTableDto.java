@@ -1,6 +1,7 @@
 package com.miruni.backend.domain.plan.dto.response;
 
 import com.miruni.backend.domain.plan.entity.Plan;
+import com.miruni.backend.domain.plan.entity.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,9 +31,16 @@ public record AiPlanTableDto(
         String subTitle,
 
         @Schema(description = "예상 소요 시간", example = "40")
-        int expectedDuration
+        int expectedDuration,
+
+        @Schema(description = "진행 상태", example = "DONE")
+        Status status
 ) {
-    public static AiPlanTableDto of(Long aiPlanId, LocalDate scheduledDate, LocalTime startTime, LocalTime endTime, String subTitle, int expectedDuration) {
-        return new AiPlanTableDto(aiPlanId, scheduledDate, startTime, endTime, subTitle, expectedDuration);
+    public static AiPlanTableDto of(Long aiPlanId,
+                                    LocalDate scheduledDate,
+                                    LocalTime startTime, LocalTime endTime,
+                                    String subTitle,
+                                    int expectedDuration, Status status) {
+        return new AiPlanTableDto(aiPlanId, scheduledDate, startTime, endTime, subTitle, expectedDuration, status);
     }
 }

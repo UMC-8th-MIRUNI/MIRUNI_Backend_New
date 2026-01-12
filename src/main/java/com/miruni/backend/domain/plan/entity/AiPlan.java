@@ -34,37 +34,37 @@ public class AiPlan extends BaseEntity {
     @Column(name = "expected_duration", nullable = false)
     private int expectedDuration;
 
-    @Column(name = "is_done", nullable = false)
-    private boolean isDone = false;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private Status status = Status.TODO;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public AiPlan(Plan plan, final String subTitle, final LocalDateTime startDateTime, final LocalDateTime endDateTime, final int expectedDuration) {
+    public AiPlan(Plan plan, final String subTitle, final LocalDateTime startDateTime, final LocalDateTime endDateTime, final int expectedDuration, final Status status) {
         this.plan = plan;
         this.subTitle = subTitle;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.expectedDuration = expectedDuration;
+        this.status = status;
     }
 
-    public static AiPlan create(Plan plan, final String subTitle, final LocalDateTime startDateTime, final LocalDateTime endDateTime, final int expectedDuration) {
+    public static AiPlan create(Plan plan, final String subTitle, final LocalDateTime startDateTime, final LocalDateTime endDateTime, final int expectedDuration, final Status status) {
         return AiPlan.builder()
                 .plan(plan)
                 .subTitle(subTitle)
                 .startDateTime(startDateTime)
                 .endDateTime(endDateTime)
                 .expectedDuration(expectedDuration)
+                .status(status)
                 .build();
     }
 
-    public void updateDetails(String subTitle, LocalDateTime startDateTime, LocalDateTime endDateTime,  int expectedDuration) {
+    public void updateDetails(String subTitle, LocalDateTime startDateTime, LocalDateTime endDateTime,  int expectedDuration, Status status) {
         this.subTitle = subTitle;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.expectedDuration = expectedDuration;
+        this.status = status;
     }
     public void complete() { this.status = Status.DONE; }
     public void start() { this.status = Status.IN_PROGRESS; }
