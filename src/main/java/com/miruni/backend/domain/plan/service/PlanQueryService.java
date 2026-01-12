@@ -131,31 +131,31 @@ public class PlanQueryService {
     /**
      * 일정 상세 조회
      */
-    public PlanDetailResponse getPlanDetail(Long userId, Long planId, PlanType planType) {
-        return switch (planType) {
-            case PlanType.BASIC -> getBasicPlanDetail(userId, planId);
-            case PlanType.AI -> getAiPlanDetail(userId, planId);
-            default -> throw BaseException.type(CommonErrorCode.INVALID_REQUEST);
-        };
-    }
+//    public PlanDetailResponse getPlanDetail(Long userId, Long planId, PlanType planType) {
+//        return switch (planType) {
+//            case PlanType.BASIC -> getBasicPlanDetail(userId, planId);
+//            case PlanType.AI -> getAiPlanDetail(userId, planId);
+//            default -> throw BaseException.type(CommonErrorCode.INVALID_REQUEST);
+//        };
+//    }
 
-    private PlanDetailResponse getBasicPlanDetail(Long userId, Long planId) {
-        BasicPlan basicPlan = basicPlanRepository.findById(planId)
-                .orElseThrow(() -> BaseException.type(BasicPlanErrorCode.BASIC_PLAN_NOT_FOUND));
-
-        if (!userId.equals(basicPlan.getUser().getId())) {
-            throw BaseException.type(BasicPlanErrorCode.BASIC_PLAN_FORBIDDEN);
-        }
-        return PlanDetailResponse.fromBasic(basicPlan);
-    }
-
-    private PlanDetailResponse getAiPlanDetail(Long userId, Long planId) {
-        AiPlan aiPlan = aiPlanRepository.findById(planId)
-                .orElseThrow(() -> BaseException.type(AiPlanErrorCode.AI_PLAN_NOT_FOUND));
-
-        if (!userId.equals(aiPlan.getPlan().getUser().getId())) {
-            throw BaseException.type(AiPlanErrorCode.AI_PLAN_FORBIDDEN);
-        }
-        return PlanDetailResponse.fromAi(aiPlan);
-    }
+//    private PlanDetailResponse getBasicPlanDetail(Long userId, Long planId) {
+//        BasicPlan basicPlan = basicPlanRepository.findById(planId)
+//                .orElseThrow(() -> BaseException.type(BasicPlanErrorCode.BASIC_PLAN_NOT_FOUND));
+//
+//        if (!userId.equals(basicPlan.getUser().getId())) {
+//            throw BaseException.type(BasicPlanErrorCode.BASIC_PLAN_FORBIDDEN);
+//        }
+//        return PlanDetailResponse.fromBasic(basicPlan);
+//    }
+//
+//    private PlanDetailResponse getAiPlanDetail(Long userId, Long planId) {
+//        AiPlan aiPlan = aiPlanRepository.findById(planId)
+//                .orElseThrow(() -> BaseException.type(AiPlanErrorCode.AI_PLAN_NOT_FOUND));
+//
+//        if (!userId.equals(aiPlan.getPlan().getUser().getId())) {
+//            throw BaseException.type(AiPlanErrorCode.AI_PLAN_FORBIDDEN);
+//        }
+//        return PlanDetailResponse.fromAi(aiPlan);
+//    }
 }
