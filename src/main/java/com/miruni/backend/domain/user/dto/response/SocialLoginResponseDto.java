@@ -13,7 +13,7 @@ public record SocialLoginResponseDto(
         @Schema(description = "이번 요청이 신규 소셜 유저인지 여부")
         boolean isNewUser,
 
-        @Schema(description = "발급된 JWT 토큰 정보 (ROLE_GUEST 또는 ROLE_USER)")
+        @Schema(description = "발급된 JWT 토큰 정보 (가입 미완료는 ROLE_GUEST(PENDING_SIGNUP), 가입 완료는 ROLE_USER)")
         JwtResponseDto tokens
 ) {
 

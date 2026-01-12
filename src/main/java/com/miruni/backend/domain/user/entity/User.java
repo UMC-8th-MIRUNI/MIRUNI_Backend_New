@@ -60,21 +60,23 @@ public class User extends BaseEntity {
     private ProfileImage profileImage;
 
     @OneToMany(mappedBy = "user")
+    @Builder.Default
     private List<Agreement> agreements = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Survey survey;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Plan> plans = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<BasicPlan> basicPlans = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
+    @Builder.Default
     private List<Question> questions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<FcmToken> fcmTokens = new ArrayList<>();
 
     // ===== 비즈니스 로직 =====
@@ -89,10 +91,6 @@ public class User extends BaseEntity {
 
     public void changeRole(UserRole role) {
         this.role = role;
-    }
-
-    public Survey getSurvey() {
-        return this.survey;
     }
 
     // ===== 정적 팩토리 메서드 =====
@@ -111,7 +109,7 @@ public class User extends BaseEntity {
     }
 
     /**
-     * 소셜 로그인 신규 유저 (ROLE_GUEST)
+     * 소셜 로그인 신규 유저 (가입 미완료: ROLE_GUEST)
      */
     public static User createSocialGuest(String name, String email, String encodedPassword, String nickname, OauthProvider provider) {
         return User.builder()
@@ -120,7 +118,7 @@ public class User extends BaseEntity {
                 .password(encodedPassword)
                 .nickname(nickname)
                 .oauthProvider(provider)
-                .role(UserRole.GUEST)
+                .role(UserRole.PENDING_SIGNUP)
                 .build();
     }
 }

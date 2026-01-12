@@ -1,12 +1,11 @@
 package com.miruni.backend.domain.user.repository;
 
 import com.miruni.backend.domain.user.entity.Agreement;
-import com.miruni.backend.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AgreementRepository extends JpaRepository<Agreement, Long> {
-    boolean existsByUser(User user);
+    boolean existsByUserId(Long userId);
 }
 

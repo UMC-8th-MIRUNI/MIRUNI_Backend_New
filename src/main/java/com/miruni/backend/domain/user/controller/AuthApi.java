@@ -301,7 +301,7 @@ public interface AuthApi {
 
     @Operation(
             summary = "소셜 회원가입 완료",
-            description = "ROLE_GUEST 상태의 소셜 유저가 필수 약관 및 닉네임을 제출하여 최종 회원가입을 완료합니다."
+            description = "가입 미완료(ROLE_GUEST, PENDING_SIGNUP) 소셜 유저가 필수 약관 및 닉네임을 제출하여 최종 회원가입을 완료합니다."
     )
     @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "JWT")
     @ApiResponses({

@@ -113,7 +113,7 @@ public class UserCommandService {
                 .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
 
         // 기존 설문이 있으면 수정, 없으면 새로 생성
-        Survey survey = user.getSurvey();
+        Survey survey = surveyRepository.findByUserId(userId);
 
         if (survey == null) {
             survey = Survey.create(
