@@ -47,20 +47,20 @@ public interface PlanApi {
 //    })
 //    DailyPlanResponse getDailyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month, @RequestParam int day);
 
-    @Operation(
-            summary = "특정 일정 조회",
-            description = "특정 일정을 조회합니다."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "일정 조회 성공"),
-            @ApiResponse(responseCode = "403", description = "해당 일정에 권한 없음",
-                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 일정",
-                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
-            )
-    })
-    PlanDetailResponse getPlanDetail(@LoginUser Long userId, @PathVariable Long planId, @RequestParam PlanType planType);
+//    @Operation(
+//            summary = "특정 일정 조회",
+//            description = "특정 일정을 조회합니다."
+//    )
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "일정 조회 성공"),
+//            @ApiResponse(responseCode = "403", description = "해당 일정에 권한 없음",
+//                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
+//            ),
+//            @ApiResponse(responseCode = "404", description = "존재하지 않는 일정",
+//                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
+//            )
+//    })
+//    PlanDetailResponse getPlanDetail(@LoginUser Long userId, @PathVariable Long planId, @RequestParam PlanType planType);
 
 
     @Operation(summary = "일정 예상 소요 시간 조회",

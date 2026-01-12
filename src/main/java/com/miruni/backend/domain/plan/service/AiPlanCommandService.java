@@ -10,6 +10,7 @@ import com.miruni.backend.domain.plan.dto.response.AiPlanUpdateResponse;
 import com.miruni.backend.domain.plan.dto.response.AiPlansDeleteResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
+import com.miruni.backend.domain.plan.entity.Status;
 import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.plan.repository.PlanRepository;
@@ -73,7 +74,8 @@ public class AiPlanCommandService {
                             dto.subTitle(),
                             dto.scheduledDate().atTime(dto.startTime()),
                             dto.scheduledDate().atTime(dto.endTime()),
-                            dto.expectedDuration()
+                            dto.expectedDuration(),
+                            Status.DONE
                     ))
                     .toList();
 
@@ -104,7 +106,8 @@ public class AiPlanCommandService {
                 command.subTitle(),
                 command.scheduledDate().atTime(command.startTime()),
                 command.scheduledDate().atTime(command.endTime()),
-                aiPlan.getExpectedDuration()
+                aiPlan.getExpectedDuration(),
+                aiPlan.getStatus()
 
         );
         return AiPlanUpdateResponse.fromEntity(aiPlan, plan);

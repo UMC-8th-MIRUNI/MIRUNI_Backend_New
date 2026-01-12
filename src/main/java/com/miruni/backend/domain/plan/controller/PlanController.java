@@ -45,10 +45,10 @@ public class PlanController implements PlanApi{
 //        return planQueryService.getDailyPlan(userId, year, month, day);
 //    }
 
-    @GetMapping("/{planId}")
-    public PlanDetailResponse getPlanDetail(@LoginUser Long userId, @PathVariable Long planId, @RequestParam PlanType planType) {
-        return planQueryService.getPlanDetail(userId, planId, planType);
-    }
+//    @GetMapping("/{planId}")
+//    public PlanDetailResponse getPlanDetail(@LoginUser Long userId, @PathVariable Long planId, @RequestParam PlanType planType) {
+//        return planQueryService.getPlanDetail(userId, planId, planType);
+//    }
 
     @Override
     @GetMapping("/{planId}/expected-duration")

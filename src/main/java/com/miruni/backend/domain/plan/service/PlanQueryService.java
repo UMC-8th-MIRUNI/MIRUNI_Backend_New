@@ -12,6 +12,7 @@ import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
+import com.miruni.backend.domain.plan.entity.Status;
 import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import com.miruni.backend.domain.plan.repository.PlanRepository;
 import com.miruni.backend.domain.user.entity.User;
@@ -63,10 +64,8 @@ public class PlanQueryService {
 
                     int totalCnt = aiPlans.size();
                     int doneCnt = (int) aiPlans.stream()
-                            .filter(AiPlan::isDone)
+                            .filter(aiPlan -> aiPlan.getStatus() == Status.DONE)
                             .count();
-
-                    // 임시 방안
                     int progressRate = (totalCnt == 0) ? 0 : (int) ((double) doneCnt / totalCnt * 100);
 
                     boolean isDone = (totalCnt > 0 && doneCnt == totalCnt);

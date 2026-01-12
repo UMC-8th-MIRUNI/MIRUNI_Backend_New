@@ -90,7 +90,7 @@ public class PlanCommandService {
         List<AiPlan> aiPlans = aiPlanRepository.findByPlanId(parentPlan.getId());
 
         int total = aiPlans.size();
-        int doneCount = (int) aiPlans.stream().filter(AiPlan::isDone).count();
+        int doneCount = (int) aiPlans.stream().filter(aiPlan -> aiPlan.getStatus() == Status.DONE).count();
 
         int progressRate = (total == 0) ? 0 : (doneCount * 100 / total);
         parentPlan.updateProgressRate(progressRate);
@@ -124,9 +124,6 @@ public class PlanCommandService {
         if(command.taskRange() != null && !command.taskRange().isEmpty()) {plan.updateScope(command.taskRange());}
         if(command.priority() != null) {plan.updatePriority(command.priority());}
 
-        //하드코드(임시방편)
-        int progressRate = 30;
-
         List<AiPlanTableDto> dtos = command.aiPlans();
         if(dtos != null && !dtos.isEmpty()){
             Map<Long, AiPlan> aiPlanMap = plan.getAiPlans().stream()
@@ -150,7 +147,8 @@ public class PlanCommandService {
                         dto.subTitle(),
                         dto.scheduledDate().atTime(dto.startTime()),
                         dto.scheduledDate().atTime(dto.endTime()),
-                        dto.expectedDuration()
+                        dto.expectedDuration(),
+                        dto.status()
                 );
             }
 
@@ -162,10 +160,11 @@ public class PlanCommandService {
                         aiPlan.getStartDateTime().toLocalTime(),
                         aiPlan.getEndDateTime().toLocalTime(),
                         aiPlan.getSubTitle(),
-                        aiPlan.getExpectedDuration()
+                        aiPlan.getExpectedDuration(),
+                        aiPlan.getStatus()
                 )).toList();
 
-        return AiPlanResponse.of(command.planId(), plan.getTitle(), plan.getDeadline().toLocalDate(), plan.getScope(), plan.getPriority(), progressRate, savedDtos);
+        return AiPlanResponse.of(command.planId(), plan.getTitle(), plan.getDeadline().toLocalDate(), plan.getScope(), plan.getPriority(), plan.getProgressRate(), savedDtos);
     }
 
     public PlanStartResponse startPlan(PlanStartRequest request) {
