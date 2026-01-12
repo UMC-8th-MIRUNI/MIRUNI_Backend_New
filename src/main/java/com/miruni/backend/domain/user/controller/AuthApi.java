@@ -298,8 +298,8 @@ public interface AuthApi {
 
     @Operation(
             summary = "일반 회원가입",
-            description = "이름, 생년월일, 전화번호, 이메일, 비밀번호, 닉네임으로 회원가입합니다. \\n" +
-                    "이메일, 닉네임, 전화번호 중복 체크 후 비밀번호를 암호화하여 저장하고, \\n" +
+            description = "이름, 생년월일, 전화번호, 이메일, 비밀번호, 닉네임으로 회원가입합니다. \n" +
+                    "이메일, 닉네임, 전화번호 중복 체크 후 비밀번호를 암호화하여 저장하고, \n" +
                     "회원가입 성공 시 JWT 토큰을 발급합니다."
     )
     @ApiResponses({
@@ -398,7 +398,7 @@ public interface AuthApi {
 
     @Operation(
             summary = "회원가입 이메일 인증코드 요청",
-            description = "회원가입 시 입력한 이메일로 6자리 인증코드를 발송합니다. \\n" +
+            description = "회원가입 시 입력한 이메일로 6자리 인증코드를 발송합니다. \n" +
                     "인증코드는 5분 동안만 유효하며, 추후 별도의 인증 코드 검증 API에서 사용됩니다."
     )
     @ApiResponses({
@@ -437,7 +437,7 @@ public interface AuthApi {
 
     @Operation(
             summary = "회원가입 이메일 인증코드 검증",
-            description = "이메일과 6자리 인증코드를 검증합니다. \\n" +
+            description = "이메일과 6자리 인증코드를 검증합니다. \n" +
                     "코드가 일치하고 유효기간(5분) 이내라면 인증에 성공합니다."
     )
     @ApiResponses({
@@ -488,7 +488,7 @@ public interface AuthApi {
 
     @Operation(
             summary = "비밀번호 재설정 이메일 요청",
-            description = "입력한 이메일로 비밀번호 재설정용 인증코드를 발송합니다. \\n" +
+            description = "입력한 이메일로 비밀번호 재설정용 인증코드를 발송합니다. \n" +
                     "요청한 이메일이 실제 계정과 매칭되지 않더라도, 보안상의 이유로 항상 동일한 응답을 반환합니다."
     )
     @ApiResponses({
@@ -527,8 +527,8 @@ public interface AuthApi {
 
     @Operation(
             summary = "비밀번호 재설정 코드 검증",
-            description = "비밀번호 재설정 시 발송된 6자리 인증코드를 검증합니다. \\n" +
-                    "코드가 일치하고 유효기간(5분) 이내라면 인증에 성공하며, \\n" +
+            description = "비밀번호 재설정 시 발송된 6자리 인증코드를 검증합니다. \n" +
+                    "코드가 일치하고 유효기간(5분) 이내라면 인증에 성공하며, \n" +
                     "비밀번호 변경에 사용할 임시 resetToken을 발급합니다."
     )
     @ApiResponses({
@@ -596,7 +596,7 @@ public interface AuthApi {
 
     @Operation(
             summary = "비밀번호 재설정 완료",
-            description = "비밀번호 재설정 코드 검증으로 발급받은 resetToken을 사용해 새 비밀번호로 재설정합니다. \\n" +
+            description = "비밀번호 재설정 코드 검증으로 발급받은 resetToken을 사용해 새 비밀번호로 재설정합니다. \n" +
                     "토큰이 만료되었거나 유효하지 않으면 실패합니다."
     )
     @ApiResponses({

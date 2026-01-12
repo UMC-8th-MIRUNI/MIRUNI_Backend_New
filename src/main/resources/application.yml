@@ -43,7 +43,7 @@ gemini:
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET_KEY}
   access-token-expiration: 3600000      
   refresh-token-expiration: 604800000
   temp-token-expiration: 300000
