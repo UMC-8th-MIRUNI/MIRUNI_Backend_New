@@ -24,11 +24,11 @@ public record BasicPlanSaveRequest(
         String description,
 
         @NotNull(message = "시작 날짜는 필수입니다.")
-        @Schema(description = "시작 날짜", example = "2025-11-20", type = "string", format = "date")
+        @Schema(description = "시작 날짜(00:00 ~ 23:59 사이만 입력 가능)", example = "2025-11-20", type = "string", format = "date")
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate startDate,
 
-        @Schema(description = "종료 날짜(없으면 단일 일정)", example = "2025-11-22", nullable = true, type = "string", format = "date")
+        @Schema(description = "종료 날짜(없으면 단일 일정, 00:00 ~ 23:59 사이만 입력 가능)", example = "2025-11-22", nullable = true, type = "string", format = "date")
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate endDate,
 

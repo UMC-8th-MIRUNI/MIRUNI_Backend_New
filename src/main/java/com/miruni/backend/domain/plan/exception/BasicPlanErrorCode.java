@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 public enum BasicPlanErrorCode implements ErrorCode {
 
     INVALID_PRIORITY_VALUE(HttpStatus.BAD_REQUEST, "BASICPLAN400_1", "잘못된 우선순위 값입니다. 우선순위 값은 '상', '중', '하' 중 하나여야 합니다."),
-    INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "BASICPLAN400_2", "일정 시작 시각은 종료 시각보다 이전이어야 합니다."),
     BASIC_PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "BASICPLAN400_3", "일반 일정을 찾을 수 없습니다."),
     BASIC_PLAN_FORBIDDEN(HttpStatus.FORBIDDEN, "BASICPLAN403_1", "해당 일정에 대한 권한이 없습니다."),
     BASIC_PLAN_CONFLICT(HttpStatus.BAD_REQUEST, "BASICPLAN400_004", "같은 시간에 다른 일정이 예정되어 있습니다.");

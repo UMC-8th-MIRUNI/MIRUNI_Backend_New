@@ -3,6 +3,7 @@ package com.miruni.backend.domain.plan.controller;
 import com.miruni.backend.domain.plan.dto.command.BasicPlanCreateCommand;
 import com.miruni.backend.domain.plan.dto.command.BasicPlanUpdateCommand;
 import com.miruni.backend.domain.plan.dto.request.BasicPlanSaveRequest;
+import com.miruni.backend.domain.plan.dto.request.BasicPlanUpdateRequest;
 import com.miruni.backend.domain.plan.dto.response.BasicPlanResponse;
 import com.miruni.backend.domain.plan.service.BasicPlanCommandService;
 import com.miruni.backend.global.authroize.LoginUser;
@@ -31,7 +32,7 @@ public class BasicPlanController implements BasicPlanApi{
     @PatchMapping("/{basicPlanId}")
     public BasicPlanResponse updateBasicPlan(@LoginUser Long userId,
                                              @PathVariable Long basicPlanId,
-                                             @Valid @RequestBody BasicPlanSaveRequest request) {
+                                             @Valid @RequestBody BasicPlanUpdateRequest request) {
         return basicPlanCommandService.updateBasicPlan(BasicPlanUpdateCommand.of(userId, basicPlanId, request));
     }
 

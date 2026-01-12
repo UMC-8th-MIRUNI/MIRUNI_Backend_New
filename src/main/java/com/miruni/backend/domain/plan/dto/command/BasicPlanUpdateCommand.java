@@ -1,7 +1,7 @@
 package com.miruni.backend.domain.plan.dto.command;
 
 
-import com.miruni.backend.domain.plan.dto.request.BasicPlanSaveRequest;
+import com.miruni.backend.domain.plan.dto.request.BasicPlanUpdateRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,26 +21,23 @@ public record BasicPlanUpdateCommand(
     public static BasicPlanUpdateCommand of(
             Long userId,
             Long planId,
-            BasicPlanSaveRequest request
+            BasicPlanUpdateRequest request
     ) {
-        LocalDate startDate = request.startDate();
-        LocalDate endDate = request.endDate();
+        LocalDate date = request.date();
         LocalTime startTime = request.startTime();
         LocalTime endTime = request.endTime();
 
-        // 시작 시간
+        // 시작 일시
         LocalDateTime startDateTime =
-                LocalDateTime.of(startDate, startTime);
+                LocalDateTime.of(date, startTime);
 
-        LocalDateTime endDateTime;
+        // 종료 일시 (자정 넘김 처리)
+        LocalDate endDate = endTime.isBefore(startTime)
+                ? date.plusDays(1)
+                : date;
 
-        if (endDate == null) {
-            // 단일 일정
-            endDateTime = LocalDateTime.of(startDate, endTime);
-        } else {
-            // 기간 일정
-            endDateTime = LocalDateTime.of(endDate, endTime);
-        }
+        LocalDateTime endDateTime =
+                LocalDateTime.of(endDate, endTime);
 
         return new BasicPlanUpdateCommand(
                 userId,
