@@ -31,28 +31,28 @@ public record DailyPlanResponse(
             Priority priority,
             boolean isDone
     ) {
-        public static DailyPlanItemResponse fromBasic(BasicPlan plan) {
-            return new DailyPlanItemResponse(
-                    PlanType.BASIC,
-                    plan.getId(),
-                    plan.getTitle(),
-                    null,
-                    formatTime(plan.getScheduledTime()),
-                    plan.getPriority(),
-                    plan.getStatus() == Status.DONE
-            );
-        }
-
-        public static DailyPlanItemResponse fromAi(AiPlan aiPlan) {
-            return new DailyPlanItemResponse(
-                    PlanType.AI,
-                    aiPlan.getId(),
-                    aiPlan.getPlan().getTitle(), // TODO
-                    aiPlan.getSubTitle(),
-                    formatTime(aiPlan.getScheduledTime()),
-                    aiPlan.getPlan().getPriority(),
-                    aiPlan.getStatus() == Status.DONE
-            );
-        }
+//        public static DailyPlanItemResponse fromBasic(BasicPlan plan) {
+//            return new DailyPlanItemResponse(
+//                    PlanType.BASIC,
+//                    plan.getId(),
+//                    plan.getTitle(),
+//                    null,
+//                    formatTime(plan.getScheduledTime()),
+//                    plan.getPriority(),
+//                    plan.getStatus() == Status.DONE
+//            );
+//        }
+//
+//        public static DailyPlanItemResponse fromAi(AiPlan aiPlan) {
+//            return new DailyPlanItemResponse(
+//                    PlanType.AI,
+//                    aiPlan.getId(),
+//                    aiPlan.getPlan().getTitle(), // TODO
+//                    aiPlan.getSubTitle(),
+//                    formatTime(aiPlan.getScheduledTime()),
+//                    aiPlan.getPlan().getPriority(),
+//                    aiPlan.getStatus() == Status.DONE
+//            );
+//        }
     }
 }

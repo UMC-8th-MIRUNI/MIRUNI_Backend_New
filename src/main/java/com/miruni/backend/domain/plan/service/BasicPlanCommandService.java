@@ -25,51 +25,51 @@ public class BasicPlanCommandService {
     private final BasicPlanQueryService basicPlanQueryService;
     private final ScheduleValidator scheduleValidator;
 
-    public BasicPlanResponse createBasicPlan(BasicPlanCreateCommand command) {
-        User user = userQueryService.getUserById(command.userId());
+//    public BasicPlanResponse createBasicPlan(BasicPlanCreateCommand command) {
+//        User user = userQueryService.getUserById(command.userId());
+//
+//        scheduleValidator.validateConflict(
+//                user.getId(),
+//                command.scheduledDate(),
+//                command.startTime(),
+//                command.endTime()
+//        );
+//
+//        BasicPlan plan = BasicPlan.create(
+//                user,
+//                command.title(),
+//                command.description(),
+//                command.scheduledDate(),
+//                command.startTime(),
+//                command.endTime(),
+//                mapPriority(command.priority())
+//        );
+//
+//        basicPlanRepository.save(plan);
+//        return BasicPlanResponse.from(plan);
+//    }
 
-        scheduleValidator.validateConflict(
-                user.getId(),
-                command.scheduledDate(),
-                command.startTime(),
-                command.endTime()
-        );
-
-        BasicPlan plan = BasicPlan.create(
-                user,
-                command.title(),
-                command.description(),
-                command.scheduledDate(),
-                command.startTime(),
-                command.endTime(),
-                mapPriority(command.priority())
-        );
-
-        basicPlanRepository.save(plan);
-        return BasicPlanResponse.from(plan);
-    }
-
-    public BasicPlanResponse updateBasicPlan(BasicPlanUpdateCommand command) {
-        BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
-
-        scheduleValidator.validateConflict(
-                command.userId(),
-                command.planId(),
-                command.scheduledDate(),
-                command.startTime(),
-                command.endTime()
-        );
-
-        plan.update(
-                command.title(),
-                command.description(),
-                command.scheduledDate(),
-                command.startTime(),
-                command.endTime(),
-                mapPriority(command.priority())
-        );
-        return BasicPlanResponse.from(plan);
-    }
+//    public BasicPlanResponse updateBasicPlan(BasicPlanUpdateCommand command) {
+//        BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(command.planId(), command.userId());
+//
+//        scheduleValidator.validateConflict(
+//                command.userId(),
+//                command.planId(),
+//                command.scheduledDate(),
+//                command.startTime(),
+//                command.endTime()
+//        );
+//
+//        plan.update(
+//                command.title(),
+//                command.description(),
+//                command.scheduledDate(),
+//                command.startTime(),
+//                command.endTime(),
+//                mapPriority(command.priority())
+//        );
+//        return BasicPlanResponse.from(plan);
+//    }
 
     public Long deleteBasicPlan(Long userId, Long planId) {
         BasicPlan plan = basicPlanQueryService.getByPlanIdAndUserId(planId, userId);

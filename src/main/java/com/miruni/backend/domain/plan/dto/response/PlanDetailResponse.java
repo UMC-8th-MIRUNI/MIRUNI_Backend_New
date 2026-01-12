@@ -20,29 +20,29 @@ public record PlanDetailResponse(
         String scheduledTime,
         Priority priority
 ) {
-    public static PlanDetailResponse fromBasic(BasicPlan basicPlan) {
-        return new PlanDetailResponse(
-                PlanType.BASIC,
-                basicPlan.getId(),
-                basicPlan.getTitle(),
-                null,
-                basicPlan.getDescription(),
-                basicPlan.getScheduledDate(),
-                formatTime(basicPlan.getScheduledTime()),
-                basicPlan.getPriority()
-        );
-    }
-
-    public static PlanDetailResponse fromAi(AiPlan aiPlan) {
-        return new PlanDetailResponse(
-                PlanType.AI,
-                aiPlan.getId(),
-                aiPlan.getPlan().getTitle(),
-                aiPlan.getSubTitle(),
-                null,
-                aiPlan.getScheduledDate(),
-                formatTime(aiPlan.getScheduledTime()),
-                aiPlan.getPlan().getPriority()
-        );
-    }
+//    public static PlanDetailResponse fromBasic(BasicPlan basicPlan) {
+//        return new PlanDetailResponse(
+//                PlanType.BASIC,
+//                basicPlan.getId(),
+//                basicPlan.getTitle(),
+//                null,
+//                basicPlan.getDescription(),
+//                basicPlan.getScheduledDate(),
+//                formatTime(basicPlan.getScheduledTime()),
+//                basicPlan.getPriority()
+//        );
+//    }
+//
+//    public static PlanDetailResponse fromAi(AiPlan aiPlan) {
+//        return new PlanDetailResponse(
+//                PlanType.AI,
+//                aiPlan.getId(),
+//                aiPlan.getPlan().getTitle(),
+//                aiPlan.getSubTitle(),
+//                null,
+//                aiPlan.getScheduledDate(),
+//                formatTime(aiPlan.getScheduledTime()),
+//                aiPlan.getPlan().getPriority()
+//        );
+//    }
 }

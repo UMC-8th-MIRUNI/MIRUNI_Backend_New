@@ -42,56 +42,56 @@ public class NotificationService {
     private final FcmTokenCommandService fcmTokenCommandService;
 
     //Plan 알림 등록
-    public void scheduleNotification(BasicPlan plan){
-
-        LocalDateTime scheduledTime = validateAndGetScheduledTime(
-                plan.getStatus(),
-                plan.getId(),
-                LocalDateTime.of(plan.getScheduledDate(), plan.getScheduledTime())
-        );
-
-        if (scheduledTime == null) return;
-
-        scheduleAllNotifications(
-                NotificationTask
-                        .builder()
-                        .userId(plan.getUser().getId())
-                        .targetId(plan.getId())
-                        .type(PlanType.BASIC_PLAN)
-                        .scheduledTime(scheduledTime)
-                        .taskTitle(plan.getTitle())
-                        .build()
-        );
-
-
-        log.info("Plan 알림 스케줄 등록 완료: planId = {}, startTime = {}", plan.getId(), plan.getScheduledTime());
-    }
+//    public void scheduleNotification(BasicPlan plan){
+//
+//        LocalDateTime scheduledTime = validateAndGetScheduledTime(
+//                plan.getStatus(),
+//                plan.getId(),
+//                LocalDateTime.of(plan.getScheduledDate(), plan.getScheduledTime())
+//        );
+//
+//        if (scheduledTime == null) return;
+//
+//        scheduleAllNotifications(
+//                NotificationTask
+//                        .builder()
+//                        .userId(plan.getUser().getId())
+//                        .targetId(plan.getId())
+//                        .type(PlanType.BASIC_PLAN)
+//                        .scheduledTime(scheduledTime)
+//                        .taskTitle(plan.getTitle())
+//                        .build()
+//        );
+//
+//
+//        log.info("Plan 알림 스케줄 등록 완료: planId = {}, startTime = {}", plan.getId(), plan.getScheduledTime());
+//    }
 
     //AIPlan 알림 등록
-    public void scheduleNotification(AiPlan aiplan){
-
-        LocalDateTime scheduledTime = validateAndGetScheduledTime(
-                aiplan.getStatus(),
-                aiplan.getId(),
-                LocalDateTime.of(aiplan.getScheduledDate(), aiplan.getScheduledTime())
-        );
-
-        if (scheduledTime == null) return;
-
-
-        scheduleAllNotifications(
-                NotificationTask
-                        .builder()
-                        .userId(aiplan.getPlan().getUser().getId())
-                        .targetId(aiplan.getId())
-                        .type(PlanType.AI_PLAN)
-                        .scheduledTime(scheduledTime)
-                        .taskTitle(aiplan.getSubTitle())
-                        .build()
-        );
-
-        log.info("AiPlan 알림 스케줄 등록 완료: planId = {}, startTime = {}", aiplan.getId(), aiplan.getScheduledTime());
-    }
+//    public void scheduleNotification(AiPlan aiplan){
+//
+//        LocalDateTime scheduledTime = validateAndGetScheduledTime(
+//                aiplan.getStatus(),
+//                aiplan.getId(),
+//                LocalDateTime.of(aiplan.getScheduledDate(), aiplan.getScheduledTime())
+//        );
+//
+//        if (scheduledTime == null) return;
+//
+//
+//        scheduleAllNotifications(
+//                NotificationTask
+//                        .builder()
+//                        .userId(aiplan.getPlan().getUser().getId())
+//                        .targetId(aiplan.getId())
+//                        .type(PlanType.AI_PLAN)
+//                        .scheduledTime(scheduledTime)
+//                        .taskTitle(aiplan.getSubTitle())
+//                        .build()
+//        );
+//
+//        log.info("AiPlan 알림 스케줄 등록 완료: planId = {}, startTime = {}", aiplan.getId(), aiplan.getScheduledTime());
+//    }
 
     //알람 취소
     public void cancelNotification(AiPlan aiplan){
