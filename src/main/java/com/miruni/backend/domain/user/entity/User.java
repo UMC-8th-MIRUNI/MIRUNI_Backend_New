@@ -9,14 +9,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "user")
 public class User extends BaseEntity {
@@ -49,6 +48,11 @@ public class User extends BaseEntity {
     private int peanutCount = 0;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    @Builder.Default
+    private UserRole role = UserRole.USER;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "oauth_provider")
     private OauthProvider oauthProvider;
 
@@ -58,72 +62,37 @@ public class User extends BaseEntity {
     private ProfileImage profileImage = ProfileImage.GREEN;
 
     @OneToMany(mappedBy = "user")
+    @Builder.Default
     private List<Agreement> agreements = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<Survey> surveys = new ArrayList<>();
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Plan> plans = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<BasicPlan> basicPlans = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
+    @Builder.Default
     private List<Question> questions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<FcmToken> fcmTokens = new ArrayList<>();
 
-    /**
-     * 일반 회원가입용 팩토리 메서드
-     */
-    public static User create(
-            String name,
-            String rawBirthDate,
-            String rawPhoneNumber,
-            String email,
-            String encodedPassword,
-            String nickname
-    ) {
-        LocalDate birth = LocalDate.parse(rawBirthDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String normalizedPhoneNumber = rawPhoneNumber.replace("-", "");
-
-        return User.builder()
-                .name(name)
-                .birth(birth)
-                .phoneNumber(normalizedPhoneNumber)
-                .email(email)
-                .password(encodedPassword)
-                .nickname(nickname)
-                .peanutCount(0)
-                .oauthProvider(null)
-                .build();
-    }
-
-    /**
-     * 소셜 로그인 사용자인지 확인
-     */
-    public boolean isSocialUser() {
-        return this.oauthProvider != null;
-    }
-    
-    /**
-     * 비밀번호가 설정되어 있는지 확인
-     */
-    public boolean hasPassword() {
-        return this.password != null && !this.password.isBlank();
-    }
-    
-    /**
-     * 비밀번호 업데이트
-     */
-    public void updatePassword(String encodedPassword) {
-        this.password = encodedPassword;
-    }
+    // ===== 비즈니스 로직 =====
 
     public void addPeanuts(int count) {
         this.peanutCount += count;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changeRole(UserRole role) {
+        this.role = role;
     }
 
     public void updateProfile(ProfileImage profileImage, String nickname) {
@@ -136,5 +105,42 @@ public class User extends BaseEntity {
         this.birth = birth;
         this.phoneNumber = phoneNumber;
         this.email = email;
+    }
+
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public boolean isSocialUser() {
+        return this.oauthProvider != null;
+    }
+
+    // ===== 정적 팩토리 메서드 =====
+
+    /**
+     * 일반 회원가입용 USER 생성
+     */
+    public static User createNormalUser(String email, String encodedPassword, String nickname) {
+        return User.builder()
+                .email(email)
+                .password(encodedPassword)
+                .nickname(nickname)
+                .peanutCount(0)
+                .role(UserRole.USER)
+                .build();
+    }
+
+    /**
+     * 소셜 로그인 신규 유저 (가입 미완료: ROLE_GUEST)
+     */
+    public static User createSocialGuest(String name, String email, String encodedPassword, String nickname, OauthProvider provider) {
+        return User.builder()
+                .name(name)
+                .email(email)
+                .password(encodedPassword)
+                .nickname(nickname)
+                .oauthProvider(provider)
+                .role(UserRole.PENDING_SIGNUP)
+                .build();
     }
 }

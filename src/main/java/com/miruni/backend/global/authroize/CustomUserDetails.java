@@ -22,8 +22,8 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // 기본 권한 부여 (추후 Role 추가 시 수정)
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        String roleName = user.getRole() != null ? user.getRole().getRoleName() : "ROLE_USER";
+        return Collections.singletonList(new SimpleGrantedAuthority(roleName));
     }
 
     @Override

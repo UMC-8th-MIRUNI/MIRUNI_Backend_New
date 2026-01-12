@@ -51,4 +51,10 @@ public class FcmTokenCommandService {
                 command.popupAlarm(),
                 command.nagAlarm());
     }
+
+    @Transactional
+    public void deleteInvalidToken(String token){
+        fcmTokenRepository.findByToken(token)
+                .ifPresent(fcmTokenRepository::delete);
+    }
 }

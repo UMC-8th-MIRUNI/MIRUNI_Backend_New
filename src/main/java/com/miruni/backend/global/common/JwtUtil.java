@@ -26,7 +26,6 @@ public class JwtUtil {
     private static final String CLAIM_TOKEN_TYPE = "type";
     private static final String TOKEN_TYPE_ACCESS = "ACCESS";
     private static final String TOKEN_TYPE_REFRESH = "REFRESH";
-    private static final String TOKEN_TYPE_TEMP = "TEMP";
 
     // ===== 공통 내부 로직 =====
 
@@ -59,11 +58,6 @@ public class JwtUtil {
     /** Refresh Token 생성 */
     public String generateRefreshToken(Long userId) {
         return generateToken(userId, TOKEN_TYPE_REFRESH, jwtProperties.refreshTokenExpiration());
-    }
-
-    /** 임시 토큰 생성 (이메일 인증 등에 사용) */
-    public String generateTempToken(Long userId) {
-        return generateToken(userId, TOKEN_TYPE_TEMP, jwtProperties.tempTokenExpiration());
     }
 
     /** Access + Refresh 한 번에 생성해서 DTO로 리턴 */
@@ -143,7 +137,7 @@ public class JwtUtil {
         }
     }
 
-    /** 토큰 타입(ACCESS/REFRESH/TEMP) 추출 */
+    /** 토큰 타입(ACCESS/REFRESH) 추출 */
     public String getTokenType(String token) {
         try {
             Claims claims = parseClaims(token);
@@ -160,10 +154,6 @@ public class JwtUtil {
 
     public boolean isRefreshToken(String token) {
         return TOKEN_TYPE_REFRESH.equals(getTokenType(token));
-    }
-
-    public boolean isTempToken(String token) {
-        return TOKEN_TYPE_TEMP.equals(getTokenType(token));
     }
 
     // ===== HTTP 요청에서 토큰 꺼내는 헬퍼 =====

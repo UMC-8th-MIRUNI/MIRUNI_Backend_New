@@ -1,20 +1,20 @@
 package com.miruni.backend.domain.plan.service;
 
+import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
 import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
+import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
 import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
+import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.plan.repository.BasicPlanRepository;
 import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.exception.BaseException;
 import com.miruni.backend.global.exception.CommonErrorCode;
-import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
-import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
-import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
