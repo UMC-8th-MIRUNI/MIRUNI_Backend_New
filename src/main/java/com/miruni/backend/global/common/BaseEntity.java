@@ -35,4 +35,9 @@ public abstract class BaseEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
+    // 소프트 삭제 복구
+    public void restore() {
+        this.deletedAt = null;
+    }
+
 }
