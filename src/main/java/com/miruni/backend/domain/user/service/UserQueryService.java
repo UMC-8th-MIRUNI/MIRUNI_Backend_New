@@ -24,6 +24,13 @@ public class UserQueryService {
                 .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
     }
 
+
+    public UserInfoResponseDto getUserInfo(Long userId) {
+        User user = getUserById(userId);
+
+        return UserInfoResponseDto.from(user);
+    }
+
     public UserSurveyResponse getUserSurveyResult(Long userId) {
         // 사용자 존재 검증 (Survey만 조회하면 USER_NOT_FOUND 대신 SURVEY_NOT_FOUND가 나갈 수 있어 분리)
         userRepository.findById(userId)

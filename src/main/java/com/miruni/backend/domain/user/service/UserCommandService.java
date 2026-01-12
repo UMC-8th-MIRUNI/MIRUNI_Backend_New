@@ -7,8 +7,6 @@ import com.miruni.backend.domain.user.dto.response.SurveyResponse;
 import com.miruni.backend.domain.user.dto.command.ProfileUpdateCommandDto;
 import com.miruni.backend.domain.user.dto.command.UserInfoUpdateCommandDto;
 import com.miruni.backend.domain.user.dto.request.ResetPasswordRequest;
-import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
-import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
 import com.miruni.backend.domain.user.entity.Agreement;
 import com.miruni.backend.domain.user.entity.Survey;
@@ -127,6 +125,56 @@ public class UserCommandService {
         tokenService.logout(accessToken, userId);
 
         log.info("회원 탈퇴 완료: userId={}", userId);
+    }
+
+    public UserInfoResponseDto updateProfile(ProfileUpdateCommandDto command) {
+        User user = userRepository.findById(command.userId())
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        user.updateProfile(command.profileImage(), command.nickname());
+
+        return UserInfoResponseDto.from(user);
+    }
+
+    public UserInfoResponseDto updateUserInfo(UserInfoUpdateCommandDto command) {
+        User user = userRepository.findById(command.userId())
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        user.updateUserInfo(command.name(), command.birth(), command.phoneNumber(), command.email());
+
+        return UserInfoResponseDto.from(user);
+    }
+
+     /**
+     * 비밀번호 재설정 완료
+     * - 비로그인 상태에서 resetToken을 사용하여 새 비밀번호로 변경
+     */
+     public void resetPassword(ResetPasswordRequest request) {
+        // resetToken으로 이메일 확인 (1회용 토큰 소비)
+        String email = verificationService.consumeResetToken(request.resetToken());
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        // 이미 탈퇴한 사용자인지 확인
+        if (user.isDeleted()) {
+            throw BaseException.type(UserErrorCode.USER_ALREADY_DELETED);
+        }
+
+        // 소셜 로그인 사용자는 비밀번호 재설정 불가
+        if (user.isSocialUser()) {
+            throw BaseException.type(UserErrorCode.SOCIAL_USER_PASSWORD_CHANGE);
+        }
+
+        // 새 비밀번호가 기존 비밀번호와 동일한지 확인
+        if (passwordEncoder.matches(request.newPassword(), user.getPassword())) {
+            throw BaseException.type(UserErrorCode.SAME_PASSWORD);
+        }
+
+         // 비밀번호 암호화 및 업데이트
+         user.updatePassword(passwordEncoder.encode(request.newPassword()));
+         
+        log.info("비밀번호 재설정 완료: email={}", email);
     }
 
     /**
