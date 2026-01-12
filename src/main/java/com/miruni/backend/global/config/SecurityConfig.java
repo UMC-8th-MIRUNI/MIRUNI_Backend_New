@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
 
                 //http Basic 인증 비활성화 - jwt 구현 전 임시 활성화
-                //.httpBasic(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
 
                 // JWT 필터 추가
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -45,13 +45,11 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/actuator/**",
-                                "/api/users",           // 일반 회원가입 API
-                                "/api/auth/token",      // 일반 로그인 API
-                                "/api/auth/social/**"   // 소셜 로그인/회원가입 완료 API
+                                "/api/**"
                         ).permitAll()
                         .anyRequest().authenticated()
-                )
-                .httpBasic(Customizer.withDefaults()); //임시로 httpBasic 활성화
+                );
+                // .httpBasic(Customizer.withDefaults()); //임시로 httpBasic 활성화
 
         return http.build();
 

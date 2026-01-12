@@ -7,7 +7,9 @@ import com.miruni.backend.domain.question.entity.Question;
 import com.miruni.backend.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +59,8 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "profile_image")
-    private ProfileImage profileImage;
+    @Builder.Default
+    private ProfileImage profileImage = ProfileImage.GREEN;
 
     @OneToMany(mappedBy = "user")
     @Builder.Default

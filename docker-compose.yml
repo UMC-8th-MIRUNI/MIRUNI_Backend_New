@@ -19,6 +19,11 @@ services:
       - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus,metrics
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_API_URL=${GEMINI_API_URL}
+      - FCM_KEY_PATH=${FCM_KEY_PATH}
+      - SPRING_MAIL_USERNAME=${MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD}
+    volumes:
+      - /home/ubuntu/firebase/serviceAccount.json:/app/firebase/serviceAccount.json:ro
     depends_on:
       redis:
         condition: service_healthy
@@ -30,7 +35,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
-    mem_limit: 384m     
+    mem_limit: 600m     
     cpus: "0.5"         
 
   redis:

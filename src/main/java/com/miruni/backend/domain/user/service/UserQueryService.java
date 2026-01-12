@@ -2,6 +2,7 @@ package com.miruni.backend.domain.user.service;
 
 import com.miruni.backend.domain.user.dto.response.UserSurveyResponse;
 import com.miruni.backend.domain.user.entity.Survey;
+import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.exception.ServeyErrorCode;
 import com.miruni.backend.domain.user.exception.UserErrorCode;
@@ -18,7 +19,7 @@ public class UserQueryService {
     private final UserRepository userRepository;
     private final SurveyRepository surveyRepository;
 
-    public User getUserById(Long id){
+    public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
     }

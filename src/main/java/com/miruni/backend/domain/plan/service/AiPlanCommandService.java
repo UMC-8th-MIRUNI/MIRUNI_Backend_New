@@ -64,7 +64,7 @@ public class AiPlanCommandService {
         Plan plan = aiPlan.getPlan();
 
         if(!plan.getUser().getId().equals(user.getId())) {
-            throw BaseException.type(AiPlanErrorCode.PLAN_FORBIDDEN);
+            throw BaseException.type(AiPlanErrorCode.AI_PLAN_FORBIDDEN);
         }
 
         plan.updateTitle(request.title());
@@ -81,7 +81,7 @@ public class AiPlanCommandService {
         User user = userRepository.findById(user_id).orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
 
         if (!aiPlan.getPlan().getUser().getId().equals(user.getId())) {
-            throw BaseException.type(AiPlanErrorCode.PLAN_FORBIDDEN);
+            throw BaseException.type(AiPlanErrorCode.AI_PLAN_FORBIDDEN);
         }
         aiPlanRepository.delete(aiPlan);
 

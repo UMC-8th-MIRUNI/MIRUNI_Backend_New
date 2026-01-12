@@ -4,6 +4,12 @@ import com.miruni.backend.domain.user.dto.request.SurveyRequest;
 import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
 import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.dto.response.SurveyResponse;
+import com.miruni.backend.domain.user.dto.command.ProfileUpdateCommandDto;
+import com.miruni.backend.domain.user.dto.command.UserInfoUpdateCommandDto;
+import com.miruni.backend.domain.user.dto.request.ResetPasswordRequest;
+import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
+import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
+import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
 import com.miruni.backend.domain.user.entity.Agreement;
 import com.miruni.backend.domain.user.entity.Survey;
 import com.miruni.backend.domain.user.entity.User;
@@ -36,19 +42,26 @@ public class UserCommandService {
     private final UserValidator userValidator;
     private final TokenService tokenService;
     private final SurveyRepository surveyRepository;
+    private final VerificationService verificationService;
     
     /**
      * 일반 회원가입
      */
     public JwtResponseDto signup(UserSignupRequest request) {
+        // 이메일 인증 여부 확인
+        verificationService.assertSignUpEmailVerified(request.email());
+
         // 이메일 중복 체크
         validateEmailNotExists(request.email());
         
         // 닉네임 중복 체크
         validateNicknameNotExists(request.nickname());
         
-        // 필수 약관 동의 체크
-        userValidator.validateAgreements(request);
+        // 전화번호 중복 체크
+        validatePhoneNumberNotExists(request.phoneNumber());
+        
+        // 필수 약관 동의 체크 (서비스 이용약관만 필수)
+        userValidator.validateAgreements(request.serviceAgreed());
         
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.password());
@@ -80,6 +93,17 @@ public class UserCommandService {
     private void validateNicknameNotExists(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
             throw BaseException.type(UserErrorCode.NICKNAME_ALREADY_EXISTS);
+        }
+    }
+
+    /**
+     * 전화번호 중복 검증
+     */
+    private void validatePhoneNumberNotExists(String phoneNumber) {
+        // 하이픈 제거 후 검증
+        String normalizedPhoneNumber = phoneNumber.replace("-", "");
+        if (userRepository.existsByPhoneNumber(normalizedPhoneNumber)) {
+            throw BaseException.type(UserErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
         }
     }
 

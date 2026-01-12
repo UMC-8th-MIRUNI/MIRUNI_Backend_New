@@ -2,6 +2,7 @@ package com.miruni.backend.domain.plan.dto.response;
 
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Priority;
+import com.miruni.backend.domain.plan.entity.Status;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,7 +15,7 @@ public record BasicPlanResponse(
         LocalDate scheduledDate,
         LocalTime scheduledTime,
         Long expectedDuration,
-        boolean isDone,
+        Status status,
         Priority priority
 ) {
     public static BasicPlanResponse from(BasicPlan plan) {
@@ -26,7 +27,7 @@ public record BasicPlanResponse(
                 plan.getScheduledDate(),
                 plan.getScheduledTime(),
                 plan.getExpectedDuration(),
-                plan.isDone(),
+                plan.getStatus(),
                 plan.getPriority()
         );
     }
