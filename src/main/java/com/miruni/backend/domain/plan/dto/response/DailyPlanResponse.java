@@ -27,7 +27,8 @@ public record DailyPlanResponse(
             Long planId,
             String title,
             String subTitle,
-            String scheduledTime,
+            String startTime,
+            String endTime,
             Priority priority,
             boolean isDone
     ) {
@@ -37,7 +38,8 @@ public record DailyPlanResponse(
                     plan.getId(),
                     plan.getTitle(),
                     null,
-                    formatTime(plan.getScheduledTime()),
+                    formatTime(plan.getStartDateTime()),
+                    formatTime(plan.getEndDateTime()),
                     plan.getPriority(),
                     plan.getStatus() == Status.DONE
             );
@@ -50,6 +52,7 @@ public record DailyPlanResponse(
                     aiPlan.getPlan().getTitle(), // TODO
                     aiPlan.getSubTitle(),
                     formatTime(aiPlan.getScheduledTime()),
+                    formatTime(aiPlan.getEndTime()),
                     aiPlan.getPlan().getPriority(),
                     aiPlan.getStatus() == Status.DONE
             );

@@ -19,35 +19,37 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
 
     @Query("""
         SELECT new com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse(
-             b.scheduledDate,
-             COUNT(b)
-         )
+            CAST(b.startDateTime AS LocalDate),
+            COUNT(b)
+        )
         FROM BasicPlan b
         WHERE b.user.id = :userId
           AND b.status != com.miruni.backend.domain.plan.entity.Status.DONE
-          AND b.scheduledDate BETWEEN :startDate AND :endDate
-        GROUP BY b.scheduledDate
-        ORDER BY b.scheduledDate
+          AND b.startDateTime >= :startDateTime
+          AND b.startDateTime < :endDateTime
+        GROUP BY CAST(b.startDateTime AS LocalDate)
+        ORDER BY CAST(b.startDateTime AS LocalDate)
     """)
     List<MonthlyPlanResponse> countUnfinishedBasicPlansByDate(
             @Param("userId") Long userId,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate
+            @Param("startDateTime") LocalDateTime startDateTime,
+            @Param("endDateTime") LocalDateTime endDateTime
     );
-
 
     @Query("""
         SELECT b
         FROM BasicPlan b
         WHERE b.user.id = :userId
-          AND b.scheduledDate = :date
-        ORDER BY b.scheduledTime
+          AND FUNCTION('DATE', b.startDateTime) = :date
+        ORDER BY b.startDateTime
     """)
     List<BasicPlan> findDailyBasicPlans(
             @Param("userId") Long userId,
             @Param("date") LocalDate date
     );
+
     //boolean existsByUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
+
     //boolean existsByUserIdAndScheduledStartTime(Long userId, LocalTime scheduledTime);
 
     @Query("""
@@ -77,5 +79,4 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
             @Param("reqStartDateTime") LocalDateTime reqStartDateTime,
             @Param("reqEndDateTime") LocalDateTime reqEndDateTime
     );
-
 }
