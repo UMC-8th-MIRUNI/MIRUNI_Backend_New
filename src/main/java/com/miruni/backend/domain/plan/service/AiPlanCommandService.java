@@ -62,9 +62,8 @@ public class AiPlanCommandService {
             for (AiPlanCreateResponse dto : dtoList) {
                 scheduleValidator.validateConflict(
                         userId,
-                        dto.scheduledDate(),
-                        dto.startTime(),
-                        dto.endTime()
+                        dto.scheduledDate().atTime(dto.startTime()),
+                        dto.scheduledDate().atTime(dto.endTime())
                 );
             }
 
@@ -72,9 +71,8 @@ public class AiPlanCommandService {
                     .map(dto -> AiPlan.create(
                             plan,
                             dto.subTitle(),
-                            dto.scheduledDate(),
-                            dto.startTime(),
-                            dto.endTime(),
+                            dto.scheduledDate().atTime(dto.startTime()),
+                            dto.scheduledDate().atTime(dto.endTime()),
                             dto.expectedDuration()
                     ))
                     .toList();
@@ -98,13 +96,14 @@ public class AiPlanCommandService {
             throw BaseException.type(CommonErrorCode.FORBIDDEN);
         }
 
-        scheduleValidator.validateConflict(command.userId(), aiPlanId, command.scheduledDate(), command.startTime(), command.endTime());
+        scheduleValidator.validateConflictForAiPlan(command.userId(), aiPlanId,
+                command.scheduledDate().atTime(command.startTime()),
+                command.scheduledDate().atTime(command.endTime()));
         plan.updateTitle(command.title());
         aiPlan.updateDetails(
                 command.subTitle(),
-                command.scheduledDate(),
-                command.startTime(),
-                command.endTime(),
+                command.scheduledDate().atTime(command.startTime()),
+                command.scheduledDate().atTime(command.endTime()),
                 aiPlan.getExpectedDuration()
 
         );

@@ -141,13 +141,15 @@ public class PlanCommandService {
 
                 checkWithinDeadline(plan.getDeadline().toLocalDate(), dto.scheduledDate());
                 checkExpectedDuration(dto.startTime(), dto.endTime(), dto.expectedDuration());
-                scheduleValidator.validateConflict(command.userId(), dto.aiPlanId(), dto.scheduledDate(), dto.startTime(), dto.endTime());
+                scheduleValidator.validateConflictForAiPlan(command.userId(), dto.aiPlanId(),
+                        dto.scheduledDate().atTime(dto.startTime()),
+                        dto.scheduledDate().atTime(dto.endTime())
+                );
 
                 aiPlanKey.updateDetails(
                         dto.subTitle(),
-                        dto.scheduledDate(),
-                        dto.startTime(),
-                        dto.endTime(),
+                        dto.scheduledDate().atTime(dto.startTime()),
+                        dto.scheduledDate().atTime(dto.endTime()),
                         dto.expectedDuration()
                 );
             }
@@ -156,9 +158,9 @@ public class PlanCommandService {
         List<AiPlanTableDto> savedDtos = plan.getAiPlans().stream()
                 .map(aiPlan -> AiPlanTableDto.of(
                         aiPlan.getId(),
-                        aiPlan.getScheduledDate(),
-                        aiPlan.getScheduledTime(),
-                        aiPlan.getEndTime(),
+                        aiPlan.getStartDateTime().toLocalDate(),
+                        aiPlan.getStartDateTime().toLocalTime(),
+                        aiPlan.getEndDateTime().toLocalTime(),
                         aiPlan.getSubTitle(),
                         aiPlan.getExpectedDuration()
                 )).toList();
@@ -169,13 +171,13 @@ public class PlanCommandService {
     public PlanStartResponse startPlan(PlanStartRequest request) {
         LocalDateTime now = LocalDateTime.now();
         int durationMinutes = parseTimeToMinutes(request.durationStr());
-        LocalDateTime endTime = now.plusMinutes(durationMinutes);
+        LocalDateTime endDateTime = now.plusMinutes(durationMinutes);
 
-        LocalDate date = now.toLocalDate();
-        LocalTime startTime = now.toLocalTime();
-        LocalTime endTimeOnly = endTime.toLocalTime();
-
-        scheduleValidator.validateConflict(request.userId(), request.planId(), date, startTime, endTimeOnly);
+        if (request.planType() == PlanType.BASIC) {
+            scheduleValidator.validateConflictForBasicPlan(request.userId(), request.planId(), now, endDateTime);
+        } else if (request.planType() == PlanType.AI) {
+            scheduleValidator.validateConflictForAiPlan(request.userId(), request.planId(), now, endDateTime);
+        }
 
         // 일정 상태 변경
         if (request.planType() == PlanType.BASIC) {
@@ -195,18 +197,21 @@ public class PlanCommandService {
         User user = userQueryService.getUserById(command.userId());
 
         int expectedMinutes = parseTimeToMinutes(command.expectedTime());
-        int actualMinutes = parseTimeToMinutes(command.actualTime());
-        int peanutCount = calculatePeanuts(expectedMinutes, actualMinutes);
+        int actualMinutes;
 
-       Status status;
+
+        Status status;
        switch (command.planType()) {
            case BASIC -> {
-               BasicPlan basicplan = getBasicPlan(command.planId(), command.userId());
-               basicplan.complete();
-               status = basicplan.getStatus();
+               BasicPlan basicPlan = getBasicPlan(command.planId(), command.userId());
+               actualMinutes = (int) Duration.between(basicPlan.getUpdatedAt(), LocalDateTime.now()).toMinutes();
+               basicPlan.complete();
+               status = basicPlan.getStatus();
            }
            case AI -> {
                AiPlan aiPlan = getAiPlan(command.planId(), command.userId());
+               actualMinutes = (int) Duration.between(aiPlan.getUpdatedAt(), LocalDateTime.now()).toMinutes();
+
                aiPlan.complete();
                status = aiPlan.getStatus();
 
@@ -216,6 +221,7 @@ public class PlanCommandService {
             default -> throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
         }
 
+        int peanutCount = calculatePeanuts(expectedMinutes, actualMinutes);
         user.addPeanuts(peanutCount);
 
         return PlanFinishResponse.of(peanutCount, command.planType(), command.planId(), status);
@@ -223,34 +229,48 @@ public class PlanCommandService {
 
     public PlanPauseResponse pausePlan(PlanPauseCommand command) {
         LocalTime newScheduledTime = LocalTime.parse(command.resumeTime());
+        LocalDate today = LocalDate.now();
 
         long expectedDurationMinutes;
         switch (command.planType()) {
             case BASIC -> {
                 BasicPlan plan = getBasicPlan(command.planId(), command.userId());
                 expectedDurationMinutes = plan.getExpectedDuration();
-                scheduleValidator.validateConflict(
+
+                LocalDateTime startDateTime = LocalDateTime.of(today, newScheduledTime);
+                LocalDateTime endDateTime = startDateTime.plusMinutes(expectedDurationMinutes);
+
+                if (!endDateTime.isAfter(startDateTime)) {
+                    endDateTime = endDateTime.plusDays(1);
+                }
+
+                scheduleValidator.validateConflictForBasicPlan(
                         command.userId(),
                         command.planId(),
-                        LocalDate.now(),
-                        newScheduledTime,
-                        newScheduledTime.plusMinutes(expectedDurationMinutes)
+                        startDateTime,
+                        endDateTime
                 );
                 plan.pause();
-                plan.rescheduleTime(newScheduledTime);
+                plan.rescheduleTime(startDateTime);
             }
             case AI -> {
                 AiPlan plan = getAiPlan(command.planId(), command.userId());
                 expectedDurationMinutes = (long) plan.getExpectedDuration();
-                scheduleValidator.validateConflict(
+
+                LocalDateTime startDateTime = LocalDateTime.of(today, newScheduledTime);
+                LocalDateTime endDateTime = startDateTime.plusMinutes(expectedDurationMinutes);
+
+                if (!endDateTime.isAfter(startDateTime)) {
+                    endDateTime = endDateTime.plusDays(1);
+                }
+                scheduleValidator.validateConflictForAiPlan(
                         command.userId(),
                         command.planId(),
-                        LocalDate.now(),
-                        newScheduledTime,
-                        newScheduledTime.plusMinutes(expectedDurationMinutes)
+                        startDateTime,
+                        endDateTime
                 );
                 plan.pause();
-                plan.rescheduleTime(newScheduledTime);
+                plan.rescheduleTime(startDateTime);
             }
             default -> throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
         }

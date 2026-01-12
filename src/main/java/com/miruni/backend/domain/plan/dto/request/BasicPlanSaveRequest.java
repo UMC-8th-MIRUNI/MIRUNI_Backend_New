@@ -40,15 +40,4 @@ public record BasicPlanSaveRequest(
         @Schema(example = "상")
         String priority
 ) {
-    public BasicPlan toEntity(User user, Long expectedDuration, Priority mappedPriority) {
-        return BasicPlan.builder()
-                .title(this.title)
-                .description(this.description)
-                .scheduledDate(this.scheduledDate)
-                .scheduledTime(this.startTime)
-                .expectedDuration(expectedDuration)
-                .priority(mappedPriority)
-                .user(user)
-                .build();
-    }
 }

@@ -67,27 +67,37 @@ public class GeminiService {
     private String buildPrompt(AiPlanCreateCommandDto command) {
         return String.format(
                 """
-                        넌 이제부터 일정 관리자야. JSON 배열만 출력해줘. 설명·코드블록·마크업 금지.
-                        아래 내용을 보고 최소 2개, 최대 10개 단계로 세부 일정들로 나눠줘.
-                        
-                        JSON 배열은 다음과 같은 키들로만 포함하는 객체들로 구성되어야 해:
-                        - "scheduledDate": (string, "YYYY-MM-DD")
-                        - "subTitle": (string, sub-task title)
-                        - "expectedDuration": (number, in minutes)
-                        - "startTime": (string, "HH:MM:SS")
-                        - "endTime": (string, "HH:MM:SS")
-                        
-                        작업 시간대는 7개의 선택지가 있고, 이에 해당하는 시간대에 맞춰 일정을 세워줘.
-                        
-                        업무 정보:
-                        - 제목: %s
-                        - 마감기한: %s
-                        - 작업 시간대: %s
-                        - 작업 범위: %s
-                        - 우선 순위: %s
-                        - 세부 요청사항: %s
-                        
-                        """,
+                You are an expert Schedule Manager.
+                Output ONLY a raw JSON array. Do not include markdown formatting (e.g., ```json), explanations, or any other text.
+                
+                Based on the information below, break down the work into detailed sub-tasks.
+                - The number of sub-tasks must be between 2 and 10.
+                - Schedule the dates and times logically leading up to the deadline.
+                
+                The JSON array must consist of objects containing strictly the following keys:
+                - "scheduledDate": (string, "YYYY-MM-DD")
+                - "subTitle": (string, sub-task title)
+                - "expectedDuration": (number, in minutes)        
+                - "startTime": (string, "HH:MM:SS")        
+                - "endTime": (string, "HH:MM:SS")        
+                
+                Schedule the tasks according to the following "Preferred Time Slot" definitions:
+                - RANDOM : Random time
+                - MORNING : 06:00 ~ 09:00
+                - FOCUS_MORNING : 09:00 ~ 12:00
+                - AFTERNOON : 13:00 ~ 17:00
+                - EVENING : 18:00 ~ 21:00
+                - NIGHT : 22:00 ~ 23:59
+                - DAWN : 00:00 ~ 06:00
+                
+                [Task Information]
+                - Title: %s
+                - Deadline: %s
+                - Preferred Time Slot: %s
+                - Scope: %s
+                - Priority: %s
+                - Details: %s
+                """,
                 command.title(), command.deadline(), command.timePeriod(),
                 command.taskRange(), command.priority(), command.detailRequest()
         );

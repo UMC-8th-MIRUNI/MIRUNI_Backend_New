@@ -1,14 +1,15 @@
 package com.miruni.backend.domain.plan.dto.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record MonthlyPlanResponse(
-        LocalDate date,
+        LocalDateTime dateTime,
         long unfinishedPlanCount
 ) {
-    public static MonthlyPlanResponse of(LocalDate date, long count) {
+    public static MonthlyPlanResponse of(LocalDateTime dateTime, long count) {
         return new MonthlyPlanResponse(
-                date,
+                dateTime,
                 count
         );
     }

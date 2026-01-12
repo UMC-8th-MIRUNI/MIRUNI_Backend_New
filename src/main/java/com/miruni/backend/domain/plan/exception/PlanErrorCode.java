@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@RequiredArgsConstructor
 @AllArgsConstructor
 public enum PlanErrorCode implements ErrorCode {
     PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "PLAN404_1", "해당 상위 일정이 없습니다."),

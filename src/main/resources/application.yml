@@ -30,7 +30,8 @@ spring:
 
 fcm:
   key:
-    path: firebase/miruni-9718b-firebase-adminsdk-fbsvc-a07f2f7db8.json
+#    path: firebase/miruni-9718b-firebase-adminsdk-fbsvc-a07f2f7db8.json
+    path: src/main/resources/firebase/miruni-9718b-firebase-adminsdk-fbsvc-a07f2f7db8.json
 
 management:
   endpoints:

@@ -53,9 +53,9 @@ public class AiPlanQueryService {
                 .map(aiPlan -> {
                     return AiPlanTableDto.of(
                             aiPlan.getId(),
-                            aiPlan.getScheduledDate(),
-                            aiPlan.getScheduledTime(),
-                            aiPlan.getEndTime(),
+                            aiPlan.getStartDateTime().toLocalDate(),
+                            aiPlan.getStartDateTime().toLocalTime(),
+                            aiPlan.getEndDateTime().toLocalTime(),
                             aiPlan.getSubTitle(),
                             aiPlan.getExpectedDuration()
                     );
