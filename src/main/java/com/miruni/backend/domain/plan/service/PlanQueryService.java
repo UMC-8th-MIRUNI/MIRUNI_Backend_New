@@ -1,23 +1,25 @@
 package com.miruni.backend.domain.plan.service;
 
+import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
 import com.miruni.backend.domain.plan.dto.response.*;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
 import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
+import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.plan.repository.BasicPlanRepository;
 import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.exception.BaseException;
 import com.miruni.backend.global.exception.CommonErrorCode;
-import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
-import com.miruni.backend.domain.plan.exception.PlanErrorCode;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +78,10 @@ public class PlanQueryService {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
 
-        List<MonthlyPlanResponse> basicPlans = basicPlanRepository.countUnfinishedBasicPlansByDate(userId, startDate, endDate);
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+
+        List<MonthlyPlanResponse> basicPlans = basicPlanRepository.countUnfinishedBasicPlansByDate(userId, startDateTime, endDateTime);
         List<MonthlyPlanResponse> aiPlans = aiPlanRepository.countUnfinishedAiPlansByDate(userId, startDate, endDate);
 
         return Stream.concat(basicPlans.stream(), aiPlans.stream())
@@ -98,12 +103,12 @@ public class PlanQueryService {
         LocalDate date = LocalDate.of(year, month, day);
 
         List<DailyPlanResponse.DailyPlanItemResponse> plans = Stream.concat(
-                    basicPlanRepository.findDailyBasicPlans(userId, date).stream()
-                            .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
-                    aiPlanRepository.findDailyAiPlans(userId, date).stream()
-                            .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
+                        basicPlanRepository.findDailyBasicPlans(userId, date).stream()
+                                .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
+                        aiPlanRepository.findDailyAiPlans(userId, date).stream()
+                                .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
                 )
-                .sorted(Comparator.comparing(DailyPlanResponse.DailyPlanItemResponse::scheduledTime))
+                .sorted(Comparator.comparing(DailyPlanResponse.DailyPlanItemResponse::startTime))
                 .toList();
 
         Map<Boolean, List<DailyPlanResponse.DailyPlanItemResponse>> plansByStatus = plans.stream()

@@ -5,10 +5,7 @@ import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Priority;
 import com.miruni.backend.domain.plan.type.PlanType;
 
-import java.time.LocalDate;
-
 import static com.miruni.backend.global.common.DateTimeFormatUtil.formatTime;
-
 
 public record PlanDetailResponse(
         PlanType planType,
@@ -16,8 +13,8 @@ public record PlanDetailResponse(
         String title,
         String subTitle, // AI
         String description, // BASIC
-        LocalDate scheduledDate,
-        String scheduledTime,
+        String startTime,
+        String endTime,
         Priority priority
 ) {
     public static PlanDetailResponse fromBasic(BasicPlan basicPlan) {
@@ -27,8 +24,8 @@ public record PlanDetailResponse(
                 basicPlan.getTitle(),
                 null,
                 basicPlan.getDescription(),
-                basicPlan.getScheduledDate(),
-                formatTime(basicPlan.getScheduledTime()),
+                formatTime(basicPlan.getStartDateTime()),
+                formatTime(basicPlan.getEndDateTime()),
                 basicPlan.getPriority()
         );
     }
@@ -40,8 +37,8 @@ public record PlanDetailResponse(
                 aiPlan.getPlan().getTitle(),
                 aiPlan.getSubTitle(),
                 null,
-                aiPlan.getScheduledDate(),
                 formatTime(aiPlan.getScheduledTime()),
+                formatTime(aiPlan.getEndTime()),
                 aiPlan.getPlan().getPriority()
         );
     }

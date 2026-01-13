@@ -16,14 +16,12 @@ import java.util.Optional;
 public interface AiPlanRepository extends JpaRepository<AiPlan, Long> {
 
     @Query("""
-        SELECT new com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse(
-            a.scheduledDate,
-            COUNT(a)
-        )
+        SELECT a.scheduledDate, COUNT(a)
         FROM AiPlan a
         WHERE a.plan.user.id = :userId
-          AND a.isDone = false
-          AND a.scheduledDate BETWEEN :startDate AND :endDate
+          AND a.status != com.miruni.backend.domain.plan.entity.Status.DONE
+          AND a.scheduledDate >= :startDate
+          AND a.scheduledDate <= :endDate
         GROUP BY a.scheduledDate
         ORDER BY a.scheduledDate
     """)
@@ -44,7 +42,42 @@ public interface AiPlanRepository extends JpaRepository<AiPlan, Long> {
             @Param("userId") Long userId,
             @Param("date") LocalDate date
     );
+
     Optional<AiPlan> findByIdAndPlanUserId(Long id, Long userId);
+
     List<AiPlan> findByPlanId(Long planId);
+
     boolean existsByPlanUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
+
+    @Query("""
+        SELECT COUNT(a) > 0
+        FROM AiPlan a
+        JOIN a.plan p
+        WHERE p.user.id = :userId
+            AND a.scheduledDate = :date
+            AND (a.scheduledTime < :reqEndTime AND a.endTime > :reqStartTime)
+    """)
+    boolean existsOverlap(
+            @Param("userId") Long userId,
+            @Param("date")LocalDate date,
+            @Param("reqStartTime")LocalTime reqStartTime,
+            @Param("reqEndTime") LocalTime reqEndTime
+    );
+
+    @Query("""
+        SELECT COUNT(a) > 0 
+        FROM AiPlan a
+        JOIN a.plan p
+        WHERE p.user.id = :userId
+            AND a.id != :excludeId
+            AND a.scheduledDate = :date
+            AND (a.scheduledTime < :endTime AND a.endTime > :startTime)
+    """)
+    boolean existsOverlapWithinUpdate(
+            @Param("userId") Long userId,
+            @Param("excludeId") Long excludeId,
+            @Param("date") LocalDate date,
+            @Param("startTime") LocalTime startTime,
+            @Param("endTime") LocalTime endTime
+    );
 }

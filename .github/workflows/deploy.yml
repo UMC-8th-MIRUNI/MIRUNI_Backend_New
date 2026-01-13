@@ -83,6 +83,8 @@ jobs:
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
           echo "GEMINI_API_URL=${{ secrets.GEMINI_API_URL }}" >> .env
           echo "FCM_KEY_PATH=/app/firebase/serviceAccount.json" >> .env
+          echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
 
           cat << 'EOF' > ./serviceAccount.json
           ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}

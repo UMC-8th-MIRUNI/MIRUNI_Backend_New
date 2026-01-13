@@ -1,15 +1,19 @@
 package com.miruni.backend.domain.user.service;
 
+import com.miruni.backend.domain.user.dto.request.SurveyRequest;
+import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
+import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
+import com.miruni.backend.domain.user.dto.response.SurveyResponse;
 import com.miruni.backend.domain.user.dto.command.ProfileUpdateCommandDto;
 import com.miruni.backend.domain.user.dto.command.UserInfoUpdateCommandDto;
 import com.miruni.backend.domain.user.dto.request.ResetPasswordRequest;
-import com.miruni.backend.domain.user.dto.request.UserSignupRequest;
-import com.miruni.backend.domain.user.dto.response.JwtResponseDto;
 import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
 import com.miruni.backend.domain.user.entity.Agreement;
+import com.miruni.backend.domain.user.entity.Survey;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.exception.UserErrorCode;
 import com.miruni.backend.domain.user.repository.AgreementRepository;
+import com.miruni.backend.domain.user.repository.SurveyRepository;
 import com.miruni.backend.domain.user.repository.UserRepository;
 import com.miruni.backend.domain.user.validator.UserValidator;
 import com.miruni.backend.global.authroize.TokenService;
@@ -17,6 +21,9 @@ import com.miruni.backend.global.exception.BaseException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDateTime;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +39,7 @@ public class UserCommandService {
     private final PasswordEncoder passwordEncoder;
     private final UserValidator userValidator;
     private final TokenService tokenService;
+    private final SurveyRepository surveyRepository;
     private final VerificationService verificationService;
     
     /**
@@ -57,14 +65,7 @@ public class UserCommandService {
         String encodedPassword = passwordEncoder.encode(request.password());
         
         // User 엔티티 생성 및 저장 
-        User user = User.create(
-                request.name(),
-                request.birthDate(),
-                request.phoneNumber(),
-                request.email(),
-                encodedPassword,
-                request.nickname()
-        );
+        User user = User.createNormalUser(request.email(), encodedPassword, request.nickname());
         userRepository.save(user);
         
         // Agreement 엔티티 생성 및 저장
@@ -144,11 +145,11 @@ public class UserCommandService {
         return UserInfoResponseDto.from(user);
     }
 
-    /**
+     /**
      * 비밀번호 재설정 완료
      * - 비로그인 상태에서 resetToken을 사용하여 새 비밀번호로 변경
      */
-    public void resetPassword(ResetPasswordRequest request) {
+     public void resetPassword(ResetPasswordRequest request) {
         // resetToken으로 이메일 확인 (1회용 토큰 소비)
         String email = verificationService.consumeResetToken(request.resetToken());
 
@@ -170,9 +171,46 @@ public class UserCommandService {
             throw BaseException.type(UserErrorCode.SAME_PASSWORD);
         }
 
-        // 비밀번호 암호화 및 업데이트
-        user.updatePassword(passwordEncoder.encode(request.newPassword()));
-
+         // 비밀번호 암호화 및 업데이트
+         user.updatePassword(passwordEncoder.encode(request.newPassword()));
+         
         log.info("비밀번호 재설정 완료: email={}", email);
+    }
+
+    /**
+     * 설문조사 수정/저장
+     */
+    public SurveyResponse updateSurvey(SurveyRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> BaseException.type(UserErrorCode.USER_NOT_FOUND));
+
+        // 기존 설문이 있으면 수정, 없으면 새로 생성
+        Survey survey = surveyRepository.findByUserId(userId);
+
+        if (survey == null) {
+            survey = Survey.create(
+                    user,
+                    request.situations(),
+                    request.level(),
+                    request.reasons()
+            );
+            surveyRepository.save(survey);
+        } else {
+            // 기존 설문 업데이트 (JPA 더티 체킹)
+            survey.update(
+                    request.situations(),
+                    request.level(),
+                    request.reasons()
+            );
+        }
+
+        log.info("설문조사 수정: userId={}, situations={}, level={}, reasons={}",
+                userId, request.situations(), request.level(), request.reasons());
+
+        return SurveyResponse.of(
+                "설문조사가 수정되었습니다!",
+                LocalDateTime.now(),
+                "UPDATED"
+        );
     }
 }

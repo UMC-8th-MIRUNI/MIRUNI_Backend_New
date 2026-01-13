@@ -25,7 +25,7 @@ public interface UserApi {
 
     @Operation(
             summary = "회원 탈퇴",
-            description = "현재 로그인한 사용자의 회원 탈퇴를 처리합니다. \\n" +
+            description = "현재 로그인한 사용자의 회원 탈퇴를 처리합니다. \n" +
                     "소프트 삭제 방식으로 처리되며, 모든 토큰이 무효화됩니다."
     )
     @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "JWT")
