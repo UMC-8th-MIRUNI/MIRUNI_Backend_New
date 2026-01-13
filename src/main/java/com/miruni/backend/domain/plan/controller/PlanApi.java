@@ -2,13 +2,7 @@ package com.miruni.backend.domain.plan.controller;
 
 import com.miruni.backend.domain.plan.dto.request.PlanFinishRequest;
 import com.miruni.backend.domain.plan.dto.request.PlanPauseRequest;
-import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
-import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanFinishResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanPauseResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanStartResponse;
+import com.miruni.backend.domain.plan.dto.response.*;
 import com.miruni.backend.domain.plan.type.PlanType;
 import com.miruni.backend.global.authroize.LoginUser;
 import com.miruni.backend.global.exception.CustomErrorResponse;
@@ -18,16 +12,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Tag(name="plan", description = "일정 분할/조회/관리/실행 API")
 public interface PlanApi {
+
+    @Operation(
+            summary = "홈페이지 일정 조회",
+            description = "오늘의 미완료 일정을 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "홈페이지 일정 조회 성공")
+    })
+    PlanHomeResponse getPlanHome(@LoginUser Long userId);
 
     @Operation(
             summary = "캘린더 조회",

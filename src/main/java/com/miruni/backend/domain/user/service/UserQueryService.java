@@ -3,6 +3,7 @@ package com.miruni.backend.domain.user.service;
 import com.miruni.backend.domain.user.dto.response.UserSurveyResponse;
 import com.miruni.backend.domain.user.entity.Survey;
 import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
+import com.miruni.backend.domain.user.dto.response.UserHomeResponse;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.exception.ServeyErrorCode;
 import com.miruni.backend.domain.user.exception.UserErrorCode;
@@ -31,6 +32,12 @@ public class UserQueryService {
         return UserInfoResponseDto.from(user);
     }
 
+    public UserHomeResponse getUserHome(Long id) {
+        User user = getUserById(id);
+
+        return UserHomeResponse.from(user);
+    }
+  
     public UserSurveyResponse getUserSurveyResult(Long userId) {
         // 사용자 존재 검증 (Survey만 조회하면 USER_NOT_FOUND 대신 SURVEY_NOT_FOUND가 나갈 수 있어 분리)
         userRepository.findById(userId)
@@ -44,5 +51,3 @@ public class UserQueryService {
         return UserSurveyResponse.fromSurvey(survey);
     }
 }
-
-

@@ -6,13 +6,7 @@ import com.miruni.backend.domain.plan.dto.command.PlanPauseCommand;
 import com.miruni.backend.domain.plan.dto.request.PlanStartRequest;
 import com.miruni.backend.domain.plan.dto.request.PlanFinishRequest;
 import com.miruni.backend.domain.plan.dto.request.PlanPauseRequest;
-import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanFinishResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanPauseResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanStartResponse;
-import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
-import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
+import com.miruni.backend.domain.plan.dto.response.*;
 import com.miruni.backend.domain.plan.service.PlanCommandService;
 import com.miruni.backend.domain.plan.service.PlanDurationQueryService;
 import com.miruni.backend.domain.plan.service.PlanQueryService;
@@ -34,6 +28,11 @@ public class PlanController implements PlanApi{
     private final PlanDurationQueryService planDurationQueryService;
     private final PlanCommandService planCommandService;
     private final PlanQueryService planQueryService;
+
+    @GetMapping("/home")
+    public PlanHomeResponse getPlanHome(@LoginUser Long userId) {
+        return planQueryService.getPlanHome(userId);
+    }
 
     @GetMapping("/monthly")
     public List<MonthlyPlanResponse> getMonthlyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month) {
