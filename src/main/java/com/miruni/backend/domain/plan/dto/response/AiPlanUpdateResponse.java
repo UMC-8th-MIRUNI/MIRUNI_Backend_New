@@ -32,9 +32,9 @@ public record AiPlanUpdateResponse(
                 return new AiPlanUpdateResponse(
                         plan.getTitle(),
                         aiPlan.getSubTitle(),
-                        aiPlan.getScheduledDate(),
-                        aiPlan.getEndTime(),
-                        aiPlan.getScheduledTime(),
+                        aiPlan.getStartDateTime().toLocalDate(),
+                        aiPlan.getStartDateTime().toLocalTime(),
+                        aiPlan.getEndDateTime().toLocalTime(),
                         aiPlan.getUpdatedAt()
                 );
         }

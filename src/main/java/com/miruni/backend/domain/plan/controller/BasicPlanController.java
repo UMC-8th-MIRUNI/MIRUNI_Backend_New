@@ -17,21 +17,21 @@ public class BasicPlanController implements BasicPlanApi{
 
     private final BasicPlanCommandService basicPlanCommandService;
 
-    @Override
-    @PostMapping
-    public BasicPlanResponse createBasicPlan(@LoginUser Long userId,
-                                             @Valid @RequestBody BasicPlanSaveRequest request) {
-
-        return basicPlanCommandService.createBasicPlan(BasicPlanCreateCommand.of(userId, request));
-    }
-
-    @Override
-    @PatchMapping("/{basicPlanId}")
-    public BasicPlanResponse updateBasicPlan(@LoginUser Long userId,
-                                             @PathVariable Long basicPlanId,
-                                             @Valid @RequestBody BasicPlanSaveRequest request) {
-        return basicPlanCommandService.updateBasicPlan(BasicPlanUpdateCommand.of(userId, basicPlanId, request));
-    }
+//    @Override
+//    @PostMapping
+//    public BasicPlanResponse createBasicPlan(@LoginUser Long userId,
+//                                             @Valid @RequestBody BasicPlanSaveRequest request) {
+//
+//        return basicPlanCommandService.createBasicPlan(BasicPlanCreateCommand.of(userId, request));
+//    }
+//
+//    @Override
+//    @PatchMapping("/{basicPlanId}")
+//    public BasicPlanResponse updateBasicPlan(@LoginUser Long userId,
+//                                             @PathVariable Long basicPlanId,
+//                                             @Valid @RequestBody BasicPlanSaveRequest request) {
+//        return basicPlanCommandService.updateBasicPlan(BasicPlanUpdateCommand.of(userId, basicPlanId, request));
+//    }
 
     @DeleteMapping("/{basicPlanId}")
     public Long deleteBasicPlan(@LoginUser Long userId,

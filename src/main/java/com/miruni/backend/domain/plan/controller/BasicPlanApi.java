@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Basic Plan API", description = "일반 일정 관련 API")
 public interface BasicPlanApi {
 
-    @Operation(summary = "일반 일정 생성", description = "사용자가 새로운 일반 일정을 생성합니다.")
-    BasicPlanResponse createBasicPlan(@LoginUser Long userId,
-                                      @Valid @RequestBody BasicPlanSaveRequest request);
-
-    @Operation(summary = "일반 일정 수정", description = "일반 일정을 수정합니다.")
-    BasicPlanResponse updateBasicPlan(@LoginUser Long userId,
-                                      @PathVariable Long basicPlanId,
-                                      @Valid @RequestBody BasicPlanSaveRequest request);
+//    @Operation(summary = "일반 일정 생성", description = "사용자가 새로운 일반 일정을 생성합니다.")
+//    BasicPlanResponse createBasicPlan(@LoginUser Long userId,
+//                                      @Valid @RequestBody BasicPlanSaveRequest request);
+//
+//    @Operation(summary = "일반 일정 수정", description = "일반 일정을 수정합니다.")
+//    BasicPlanResponse updateBasicPlan(@LoginUser Long userId,
+//                                      @PathVariable Long basicPlanId,
+//                                      @Valid @RequestBody BasicPlanSaveRequest request);
 
     @Operation(summary = "일반 일정 삭제", description = "일반 일정을 삭제합니다.")
     Long deleteBasicPlan(@LoginUser Long userId,

@@ -63,11 +63,11 @@ public record AiPlanCreateResponse(
                         plan.getDeadline().toLocalDate(),
                         plan.getScope(),
                         plan.getPriority(),
-                        aiPlan.getScheduledDate(),
+                        aiPlan.getStartDateTime().toLocalDate(),
                         aiPlan.getSubTitle(),
                         aiPlan.getExpectedDuration(),
-                        aiPlan.getScheduledTime(),
-                        aiPlan.getEndTime()
+                        aiPlan.getStartDateTime().toLocalTime(),
+                        aiPlan.getEndDateTime().toLocalTime()
                 );
         }
 }

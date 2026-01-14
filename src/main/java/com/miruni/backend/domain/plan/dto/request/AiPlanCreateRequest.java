@@ -16,7 +16,7 @@ public record AiPlanCreateRequest(
         String title,
 
         @NotNull
-        @Schema(description = "마감기한", example = "2025-12-31")
+        @Schema(description = "마감기한", example = "2026-05-01")
         LocalDate deadline,
 
         @NotNull
