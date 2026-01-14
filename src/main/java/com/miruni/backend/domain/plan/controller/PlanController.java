@@ -29,20 +29,20 @@ public class PlanController implements PlanApi{
     private final PlanCommandService planCommandService;
     private final PlanQueryService planQueryService;
 
-    @GetMapping("/home")
-    public PlanHomeResponse getPlanHome(@LoginUser Long userId) {
-        return planQueryService.getPlanHome(userId);
-    }
-
-    @GetMapping("/monthly")
-    public List<MonthlyPlanResponse> getMonthlyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month) {
-        return planQueryService.getMonthlyPlan(userId, year, month);
-    }
-
-    @GetMapping("/daily")
-    public DailyPlanResponse getDailyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month, @RequestParam int day) {
-        return planQueryService.getDailyPlan(userId, year, month, day);
-    }
+//    @GetMapping("/home")
+//    public PlanHomeResponse getPlanHome(@LoginUser Long userId) {
+//        return planQueryService.getPlanHome(userId);
+//    }
+//
+//    @GetMapping("/monthly")
+//    public List<MonthlyPlanResponse> getMonthlyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month) {
+//        return planQueryService.getMonthlyPlan(userId, year, month);
+//    }
+//
+//    @GetMapping("/daily")
+//    public DailyPlanResponse getDailyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month, @RequestParam int day) {
+//        return planQueryService.getDailyPlan(userId, year, month, day);
+//    }
 
     @GetMapping("/{planId}")
     public PlanDetailResponse getPlanDetail(@LoginUser Long userId, @PathVariable Long planId, @RequestParam PlanType planType) {
