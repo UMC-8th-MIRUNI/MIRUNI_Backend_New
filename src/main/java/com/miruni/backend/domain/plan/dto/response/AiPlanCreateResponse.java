@@ -41,11 +41,11 @@ public record AiPlanCreateResponse(
 
         @NotBlank
         @Schema(description = "분할 일정 제목", example = "PPT 주제 선정")
-        String description,
+        String subTitle,
 
         @NotBlank
         @Schema(description = "예상 소요 시간", example = "90")
-        Long expectedDuration,
+        int expectedDuration,
 
         @NotNull
         @Schema(description = "시작 시간", example = "09:00:00")
@@ -55,16 +55,6 @@ public record AiPlanCreateResponse(
         @Schema(description = "종료 시간", example = "10:30:00")
         LocalTime endTime
 ) {
-        public AiPlan toEntity(Plan plan) {
-                return AiPlan.builder()
-                        .plan(plan)
-                        .subTitle(this.description())
-                        .scheduledDate(this.scheduledDate())
-                        .scheduledTime(this.startTime())
-                        .expectedDuration(this.expectedDuration().intValue())
-                        .build();
-        }
-
         public static AiPlanCreateResponse fromEntity(AiPlan aiPlan, Plan plan) {
                 return new AiPlanCreateResponse(
                         plan.getId(),
@@ -73,11 +63,11 @@ public record AiPlanCreateResponse(
                         plan.getDeadline().toLocalDate(),
                         plan.getScope(),
                         plan.getPriority(),
-                        aiPlan.getScheduledDate(),
+                        aiPlan.getStartDateTime().toLocalDate(),
                         aiPlan.getSubTitle(),
-                        (long) aiPlan.getExpectedDuration(),
-                        aiPlan.getScheduledTime(),
-                        aiPlan.getScheduledTime().plusMinutes(aiPlan.getExpectedDuration())
+                        aiPlan.getExpectedDuration(),
+                        aiPlan.getStartDateTime().toLocalTime(),
+                        aiPlan.getEndDateTime().toLocalTime()
                 );
         }
 }

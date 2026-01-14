@@ -5,6 +5,9 @@ import com.miruni.backend.domain.plan.entity.Priority;
 import com.miruni.backend.domain.plan.entity.Status;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public record BasicPlanResponse(
         Long id,

@@ -4,13 +4,12 @@ import com.miruni.backend.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "ai_plan")
 public class AiPlan extends BaseEntity {
 
@@ -26,38 +25,53 @@ public class AiPlan extends BaseEntity {
     @Column(name = "sub_title", nullable = false, length = 50)
     private String subTitle;
 
-    @Column(name = "scheduled_date", nullable = false)
-    private LocalDate scheduledDate;
+    @Column(name="start_date_time", nullable = false)
+    private LocalDateTime startDateTime;
 
-    @Column(name = "scheduled_time", nullable = false)
-    private LocalTime scheduledTime;
-
-    @Column(name = "end_time", nullable = false)
-    private LocalTime endTime;
+    @Column(name = "end_date_time", nullable = false)
+    private LocalDateTime endDateTime;
 
     @Column(name = "expected_duration", nullable = false)
     private int expectedDuration;
 
-//    @Column(name = "is_done", nullable = false)
-//    @Builder.Default
-//    private boolean isDone = false;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    @Builder.Default
     private Status status = Status.TODO;
 
-    public void updateDetails(String subTitle, LocalDate scheduledDate, LocalTime scheduledTime) {
+    @Builder(access = AccessLevel.PRIVATE)
+    public AiPlan(Plan plan, final String subTitle, final LocalDateTime startDateTime, final LocalDateTime endDateTime, final int expectedDuration, final Status status) {
+        this.plan = plan;
         this.subTitle = subTitle;
-        this.scheduledDate = scheduledDate;
-        this.scheduledTime = scheduledTime;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.expectedDuration = expectedDuration;
+        this.status = status;
+    }
+
+    public static AiPlan create(Plan plan, final String subTitle, final LocalDateTime startDateTime, final LocalDateTime endDateTime, final int expectedDuration, final Status status) {
+        return AiPlan.builder()
+                .plan(plan)
+                .subTitle(subTitle)
+                .startDateTime(startDateTime)
+                .endDateTime(endDateTime)
+                .expectedDuration(expectedDuration)
+                .status(status)
+                .build();
+    }
+
+    public void updateDetails(String subTitle, LocalDateTime startDateTime, LocalDateTime endDateTime,  int expectedDuration, Status status) {
+        this.subTitle = subTitle;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.expectedDuration = expectedDuration;
+        this.status = status;
     }
     public void complete() { this.status = Status.DONE; }
     public void start() { this.status = Status.IN_PROGRESS; }
     public void pause() { this.status = Status.TODO; }
 
-    public void rescheduleTime(LocalTime newScheduledTime) {
-        this.scheduledTime = newScheduledTime;
-        this.endTime = newScheduledTime.plusMinutes(this.getExpectedDuration());
+    public void rescheduleTime(LocalDateTime newScheduledTime) {
+        this.startDateTime = newScheduledTime;
+        this.endDateTime = newScheduledTime.plusMinutes(this.getExpectedDuration());
     }
 }

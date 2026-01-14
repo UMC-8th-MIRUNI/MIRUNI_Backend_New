@@ -7,14 +7,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum 
-UserErrorCode implements ErrorCode {
-    
-    // 400 BAD_REQUEST
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "USER400_4", "비밀번호가 올바르지 않습니다."),
-    AGREEMENT_REQUIRED(HttpStatus.BAD_REQUEST, "USER400_5", "필수 약관에 동의해야 합니다."),
-    USER_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "USER400_7", "이미 탈퇴한 사용자입니다."),
-    OAUTH_PROVIDER_MISMATCH(HttpStatus.BAD_REQUEST, "USER400_9", "소셜 로그인 제공자 정보가 일치하지 않습니다."),
+public enum UserErrorCode implements ErrorCode {
+
+    NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "USER400_8", "땅콩 갯수가 부족합니다."),
     EMAIL_VERIFICATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER400_10", "이메일 인증 코드가 존재하지 않거나 만료되었습니다."),
     EMAIL_VERIFICATION_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "USER400_11", "이메일 인증 코드가 올바르지 않습니다."),
     EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "USER400_12", "이메일 인증이 완료되지 않았습니다."),
@@ -33,6 +28,12 @@ UserErrorCode implements ErrorCode {
 
     // 404 NOT_FOUND
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER404_3", "사용자를 찾을 수 없습니다."),
+
+    // 400 BAD_REQUEST
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "USER400_4", "비밀번호가 올바르지 않습니다."),
+    AGREEMENT_REQUIRED(HttpStatus.BAD_REQUEST, "USER400_5", "필수 약관에 동의해야 합니다."),
+    USER_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "USER400_7", "이미 탈퇴한 사용자입니다."),
+    OAUTH_PROVIDER_MISMATCH(HttpStatus.BAD_REQUEST, "USER400_9", "소셜 로그인 제공자 정보가 일치하지 않습니다."),
 
     // 409 CONFLICT
     NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "USER404_1", "이미 사용 중인 닉네임입니다."),

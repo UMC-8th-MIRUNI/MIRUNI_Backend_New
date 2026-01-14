@@ -51,8 +51,8 @@ public record DailyPlanResponse(
                     aiPlan.getId(),
                     aiPlan.getPlan().getTitle(), // TODO
                     aiPlan.getSubTitle(),
-                    formatTime(aiPlan.getScheduledTime()),
-                    formatTime(aiPlan.getEndTime()),
+                    formatTime(aiPlan.getStartDateTime()),
+                    formatTime(aiPlan.getEndDateTime()),
                     aiPlan.getPlan().getPriority(),
                     aiPlan.getStatus() == Status.DONE
             );

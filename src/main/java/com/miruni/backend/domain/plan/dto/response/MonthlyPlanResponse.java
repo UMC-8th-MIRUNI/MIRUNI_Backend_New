@@ -1,6 +1,7 @@
 package com.miruni.backend.domain.plan.dto.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record MonthlyPlanResponse(
         LocalDate date,

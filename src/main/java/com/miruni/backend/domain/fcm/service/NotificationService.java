@@ -46,7 +46,7 @@ public class NotificationService {
         LocalDateTime scheduledTime = validateAndGetScheduledTime(
                 plan.getStatus(),
                 plan.getId(),
-                LocalDateTime.of(plan.getScheduledDate(), plan.getScheduledTime())
+                LocalDateTime.of(plan.getStartDateTime().toLocalDate(), plan.getStartDateTime().toLocalTime())
         );
 
         if (scheduledTime == null) return;
@@ -63,7 +63,7 @@ public class NotificationService {
         );
 
 
-        log.info("Plan 알림 스케줄 등록 완료: planId = {}, startTime = {}", plan.getId(), plan.getScheduledTime());
+        log.info("Plan 알림 스케줄 등록 완료: planId = {}, startTime = {}", plan.getId(), plan.getStartDateTime().toLocalTime());
     }
 
     //AIPlan 알림 등록
@@ -72,7 +72,7 @@ public class NotificationService {
         LocalDateTime scheduledTime = validateAndGetScheduledTime(
                 aiplan.getStatus(),
                 aiplan.getId(),
-                LocalDateTime.of(aiplan.getScheduledDate(), aiplan.getScheduledTime())
+                LocalDateTime.of(aiplan.getStartDateTime().toLocalDate(), aiplan.getStartDateTime().toLocalTime())
         );
 
         if (scheduledTime == null) return;
@@ -89,7 +89,7 @@ public class NotificationService {
                         .build()
         );
 
-        log.info("AiPlan 알림 스케줄 등록 완료: planId = {}, startTime = {}", aiplan.getId(), aiplan.getScheduledTime());
+        log.info("AiPlan 알림 스케줄 등록 완료: planId = {}, startTime = {}", aiplan.getId(), aiplan.getStartDateTime().toLocalTime());
     }
 
     //알람 취소

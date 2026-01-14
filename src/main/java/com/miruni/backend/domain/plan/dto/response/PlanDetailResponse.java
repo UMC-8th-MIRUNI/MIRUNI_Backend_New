@@ -37,8 +37,8 @@ public record PlanDetailResponse(
                 aiPlan.getPlan().getTitle(),
                 aiPlan.getSubTitle(),
                 null,
-                formatTime(aiPlan.getScheduledTime()),
-                formatTime(aiPlan.getEndTime()),
+                formatTime(aiPlan.getStartDateTime()),
+                formatTime(aiPlan.getEndDateTime()),
                 aiPlan.getPlan().getPriority()
         );
     }

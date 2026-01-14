@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import reactor.netty.http.client.HttpClient;
+import java.time.Duration;
 
 @Configuration
 public class GeminiConfig {
@@ -16,8 +19,13 @@ public class GeminiConfig {
 
     @Bean
     public WebClient webClient() {
+
+        HttpClient httpClient = HttpClient.create()
+                .responseTimeout(Duration.ofSeconds(60));
+
         return WebClient.builder()
                 .baseUrl(apiUrl)
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .defaultUriVariables(java.util.Map.of("key", apiKey))
                 .build();
     }

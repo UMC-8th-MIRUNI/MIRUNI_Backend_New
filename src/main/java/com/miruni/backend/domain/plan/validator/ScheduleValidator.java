@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Component
 @RequiredArgsConstructor
@@ -18,18 +21,16 @@ public class ScheduleValidator {
     private final BasicPlanRepository basicPlanRepository;
 
     public void validateConflict(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+
         if (basicPlanRepository.existsOverlap(userId, startDateTime, endDateTime)) {
             throw BaseException.type(BasicPlanErrorCode.BASIC_PLAN_CONFLICT);
         }
 
-//        if (aiPlanRepository.existsOverlap(userId, startDateTime, endDateTime)) {
-//            throw BaseException.type(AiPlanErrorCode.AI_PLAN_CONFLICT);
-//        }
+        if(aiPlanRepository.existsOverlap(userId, startDateTime, endDateTime)) {
+            throw BaseException.type(AiPlanErrorCode.AI_PLAN_CONFLICT);
+        }
     }
 
-    // 오버로딩
-
-    //BasicPlan
     public void validateConflictForBasicPlan(Long userId, Long excludeId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
 
         // BasicPlan 검증
@@ -38,12 +39,11 @@ public class ScheduleValidator {
         }
 
         // AiPlan 검증
-//        if (aiPlanRepository.existsOverlap(userId, startDateTime, endDateTime)) {
-//            throw BaseException.type(AiPlanErrorCode.AI_PLAN_CONFLICT);
-//        }
+        if (aiPlanRepository.existsOverlap(userId, startDateTime, endDateTime)) {
+            throw BaseException.type(AiPlanErrorCode.AI_PLAN_CONFLICT);
+        }
     }
 
-    //AiPlan
     public void validateConflictForAiPlan(Long userId, Long excludeId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
 
         // BasicPlan 검증
@@ -52,9 +52,8 @@ public class ScheduleValidator {
         }
 
         // AiPlan 검증
-//        if (aiPlanRepository.existsOverlapWithinUpdate(userId, excludeId, startDateTime, endDateTime)) {
-//            throw BaseException.type(AiPlanErrorCode.AI_PLAN_CONFLICT);
-//        }
+        if (aiPlanRepository.existsOverlapWithinUpdate(userId, excludeId, startDateTime, endDateTime)) {
+            throw BaseException.type(AiPlanErrorCode.AI_PLAN_CONFLICT);
+        }
     }
-
 }

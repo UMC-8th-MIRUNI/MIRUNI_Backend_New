@@ -4,8 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.miruni.backend.domain.plan.dto.request.AiPlanCreateRequest;
+import com.miruni.backend.domain.plan.dto.command.AiPlanCreateCommandDto;
 import com.miruni.backend.domain.plan.dto.response.AiPlanCreateResponse;
+import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
 import com.miruni.backend.global.exception.BaseException;
 import org.springframework.stereotype.Component;
@@ -17,16 +18,18 @@ import java.util.List;
 @Component
 public class GeminiParser {
     private final ObjectMapper objectMapper;
+    private final PlanQueryService planQueryService;
 
-    public GeminiParser() {
+    public GeminiParser(PlanQueryService planQueryService) {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
+        this.planQueryService = planQueryService;
     }
 
-    public List<AiPlanCreateResponse> parseToDto(AiResponse aiResponse, AiPlanCreateRequest request, Long planId) {
+    public List<AiPlanCreateResponse> parseToDto(AiResponse aiResponse, AiPlanCreateCommandDto command) {
         String jsonText = extractText(aiResponse);
 
-        return mapJsonToDto(jsonText, request, planId);
+        return mapJsonToDto(jsonText, command);
     }
 
     private String extractText(AiResponse aiResponse) {
@@ -43,14 +46,14 @@ public class GeminiParser {
         throw BaseException.type(AiPlanErrorCode.AI_RESPONSE_EMPTY);
     }
 
-    private List<AiPlanCreateResponse> mapJsonToDto(String jsonText, AiPlanCreateRequest request, Long planId) {
+    private List<AiPlanCreateResponse> mapJsonToDto(String jsonText, AiPlanCreateCommandDto command) {
         try{
             List<AiPlanStepDto> aiSteps = objectMapper.readValue(jsonText, new TypeReference<>() {}) ;
 
             return aiSteps.stream()
                     .map(step -> new AiPlanCreateResponse(
-                            planId, 1L,
-                            request.title(), request.deadline(), request.taskRange(), request.priority(),
+                            command.planId(), 1L,
+                            command.title(), command.deadline(), command.taskRange(), command.priority(),
                             step.scheduledDate(), step.subTitle(), step.expectedDuration(),
                             step.startTime(), step.endTime()
                     ))
@@ -69,7 +72,7 @@ public class GeminiParser {
     private record AiPlanStepDto(
             LocalDate scheduledDate,
             String subTitle,
-            Long expectedDuration,
+            int expectedDuration,
             LocalTime startTime,
             LocalTime endTime
     ) {}

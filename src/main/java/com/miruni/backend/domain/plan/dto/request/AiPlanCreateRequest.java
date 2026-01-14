@@ -16,7 +16,7 @@ public record AiPlanCreateRequest(
         String title,
 
         @NotNull
-        @Schema(description = "마감기한", example = "2025-12-31")
+        @Schema(description = "마감기한", example = "2026-05-01")
         LocalDate deadline,
 
         @NotNull
@@ -35,14 +35,4 @@ public record AiPlanCreateRequest(
         @Schema(description = "세부 요청사항", example = "하루에 2시간씩 작업할 예정이야.")
         String detailRequest
 ) {
-
-        public Plan toEntity(User user) {
-                return Plan.builder()
-                        .title(this.title())
-                        .deadline(this.deadline().atStartOfDay())
-                        .scope(this.taskRange())
-                        .priority(this.priority)
-                        .user(user)
-                        .build();
-        }
 }
