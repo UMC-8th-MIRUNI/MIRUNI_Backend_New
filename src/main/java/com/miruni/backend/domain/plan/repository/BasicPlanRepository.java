@@ -47,9 +47,7 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
             @Param("userId") Long userId,
             @Param("date") LocalDate date
     );
-
     //boolean existsByUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
-
     //boolean existsByUserIdAndScheduledStartTime(Long userId, LocalTime scheduledTime);
 
     @Query("""
@@ -79,4 +77,5 @@ public interface BasicPlanRepository extends JpaRepository<BasicPlan, Long> {
             @Param("reqStartDateTime") LocalDateTime reqStartDateTime,
             @Param("reqEndDateTime") LocalDateTime reqEndDateTime
     );
+
 }

@@ -12,7 +12,7 @@ public record AiPlansDeleteCommandDto(
     public static  AiPlansDeleteCommandDto from(Long planId, AiPlansDeleteRequest req, Long userId) {
         return new AiPlansDeleteCommandDto(
                 planId,
-                req.aiPlansId(),
+                req.aiPlansIds(),
                 userId
         );
     }

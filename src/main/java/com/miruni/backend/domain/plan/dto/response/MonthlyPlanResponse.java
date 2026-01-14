@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record MonthlyPlanResponse(
-        LocalDateTime dateTime,
+        LocalDate date,
         long unfinishedPlanCount
 ) {
-    public static MonthlyPlanResponse of(LocalDateTime dateTime, long count) {
+    public static MonthlyPlanResponse of(LocalDate date, long count) {
         return new MonthlyPlanResponse(
-                dateTime,
+                date,
                 count
         );
     }

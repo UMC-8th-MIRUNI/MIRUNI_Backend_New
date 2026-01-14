@@ -54,7 +54,6 @@ public class AiPlanCommandService {
 
     public List<AiPlanCreateResponse> saveAiPlans(AiPlanCreateCommandDto command, Long userId) {
         User user = userQueryService.getUserById(userId);
-        user.deductAiChance();
 
         Plan plan = planQueryService.findById(command.planId());
         List<AiPlanCreateResponse> dtoList = this.geminiService.getAiPlanFromApi(command).block();
@@ -75,15 +74,17 @@ public class AiPlanCommandService {
                             dto.scheduledDate().atTime(dto.startTime()),
                             dto.scheduledDate().atTime(dto.endTime()),
                             dto.expectedDuration(),
-                            Status.DONE
+                            Status.TODO
                     ))
                     .toList();
 
             List<AiPlan> savedEntity = aiPlanRepository.saveAll(entityToSave);
+            user.deductAiChance();
 
             return savedEntity.stream()
                     .map(entity -> AiPlanCreateResponse.fromEntity(entity, plan))
                     .toList();
+
 
         }
         return List.of();
