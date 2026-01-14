@@ -58,29 +58,29 @@ public class PlanQueryService {
     private final BasicPlanQueryService basicPlanQueryService;
     private final AiPlanQueryService aiPlanQueryService;
 
-    public PlanHomeResponse getPlanHome(Long userId) {
-//        LocalDate today = LocalDate.now();
-        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
-
-        List<DailyPlanResponse.DailyPlanItemResponse> allPlans =
-                Stream.concat(
-                        basicPlanRepository.findDailyBasicPlans(userId, today).stream()
-                                .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
-                        aiPlanRepository.findDailyAiPlans(userId, today).stream()
-                                .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
-                ).toList();
-
-        int progressRate = calculateProgressRate(allPlans);
-
-        List<DailyPlanResponse.DailyPlanItemResponse> todayPlans = allPlans.stream()
-                .filter(p -> !p.isDone())
-                .sorted(Comparator.comparing(
-                        DailyPlanResponse.DailyPlanItemResponse::startTime
-                ))
-                .toList();
-
-        return PlanHomeResponse.of(progressRate, todayPlans);
-    }
+//    public PlanHomeResponse getPlanHome(Long userId) {
+////        LocalDate today = LocalDate.now();
+//        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+//
+//        List<DailyPlanResponse.DailyPlanItemResponse> allPlans =
+//                Stream.concat(
+//                        basicPlanRepository.findDailyBasicPlans(userId, today).stream()
+//                                .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
+//                        aiPlanRepository.findDailyAiPlans(userId, today).stream()
+//                                .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
+//                ).toList();
+//
+//        int progressRate = calculateProgressRate(allPlans);
+//
+//        List<DailyPlanResponse.DailyPlanItemResponse> todayPlans = allPlans.stream()
+//                .filter(p -> !p.isDone())
+//                .sorted(Comparator.comparing(
+//                        DailyPlanResponse.DailyPlanItemResponse::startTime
+//                ))
+//                .toList();
+//
+//        return PlanHomeResponse.of(progressRate, todayPlans);
+//    }
 
     private int calculateProgressRate(List<DailyPlanResponse.DailyPlanItemResponse> plans) {
         if (plans.isEmpty()) return 0;
@@ -95,49 +95,49 @@ public class PlanQueryService {
     /**
      * 캘린더 조회
      */
-    public List<MonthlyPlanResponse> getMonthlyPlan(Long userId, int year, int month) {
-
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
-
-        List<MonthlyPlanResponse> basicPlans = basicPlanRepository.countUnfinishedBasicPlansByDate(userId, startDateTime, endDateTime);
-        List<MonthlyPlanResponse> aiPlans = aiPlanRepository.countUnfinishedAiPlansByDate(userId, startDate, endDate);
-
-        return Stream.concat(basicPlans.stream(), aiPlans.stream())
-                .collect(Collectors.groupingBy(
-                        MonthlyPlanResponse::dateTime,
-                        Collectors.summingLong(MonthlyPlanResponse::unfinishedPlanCount)
-                ))
-                .entrySet().stream()
-                .map(e -> MonthlyPlanResponse.of(e.getKey(), e.getValue()))
-                .sorted(Comparator.comparing(MonthlyPlanResponse::dateTime))
-                .toList();
-    }
+//    public List<MonthlyPlanResponse> getMonthlyPlan(Long userId, int year, int month) {
+//
+//        LocalDate startDate = LocalDate.of(year, month, 1);
+//        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+//
+//        LocalDateTime startDateTime = startDate.atStartOfDay();
+//        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+//
+//        List<MonthlyPlanResponse> basicPlans = basicPlanRepository.countUnfinishedBasicPlansByDate(userId, startDateTime, endDateTime);
+//        List<MonthlyPlanResponse> aiPlans = aiPlanRepository.countUnfinishedAiPlansByDate(userId, startDate, endDate);
+//
+//        return Stream.concat(basicPlans.stream(), aiPlans.stream())
+//                .collect(Collectors.groupingBy(
+//                        MonthlyPlanResponse::dateTime,
+//                        Collectors.summingLong(MonthlyPlanResponse::unfinishedPlanCount)
+//                ))
+//                .entrySet().stream()
+//                .map(e -> MonthlyPlanResponse.of(e.getKey(), e.getValue()))
+//                .sorted(Comparator.comparing(MonthlyPlanResponse::dateTime))
+//                .toList();
+//    }
 
     /**
      * (캘린더 아래) 특정 날짜의 일정 조회
      */
-    public DailyPlanResponse getDailyPlan(Long userId, int year, int month, int day) {
-
-        LocalDate date = LocalDate.of(year, month, day);
-
-        List<DailyPlanResponse.DailyPlanItemResponse> plans = Stream.concat(
-                        basicPlanRepository.findDailyBasicPlans(userId, date).stream()
-                                .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
-                        aiPlanRepository.findDailyAiPlans(userId, date).stream()
-                                .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
-                )
-                .sorted(Comparator.comparing(DailyPlanResponse.DailyPlanItemResponse::startTime))
-                .toList();
-
-        Map<Boolean, List<DailyPlanResponse.DailyPlanItemResponse>> plansByStatus = plans.stream()
-                .collect(Collectors.partitioningBy(DailyPlanResponse.DailyPlanItemResponse::isDone));
-
-        return DailyPlanResponse.of(plansByStatus.get(false), plansByStatus.get(true));
-    }
+//    public DailyPlanResponse getDailyPlan(Long userId, int year, int month, int day) {
+//
+//        LocalDate date = LocalDate.of(year, month, day);
+//
+//        List<DailyPlanResponse.DailyPlanItemResponse> plans = Stream.concat(
+//                        basicPlanRepository.findDailyBasicPlans(userId, date).stream()
+//                                .map(DailyPlanResponse.DailyPlanItemResponse::fromBasic),
+//                        aiPlanRepository.findDailyAiPlans(userId, date).stream()
+//                                .map(DailyPlanResponse.DailyPlanItemResponse::fromAi)
+//                )
+//                .sorted(Comparator.comparing(DailyPlanResponse.DailyPlanItemResponse::startTime))
+//                .toList();
+//
+//        Map<Boolean, List<DailyPlanResponse.DailyPlanItemResponse>> plansByStatus = plans.stream()
+//                .collect(Collectors.partitioningBy(DailyPlanResponse.DailyPlanItemResponse::isDone));
+//
+//        return DailyPlanResponse.of(plansByStatus.get(false), plansByStatus.get(true));
+//    }
 
     /**
      * 일정 상세 조회
