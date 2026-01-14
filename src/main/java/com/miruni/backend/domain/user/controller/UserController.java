@@ -5,6 +5,7 @@ import com.miruni.backend.domain.user.dto.command.UserInfoUpdateCommandDto;
 import com.miruni.backend.domain.user.dto.request.ProfileUpdateRequestDto;
 import com.miruni.backend.domain.user.dto.request.UserInfoUpdateRequestDto;
 import com.miruni.backend.domain.user.dto.response.UserInfoResponseDto;
+import com.miruni.backend.domain.user.dto.response.UserHomeResponse;
 import com.miruni.backend.domain.user.service.UserQueryService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,4 +47,8 @@ public class UserController implements UserApi {
         return userCommandService.updateUserInfo(UserInfoUpdateCommandDto.of(userId, requestDto));
     }
 
+    @GetMapping("/home")
+    public UserHomeResponse getUserHome(@LoginUser Long userId) {
+        return userQueryService.getUserHome(userId);
+    }
 }

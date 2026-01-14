@@ -198,8 +198,7 @@ public class PlanCommandService {
         int expectedMinutes = parseTimeToMinutes(command.expectedTime());
         int actualMinutes;
 
-
-        Status status;
+       Status status;
        switch (command.planType()) {
            case BASIC -> {
                BasicPlan basicPlan = getBasicPlan(command.planId(), command.userId());
@@ -214,11 +213,11 @@ public class PlanCommandService {
                aiPlan.complete();
                status = aiPlan.getStatus();
 
-                // 상위 Plan progressRate 갱신
-                updateParentPlanProgress(aiPlan.getPlan());
-            }
-            default -> throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
-        }
+               // 상위 Plan progressRate 갱신
+               updateParentPlanProgress(aiPlan.getPlan());
+           }
+           default -> throw BaseException.type(PlanErrorCode.PLAN_TYPE_NOT_FOUND);
+       }
 
         int peanutCount = calculatePeanuts(expectedMinutes, actualMinutes);
         user.addPeanuts(peanutCount);
@@ -262,6 +261,7 @@ public class PlanCommandService {
                 if (!endDateTime.isAfter(startDateTime)) {
                     endDateTime = endDateTime.plusDays(1);
                 }
+
                 scheduleValidator.validateConflictForAiPlan(
                         command.userId(),
                         command.planId(),

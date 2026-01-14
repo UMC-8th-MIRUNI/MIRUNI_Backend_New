@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -55,7 +56,6 @@ public class BasicPlan extends BaseEntity {
 
     public void update(String title, String description, LocalDateTime startDateTime,
                        LocalDateTime endDateTime, Priority priority) {
-        validateTimeRange(startDateTime, endDateTime);
 
         this.title = title;
         this.description = description;
@@ -66,8 +66,7 @@ public class BasicPlan extends BaseEntity {
     }
 
     public static BasicPlan create(User user, String title, String description, LocalDateTime startDateTime,
-                             LocalDateTime endDateTime, Priority priority) {
-        validateTimeRange(startDateTime, endDateTime);
+                            LocalDateTime endDateTime, Priority priority) {
         long expectedDuration = Duration.between(startDateTime, endDateTime).toMinutes();
         return BasicPlan.builder()
                 .user(user)
@@ -80,11 +79,6 @@ public class BasicPlan extends BaseEntity {
                 .build();
     }
 
-    private static void validateTimeRange(LocalDateTime start, LocalDateTime end) {
-        if (start.isAfter(end)) {
-            throw BaseException.type(BasicPlanErrorCode.INVALID_TIME_RANGE);
-        }
-    }
 
     public void complete() { this.status = Status.DONE; }
     public void start() { this.status = Status.IN_PROGRESS; }
