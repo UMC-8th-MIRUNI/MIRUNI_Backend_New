@@ -1,16 +1,15 @@
 package com.miruni.backend.domain.plan.dto.command;
 
 import com.miruni.backend.domain.plan.dto.request.AiPlanCreateRequest;
-import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.plan.entity.Priority;
-import com.miruni.backend.domain.plan.entity.TimePeriod;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record PlanCreateCommandDto(
         Long userId,
         String title,
-        LocalDate deadline,
+        LocalDateTime startDateTime,
+        LocalDateTime endDateTime,
         String taskRange,
         Priority priority
 ) {
@@ -18,8 +17,9 @@ public record PlanCreateCommandDto(
         return new PlanCreateCommandDto(
                 userId,
                 request.title(),
-                request.deadline(),
-                request.taskRange(),
+                request.startDateTime(),
+                request.endDateTime(),
+                request.scope(),
                 request.priority()
         );
     }

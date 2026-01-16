@@ -24,12 +24,12 @@ public record AiPlanCreateResponse(
         String title,
 
         @NotNull
-        @Schema(description = "마감기한", example = "2025-12-31")
+        @Schema(description = "마감기한", example = "2026-03-01T11:00:00")
         LocalDate deadline,
 
         @NotBlank
         @Schema(description = "일정 범위", example = "기획안 13페이지 작성")
-        String taskRange,
+        String scope,
 
         @NotNull
         @Schema(description = "우선 순위", example = "HIGH")
@@ -60,7 +60,7 @@ public record AiPlanCreateResponse(
                         plan.getId(),
                         aiPlan.getId(),
                         plan.getTitle(),
-                        plan.getDeadline().toLocalDate(),
+                        plan.getEndDateTime().toLocalDate(),
                         plan.getScope(),
                         plan.getPriority(),
                         aiPlan.getStartDateTime().toLocalDate(),

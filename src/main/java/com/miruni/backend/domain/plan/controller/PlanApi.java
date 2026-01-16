@@ -21,32 +21,32 @@ import java.util.List;
 @Tag(name="plan", description = "일정 분할/조회/관리/실행 API")
 public interface PlanApi {
 
-//    @Operation(
-//            summary = "홈페이지 일정 조회",
-//            description = "오늘의 미완료 일정을 조회합니다."
-//    )
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "홈페이지 일정 조회 성공")
-//    })
-//    PlanHomeResponse getPlanHome(@LoginUser Long userId);
+    @Operation(
+            summary = "홈페이지 일정 조회",
+            description = "오늘의 미완료 일정을 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "홈페이지 일정 조회 성공")
+    })
+    PlanHomeResponse getPlanHome(@LoginUser Long userId);
 
-//    @Operation(
-//            summary = "캘린더 조회",
-//            description = "특정 년/월의 날짜별 미완료 일정 개수를 조회합니다."
-//    )
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "캘린더 조회 성공")
-//    })
-//    List<MonthlyPlanResponse> getMonthlyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month);
+    @Operation(
+            summary = "캘린더 조회",
+            description = "특정 년/월의 날짜별 미완료 일정 개수를 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "캘린더 조회 성공")
+    })
+    List<MonthlyPlanResponse> getMonthlyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month);
 
-//    @Operation(
-//            summary = "특정 날짜의 완료/미완료 일정 조회",
-//            description = "특정 날짜의 완료/미완료 일정을 조회합니다."
-//    )
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "일정 조회 성공")
-//    })
-//    DailyPlanResponse getDailyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month, @RequestParam int day);
+    @Operation(
+            summary = "특정 날짜의 완료/미완료 일정 조회",
+            description = "특정 날짜의 완료/미완료 일정을 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "일정 조회 성공")
+    })
+    DailyPlanResponse getDailyPlans(@LoginUser Long userId, @RequestParam int year, @RequestParam int month, @RequestParam int day);
 
     @Operation(
             summary = "특정 일정 조회",

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.miruni.backend.domain.plan.dto.command.AiPlanCreateCommandDto;
 import com.miruni.backend.domain.plan.dto.response.AiPlanCreateResponse;
-import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
 import com.miruni.backend.global.exception.BaseException;
 import org.springframework.stereotype.Component;
@@ -53,7 +52,7 @@ public class GeminiParser {
             return aiSteps.stream()
                     .map(step -> new AiPlanCreateResponse(
                             command.planId(), 1L,
-                            command.title(), command.deadline(), command.taskRange(), command.priority(),
+                            command.title(), command.startDateTime().toLocalDate(), command.scope(), command.priority(),
                             step.scheduledDate(), step.subTitle(), step.expectedDuration(),
                             step.startTime(), step.endTime()
                     ))

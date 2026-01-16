@@ -28,8 +28,11 @@ public class Plan extends BaseEntity {
     @Column(name = "title", nullable = false, length = 50)
     private String title;
 
-    @Column(name = "deadline", nullable = false)
-    private LocalDateTime deadline;
+    @Column(name = "startDateTime", nullable = false)
+    private LocalDateTime startDateTime;
+
+    @Column(name = "endDateTime", nullable = false)
+    private LocalDateTime endDateTime;
 
     @Column(name = "is_done", nullable = false)
     private boolean isDone = false;
@@ -48,7 +51,7 @@ public class Plan extends BaseEntity {
     private List<AiPlan> aiPlans = new ArrayList<>();
 
     public void updateTitle(String title) {this.title = title;}
-    public void updateDeadline(LocalDate deadline) {this.deadline = deadline.atStartOfDay();}
+    public void updateDeadline(LocalDate deadline) {this.startDateTime = deadline.atStartOfDay();}
     public void updateScope(String scope) {this.scope = scope;}
     public void updatePriority(Priority priority) {this.priority = priority;}
 
@@ -56,22 +59,25 @@ public class Plan extends BaseEntity {
     private Plan(
             User user,
             final String title,
-            final LocalDateTime deadline,
+            final LocalDateTime startDateTime,
+            final LocalDateTime endDateTime,
             final String scope,
             final Priority priority
     ){
         this.user = user;
         this.title = title;
-        this.deadline = deadline;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
         this.scope = scope;
         this.priority = priority;
     }
 
-    public static Plan create(User user, final String title, final LocalDateTime deadline, final String scope, final Priority priority) {
+    public static Plan create(User user, final String title, final LocalDateTime startDateTime, final LocalDateTime endDateTime, final String scope, final Priority priority) {
         return Plan.builder()
                 .user(user)
                 .title(title)
-                .deadline(deadline)
+                .startDateTime(startDateTime)
+                .endDateTime(endDateTime)
                 .scope(scope)
                 .priority(priority)
                 .build();

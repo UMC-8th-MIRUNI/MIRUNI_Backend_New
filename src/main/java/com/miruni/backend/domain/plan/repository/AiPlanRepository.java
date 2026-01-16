@@ -50,6 +50,7 @@ public interface AiPlanRepository extends JpaRepository<AiPlan, Long> {
     Optional<AiPlan> findByIdAndPlanUserId(Long id, Long userId);
 
     List<AiPlan> findByPlanId(Long planId);
+
 //    boolean existsByPlanUserIdAndScheduledTime(Long userId, LocalTime scheduledTime);
     boolean existsByPlanUserIdAndStartDateTime(Long userId, LocalDateTime startDateTime);
 

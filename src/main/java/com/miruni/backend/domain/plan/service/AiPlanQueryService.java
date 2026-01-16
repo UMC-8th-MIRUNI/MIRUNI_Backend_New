@@ -8,18 +8,13 @@ import com.miruni.backend.domain.plan.entity.Status;
 import com.miruni.backend.domain.user.service.UserQueryService;
 import com.miruni.backend.global.exception.BaseException;
 import com.miruni.backend.global.exception.CommonErrorCode;
-import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
-import com.miruni.backend.domain.user.service.UserQueryService;
-import com.miruni.backend.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import java.time.LocalTime;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +64,7 @@ public class AiPlanQueryService {
             return AiPlanResponse.of(
                     plan.getId(),
                     plan.getTitle(),
-                    plan.getDeadline().toLocalDate(),
+                    plan.getStartDateTime().toLocalDate(),
                     plan.getScope(),
                     plan.getPriority(),
                     progressRate,
