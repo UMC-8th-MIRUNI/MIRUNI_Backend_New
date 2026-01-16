@@ -1,15 +1,11 @@
 package com.miruni.backend.domain.plan.service;
 
-import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
 import com.miruni.backend.domain.plan.dto.response.*;
 import com.miruni.backend.domain.plan.dto.response.PlanPreviewDto;
 import com.miruni.backend.domain.plan.dto.response.PlanReadResponse;
-import com.miruni.backend.domain.plan.dto.command.PlanDurationCommand;
-import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.dto.response.DailyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.MonthlyPlanResponse;
 import com.miruni.backend.domain.plan.dto.response.PlanDetailResponse;
-import com.miruni.backend.domain.plan.dto.response.PlanDurationResponse;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
@@ -20,7 +16,6 @@ import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.service.UserQueryService;
 import com.miruni.backend.domain.plan.exception.AiPlanErrorCode;
 import com.miruni.backend.domain.plan.exception.BasicPlanErrorCode;
-import com.miruni.backend.domain.plan.exception.PlanErrorCode;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.plan.repository.BasicPlanRepository;
 import com.miruni.backend.domain.plan.type.PlanType;
@@ -34,10 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -88,8 +81,7 @@ public class PlanQueryService {
     }
 
     public PlanHomeResponse getPlanHome(Long userId) {
-//        LocalDate today = LocalDate.now();
-        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        LocalDate today = LocalDate.now();
 
         List<DailyPlanResponse.DailyPlanItemResponse> allPlans =
                 Stream.concat(

@@ -49,7 +49,7 @@ public record DailyPlanResponse(
             return new DailyPlanItemResponse(
                     PlanType.AI,
                     aiPlan.getId(),
-                    aiPlan.getPlan().getTitle(), // TODO
+                    aiPlan.getPlan().getTitle(),
                     aiPlan.getSubTitle(),
                     formatTime(aiPlan.getStartDateTime()),
                     formatTime(aiPlan.getEndDateTime()),
