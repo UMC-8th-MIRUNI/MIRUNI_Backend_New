@@ -41,7 +41,7 @@ public class GeminiService {
         return false;
     }
 
-    @Cacheable(value = "aiPlans", key = "#command.title + #command.deadline + #command.taskRange", cacheManager = "cacheManager")
+    @Cacheable(value = "aiPlans", key = "#command.title + #command.endDateTime + #command.scope", cacheManager = "cacheManager")
     public Mono<List<AiPlanCreateResponse>> getAiPlanFromApi(AiPlanCreateCommandDto command) {
         String prompt = buildPrompt(command);
         AiRequest aiRequest = AiRequest.fromPrompt(prompt);
@@ -72,16 +72,16 @@ public class GeminiService {
                 
                 Based on the information below, break down the work into detailed sub-tasks.
                 - The number of sub-tasks must be between 2 and 10.
-                - Schedule the dates and times logically leading up to the deadline.
+                - Schedule the dates and times logically between StartDateTime and EndDateTime.
                 
                 The JSON array must consist of objects containing strictly the following keys:
                 - "scheduledDate": (string, "YYYY-MM-DD")
                 - "subTitle": (string, sub-task title)
-                - "expectedDuration": (number, in minutes)        
-                - "startTime": (string, "HH:MM:SS")        
-                - "endTime": (string, "HH:MM:SS")        
+                - "expectedDuration": (number, in minutes)
+                - "startTime": (string, "HH:MM:SS")
+                - "endTime": (string, "HH:MM:SS")
                 
-                Schedule the tasks according to the following "Preferred Time Slot" definitions:
+                [Time Slot Definitions]
                 - RANDOM : Random time
                 - MORNING : 06:00 ~ 09:00
                 - FOCUS_MORNING : 09:00 ~ 12:00
@@ -90,16 +90,26 @@ public class GeminiService {
                 - NIGHT : 22:00 ~ 23:59
                 - DAWN : 00:00 ~ 06:00
                 
+                [Scheduling Rules]
+                1. Try to fit tasks into the 'Preferred Time Slot' if possible.
+                2. If StartDateTime and EndDateTime are on the same day (Single-day Task):
+                   - You MUST schedule all tasks within that single day.
+                   - If the tasks cannot fit into the 'Preferred Time Slot', you are allowed to extend beyond the preferred slot to ensure all tasks are completed within the day.
+                3. If StartDateTime and EndDateTime are different (Multi-day Task):
+                   - Distribute tasks logically across the days within the 'Preferred Time Slot'.
+                4. Chronological Order: The final JSON array MUST be sorted strictly by 'scheduledDate' and 'startTime'. The earliest task must appear first in the array.
+                
                 [Task Information]
                 - Title: %s
-                - Deadline: %s
+                - StartDateTime: %s
+                - EndDateTime: %s
                 - Preferred Time Slot: %s
                 - Scope: %s
                 - Priority: %s
                 - Details: %s
                 """,
-                command.title(), command.deadline(), command.timePeriod(),
-                command.taskRange(), command.priority(), command.detailRequest()
+                command.title(), command.startDateTime(), command.endDateTime(), command.timePeriod(),
+                command.scope(), command.priority(), command.detailRequest()
         );
     }
 

@@ -23,6 +23,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -37,6 +39,11 @@ public class AiPlanCommandService {
     private final PlanQueryService planQueryService;
     private final ScheduleValidator scheduleValidator;
 
+    private static void checkWithinDeadline(LocalDateTime deadline, LocalDateTime scheduledDate) {
+        if (scheduledDate.isAfter(deadline)) {
+            throw BaseException.type(AiPlanErrorCode.DEADLINE_AFTER);
+        }
+    }
 
     @Transactional
     public Plan savePlan(PlanCreateCommandDto command) {
@@ -45,7 +52,8 @@ public class AiPlanCommandService {
         Plan newPlan = Plan.create(
                 user,
                 command.title(),
-                command.deadline().atStartOfDay(),
+                command.startDateTime(),
+                command.endDateTime(),
                 command.taskRange(),
                 command.priority()
         );
@@ -66,6 +74,7 @@ public class AiPlanCommandService {
                         dto.scheduledDate().atTime(dto.endTime())
                 );
             }
+            scheduleValidator.validateConflict(userId, command.startDateTime(), command.endDateTime());
 
             List<AiPlan> entityToSave = dtoList.stream()
                     .map(dto -> AiPlan.create(
@@ -84,8 +93,6 @@ public class AiPlanCommandService {
             return savedEntity.stream()
                     .map(entity -> AiPlanCreateResponse.fromEntity(entity, plan))
                     .toList();
-
-
         }
         return List.of();
     }
@@ -102,7 +109,11 @@ public class AiPlanCommandService {
         scheduleValidator.validateConflictForAiPlan(command.userId(), aiPlanId,
                 command.scheduledDate().atTime(command.startTime()),
                 command.scheduledDate().atTime(command.endTime()));
+
+        checkWithinDeadline(plan.getEndDateTime(), command.scheduledDate().atTime(command.endTime()));
+
         plan.updateTitle(command.title());
+
         aiPlan.updateDetails(
                 command.subTitle(),
                 command.scheduledDate().atTime(command.startTime()),

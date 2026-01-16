@@ -1,14 +1,12 @@
 package com.miruni.backend.domain.plan.dto.request;
 
-import com.miruni.backend.domain.plan.entity.Plan;
 import com.miruni.backend.domain.plan.entity.Priority;
 import com.miruni.backend.domain.plan.entity.TimePeriod;
-import com.miruni.backend.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record AiPlanCreateRequest(
         @NotBlank
@@ -16,8 +14,12 @@ public record AiPlanCreateRequest(
         String title,
 
         @NotNull
-        @Schema(description = "마감기한", example = "2026-05-01")
-        LocalDate deadline,
+        @Schema(description = "시작날짜시간", example = "2026-05-01T11:00:00")
+        LocalDateTime startDateTime,
+
+        @NotNull
+        @Schema(description = "종료날짜시간", example = "2026-05-07T09:00:00")
+        LocalDateTime endDateTime,
 
         @NotNull
         @Schema(description = "실행시간대", example = "MORNING")
@@ -25,7 +27,7 @@ public record AiPlanCreateRequest(
 
         @NotBlank
         @Schema(description = "일정 범위", example = "슬라이드 13장 제작")
-        String taskRange,
+        String scope,
 
         @NotNull
         @Schema(description = "우선 순위", example = "HIGH")

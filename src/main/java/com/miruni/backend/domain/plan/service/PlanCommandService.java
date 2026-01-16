@@ -20,7 +20,6 @@ import com.miruni.backend.domain.plan.repository.PlanRepository;
 import com.miruni.backend.domain.plan.validator.ScheduleValidator;
 import com.miruni.backend.domain.plan.repository.AiPlanRepository;
 import com.miruni.backend.domain.plan.type.PlanType;
-import com.miruni.backend.domain.plan.validator.ScheduleValidator;
 import com.miruni.backend.domain.user.entity.User;
 import com.miruni.backend.domain.user.service.UserQueryService;
 import com.miruni.backend.global.exception.BaseException;
@@ -136,7 +135,7 @@ public class PlanCommandService {
                     throw BaseException.type(AiPlanErrorCode.AI_PLAN_NOT_FOUND);
                 }
 
-                checkWithinDeadline(plan.getDeadline().toLocalDate(), dto.scheduledDate());
+                checkWithinDeadline(plan.getStartDateTime().toLocalDate(), dto.scheduledDate());
                 checkExpectedDuration(dto.startTime(), dto.endTime(), dto.expectedDuration());
                 scheduleValidator.validateConflictForAiPlan(command.userId(), dto.aiPlanId(),
                         dto.scheduledDate().atTime(dto.startTime()),
@@ -164,7 +163,7 @@ public class PlanCommandService {
                         aiPlan.getStatus()
                 )).toList();
 
-        return AiPlanResponse.of(command.planId(), plan.getTitle(), plan.getDeadline().toLocalDate(), plan.getScope(), plan.getPriority(), plan.getProgressRate(), savedDtos);
+        return AiPlanResponse.of(command.planId(), plan.getTitle(), plan.getStartDateTime().toLocalDate(), plan.getScope(), plan.getPriority(), plan.getProgressRate(), savedDtos);
     }
 
     public PlanStartResponse startPlan(PlanStartRequest request) {
