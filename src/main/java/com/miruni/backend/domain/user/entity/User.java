@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +88,9 @@ public class User extends BaseEntity {
     @Builder.Default
     private List<FcmToken> fcmTokens = new ArrayList<>();
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     // ===== 비즈니스 로직 =====
 
     public void addPeanuts(int count) {
@@ -136,6 +140,20 @@ public class User extends BaseEntity {
 
     public boolean isSocialUser() {
         return this.oauthProvider != null;
+    }
+
+    // ===== 소프트 삭제 관련 로직 (User 전용) =====
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public void restore() {
+        this.deletedAt = null;
     }
 
     // ===== 정적 팩토리 메서드 =====
