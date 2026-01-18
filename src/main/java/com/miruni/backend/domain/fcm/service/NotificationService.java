@@ -4,9 +4,11 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import com.miruni.backend.domain.fcm.dto.ScheduleNotificationDto;
 import com.miruni.backend.domain.fcm.entity.FcmErrorResponse;
 import com.miruni.backend.domain.fcm.entity.FcmToken;
 import com.miruni.backend.domain.fcm.exception.FcmErrorCode;
+import com.miruni.backend.domain.fcm.repository.NotificationRedisRepository;
 import com.miruni.backend.domain.plan.entity.AiPlan;
 import com.miruni.backend.domain.plan.entity.BasicPlan;
 import com.miruni.backend.domain.plan.entity.Status;
@@ -39,6 +41,7 @@ public class NotificationService {
     private final BasicPlanQueryService basicPlanQueryService;
     private final AiPlanQueryService aiPlanQueryService;
     private final FcmTokenCommandService fcmTokenCommandService;
+    private final NotificationRedisRepository notificationRedisRepository;
 
     //Plan 알림 등록
     public void scheduleNotification(BasicPlan plan){
@@ -102,6 +105,28 @@ public class NotificationService {
         cancelAllNotifications(basicPlan.getUser().getId(), basicPlan.getId(), PlanType.BASIC_PLAN);
     }
 
+    // 서버 재시작 시 복구용 메서드 추가
+    public void reschedule(ScheduleNotificationDto info) {
+        NotificationTask task = NotificationTask.builder()
+                .userId(info.userId())
+                .targetId(info.targetId())
+                .type(PlanType.valueOf(info.planType()))
+                .scheduledTime(info.notificationTime())
+                .taskTitle(info.taskTitle())
+                .build();
+
+        AlarmType alarmType = AlarmType.valueOf(info.alarmType());
+
+        // 메모리에만 등록 (Redis엔 이미 있음)
+        String scheduleKey = createScheduleKey(task.type(), task.targetId(), alarmType, task.userId());
+
+        ScheduledFuture<?> future = taskScheduler.schedule(
+                () -> executeNotification(task, alarmType, task.userId()),
+                info.notificationTime().atZone(ZoneId.systemDefault()).toInstant()
+        );
+        scheduledTasks.put(scheduleKey, future);
+    }
+
     //토큰 스케줄링
     private void scheduleAllNotifications(NotificationTask task) {
         scheduleAlarm(task, AlarmType.BEFORE_5MIN);
@@ -133,6 +158,17 @@ public class NotificationService {
         String scheduleKey = createScheduleKey(task.type(), task.targetId(), alarmType, task.userId());
 
 
+        ScheduleNotificationDto notificationDto = new ScheduleNotificationDto(
+                task.userId(),
+                task.targetId(),
+                task.type().name(),
+                alarmType.name(),
+                notificationTime,
+                task.taskTitle()
+        );
+
+        notificationRedisRepository.save(scheduleKey, notificationDto);
+
         ScheduledFuture<?> future = taskScheduler.schedule(
                 () -> executeNotification(task, alarmType, task.userId),
                 notificationTime.atZone(ZoneId.systemDefault()).toInstant()
@@ -143,6 +179,9 @@ public class NotificationService {
 
     // == 알림 삭제 관련 메서드 == //
     private void cancelExistingSchedule(String scheduleKey){
+
+        notificationRedisRepository.delete(scheduleKey);
+
         ScheduledFuture<?> existingFuture = scheduledTasks.remove(scheduleKey);
         if (existingFuture != null && !existingFuture.isDone()) {
             boolean cancelled = existingFuture.cancel(false);
@@ -170,6 +209,7 @@ public class NotificationService {
         } finally {
             String scheduleKey = createScheduleKey(task.type(), task.targetId(), alarmType, task.userId);
             scheduledTasks.remove(scheduleKey);
+            notificationRedisRepository.delete(scheduleKey);
         }
     }
 
