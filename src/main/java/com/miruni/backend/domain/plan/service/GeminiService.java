@@ -93,9 +93,12 @@ public class GeminiService {
                 [Scheduling Rules]
                 1. Try to fit tasks into the 'Preferred Time Slot' if possible.
                 2. If StartDateTime and EndDateTime are on the same day (Single-day Task):
-                   - You MUST schedule all tasks within that single day.
-                   - If the tasks cannot fit into the 'Preferred Time Slot', you are allowed to extend beyond the preferred slot to ensure all tasks are completed within the day.
+                   - You MUST schedule all tasks strictly within the time range between StartDateTime and EndDateTime on that specific day.
+                   - The 'endTime' of the last task MUST NOT exceed the time of EndDateTime.
+                   - If the tasks cannot fit into the 'Preferred Time Slot' within this time range, you are allowed to use other time slots, but strictly within the StartDateTime and EndDateTime limits.
                 3. If StartDateTime and EndDateTime are different (Multi-day Task):
+                   - The 'scheduledDate' MUST be strictly within the range from StartDateTime's date to EndDateTime's date (inclusive).
+                   - UNDER NO CIRCUMSTANCES should a 'scheduledDate' be later than the EndDateTime.
                    - Distribute tasks logically across the days within the 'Preferred Time Slot'.
                 4. Chronological Order: The final JSON array MUST be sorted strictly by 'scheduledDate' and 'startTime'. The earliest task must appear first in the array.
                 

@@ -45,6 +45,12 @@ public class AiPlanCommandService {
         }
     }
 
+    private static void checkStartAfter(LocalDateTime startDate, LocalDateTime scheduledDate) {
+        if (scheduledDate.isBefore(startDate)) {
+            throw BaseException.type(AiPlanErrorCode.START_BEFORE);
+        }
+    }
+
     @Transactional
     public Plan savePlan(PlanCreateCommandDto command) {
         User user = userQueryService.getUserById(command.userId());
@@ -68,6 +74,13 @@ public class AiPlanCommandService {
 
         if (dtoList != null && !dtoList.isEmpty()) {
             for (AiPlanCreateResponse dto : dtoList) {
+
+                LocalDateTime taskStart = dto.scheduledDate().atTime(dto.startTime());
+                LocalDateTime taskEnd = dto.scheduledDate().atTime(dto.endTime());
+
+                checkWithinDeadline(command.endDateTime(), taskEnd);
+                checkStartAfter(command.startDateTime(), taskStart);
+
                 scheduleValidator.validateConflict(
                         userId,
                         dto.scheduledDate().atTime(dto.startTime()),
