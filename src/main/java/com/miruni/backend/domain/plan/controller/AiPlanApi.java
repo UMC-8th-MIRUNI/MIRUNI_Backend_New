@@ -6,6 +6,7 @@ import com.miruni.backend.domain.plan.dto.request.AiPlansDeleteRequest;
 import com.miruni.backend.domain.plan.dto.request.PlanUpdateRequest;
 import com.miruni.backend.domain.plan.dto.response.*;
 import com.miruni.backend.global.authroize.CustomUserDetails;
+import com.miruni.backend.global.authroize.LoginUser;
 import com.miruni.backend.global.exception.CustomErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -118,7 +119,7 @@ public interface AiPlanApi {
             )
     })
     List<AiPlanCreateResponse> createAiPlan(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @LoginUser Long userId,
             @RequestBody @Valid AiPlanCreateRequest request
     );
 
@@ -152,7 +153,7 @@ public interface AiPlanApi {
             )
     })
     AiPlanUpdateResponse updateAiPlan(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @LoginUser Long userId,
             @PathVariable("ai_plan_id") Long ai_plan_id,
             @RequestBody @Valid AiPlanUpdateRequest request
     );
@@ -180,7 +181,7 @@ public interface AiPlanApi {
     })
     AiPlanDeleteResponse deleteAiPlan(
             @PathVariable("ai_plan_id") Long ai_plan_id,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @LoginUser Long user_id
     );
 
     @Operation(
@@ -227,7 +228,7 @@ public interface AiPlanApi {
             )
     })
     PlanReadResponse readPlan(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @LoginUser Long userId
     );
 
     @Operation(
@@ -281,7 +282,7 @@ public interface AiPlanApi {
     AiPlanResponse readAiPlan(
             @Parameter(description = "조회할 상위 일정의 ID", example = "1")
             @PathVariable("plan-id") Long planId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @LoginUser Long userId
     );
 
     @Operation(
@@ -313,7 +314,7 @@ public interface AiPlanApi {
             @Parameter(description = "삭제할 상위 일정의 ID", example = "1")
             @PathVariable("plan-id") Long planId,
 
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @LoginUser Long userId
     );
 
     @Operation(
@@ -372,7 +373,7 @@ public interface AiPlanApi {
     AiPlanResponse updatePlanTable(
             @Parameter(description = "수정할 상위 일정의 ID", example = "1")
             @PathVariable("plan-id") Long planId,
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @LoginUser Long userId,
             @RequestBody @Valid PlanUpdateRequest request
     );
 
@@ -413,7 +414,7 @@ public interface AiPlanApi {
     AiPlansDeleteResponse deleteAiPlanItems(
             @Parameter(description = "상위 일정의 ID", example = "1")
             @PathVariable("plan-id") Long planId,
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @LoginUser Long userId,
             @RequestBody @Valid AiPlansDeleteRequest request
     );
 

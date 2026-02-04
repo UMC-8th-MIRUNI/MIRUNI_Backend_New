@@ -13,6 +13,7 @@ import com.miruni.backend.domain.plan.service.AiPlanQueryService;
 import com.miruni.backend.domain.plan.service.PlanCommandService;
 import com.miruni.backend.domain.plan.service.PlanQueryService;
 import com.miruni.backend.global.authroize.CustomUserDetails;
+import com.miruni.backend.global.authroize.LoginUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,10 +36,9 @@ public class AiPlanController implements AiPlanApi {
         @PostMapping
         @Override
         public List<AiPlanCreateResponse> createAiPlan(
-                @AuthenticationPrincipal CustomUserDetails userDetails,
+                @LoginUser Long userId,
                 @RequestBody @Valid AiPlanCreateRequest request
                 ){
-                Long userId = userDetails.getId();
                 PlanCreateCommandDto planCreateCommand = PlanCreateCommandDto.from(userId, request);
                 Plan savedPlan = aiPlanCommandService.savePlan(planCreateCommand);
 
@@ -50,11 +50,10 @@ public class AiPlanController implements AiPlanApi {
         @PatchMapping("/{ai-plan-id}")
         @Override
         public AiPlanUpdateResponse updateAiPlan(
-                @AuthenticationPrincipal CustomUserDetails userDetails,
+                @LoginUser Long userId,
                 @PathVariable("ai-plan-id") Long aiPlanId,
                 @RequestBody @Valid AiPlanUpdateRequest request
         ){
-                Long userId = userDetails.getId();
                 AiPlanUpdateCommandDto aiPlanUpdateCommand = AiPlanUpdateCommandDto.from(userId, aiPlanId, request);
                 return aiPlanCommandService.updateAiPlan(aiPlanId, aiPlanUpdateCommand);
         }
@@ -63,18 +62,16 @@ public class AiPlanController implements AiPlanApi {
         @Override
         public AiPlanDeleteResponse deleteAiPlan(
                 @PathVariable("ai-plan-id") Long aiPlanId,
-                @AuthenticationPrincipal CustomUserDetails userDetails
+                @LoginUser Long userId
         ){
-                Long userId = userDetails.getId();
                 return aiPlanCommandService.deleteAiPlan(aiPlanId, userId);
         }
 
         @GetMapping
         @Override
         public PlanReadResponse readPlan(
-                @AuthenticationPrincipal CustomUserDetails userDetails
+                @LoginUser Long userId
         ){
-                Long userId = userDetails.getId();
                 return planQueryService.findPlans(userId);
         }
 
@@ -82,9 +79,8 @@ public class AiPlanController implements AiPlanApi {
         @Override
         public AiPlanResponse readAiPlan(
                 @PathVariable("plan-id") Long planId,
-                @AuthenticationPrincipal CustomUserDetails userDetails
+                @LoginUser Long userId
         ){
-                Long userId = userDetails.getId();
                 return aiPlanQueryService.findAiPlans(userId, planId);
         }
 
@@ -92,9 +88,8 @@ public class AiPlanController implements AiPlanApi {
         @Override
         public PlanDeleteAllResponse deletePlanTable(
                 @PathVariable("plan-id") Long planId,
-                @AuthenticationPrincipal CustomUserDetails userDetails
+                @LoginUser Long userId
         ){
-                Long userId = userDetails.getId();
                 return planCommandService.deletePlanAll(userId, planId);
         }
 
@@ -102,10 +97,9 @@ public class AiPlanController implements AiPlanApi {
         @Override
         public AiPlanResponse updatePlanTable(
                 @PathVariable("plan-id") Long planId,
-                @AuthenticationPrincipal CustomUserDetails userDetails,
+                @LoginUser Long userId,
                 @RequestBody @Valid PlanUpdateRequest request
         ){
-                Long userId = userDetails.getId();
                 PlanUpdateCommandDto command = PlanUpdateCommandDto.from(userId, planId, request);
                 return planCommandService.updatePlanTable(command);
         }
@@ -114,10 +108,9 @@ public class AiPlanController implements AiPlanApi {
         @Override
         public AiPlansDeleteResponse deleteAiPlanItems(
                 @PathVariable("plan-id") Long planId,
-                @AuthenticationPrincipal CustomUserDetails userDetails,
+                @LoginUser Long userId,
                 @RequestBody @Valid AiPlansDeleteRequest request
         ){
-                Long userId = userDetails.getId();
                 AiPlansDeleteCommandDto command = AiPlansDeleteCommandDto.from(planId, request, userId);
                 return aiPlanCommandService.deleteAiPlanItems(command);
         }
